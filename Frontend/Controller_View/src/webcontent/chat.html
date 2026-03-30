@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>
+            Chat Application
+        </title>
+    </head>
+
+    <body>
+        <h2>Chat WebSocket </h2>
+
+        <div id="log"></div>
+
+        <div class="row">
+            <input id="msg" placeholder="Enter your message…" />
+            <button id="send">Envoyer</button>
+        </div>
+
+        <script>
+        const log = (s) => {
+            const el = document.getElementById("log");
+            el.textContent += s + "\n";
+            el.scrollTop = el.scrollHeight;
+        };
+
+        //const wsUrl = `ws://${location.host}/chat/ws`;
+        const wsUrl = `ws://localhost:8080/facade/ws`;
+        const ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => log("[client] connected to " + wsUrl);
+        ws.onmessage = (e) => log(e.data);
+        ws.onclose = () => log("[client] disconnected");
+        ws.onerror = () => log("[client] websocket error");
+
+        function send() {
+            const inp = document.getElementById("msg");
+            const text = inp.value.trim();
+            if (!text) return;
+            ws.send(text);
+            inp.value = "";
+            inp.focus();
+        }
+        
+        document.getElementById("send").onclick = send;
+        document.getElementById("msg").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") send();
+        });
+        </script>
+    </body>
+</html>
