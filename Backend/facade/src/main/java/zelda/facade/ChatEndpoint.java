@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONObject;
+
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -14,23 +16,37 @@ import jakarta.websocket.server.ServerEndpoint;
 @ServerEndpoint("/ws")
 public class ChatEndpoint{
     private static final Set<Session> sessions = ConcurrentHashMap.newKeySet();
-    
+    private int myId = 0;
+
     @OnOpen
     public void onOpen(Session session) throws IOException {
+        JSONObject json = new JSONObject();
+        json.put("senderId", myId);
+        json.put("text", "welcome " + session.getId());
+
         sessions.add(session);
-        session.getBasicRemote().sendText("[server] welcome " + session.getId());
-        broadcast("[server] " + session.getId() + " joined the chat");
+        session.getBasicRemote().sendText(json.toString());
+
+        json.put("text", session.getId() + " joined the chat");
+        broadcast(json);
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
-        broadcast("[" + session.getId() + "] " + message);
+        JSONObject json = new JSONObject(message);
+
+        broadcast(json);
     }
 
     @OnClose
     public void onClose(Session session) throws IOException {
         sessions.remove(session);
-        broadcast("[server] " + session.getId() + " left the chat");
+        
+        JSONObject json = new JSONObject();
+        json.put("senderId", myId);
+        json.put("text", session.getId() + " left the chat");
+
+        broadcast(json);
     }
 
     @OnError
@@ -38,11 +54,10 @@ public class ChatEndpoint{
         System.err.println("WebSocket error for session " + session.getId() + ":");
     }
 
-    private void broadcast(String message) throws IOException {
-        for (Session s : sessions) {
-            if (s.isOpen()) {
-                s.getBasicRemote().sendText(message);
-            }
+    private void broadcast(JSONObject json) throws IOException {
+        // Broadcast à tous les clients
+        for (Session client : sessions) {
+            client.getBasicRemote().sendText(json.toString());
         }
     }
 }
