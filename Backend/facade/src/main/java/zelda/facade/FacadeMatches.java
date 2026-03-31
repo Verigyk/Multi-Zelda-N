@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -118,6 +119,13 @@ public class FacadeMatches {
             history.add(toView(match));
         }
         return history;
+    }
+
+    @GetMapping("/ping")
+    public ApiInfoView ping(HttpServletRequest request) {
+        String contextPath = request.getContextPath() == null ? "" : request.getContextPath();
+        String apiBase = contextPath + "/matches";
+        return new ApiInfoView("ok", contextPath, apiBase);
     }
 
     private int clampMaxPlayers(Integer value) {
@@ -241,6 +249,30 @@ public class FacadeMatches {
 
         public String getWinner() {
             return winner;
+        }
+    }
+
+    public static class ApiInfoView {
+        private final String status;
+        private final String contextPath;
+        private final String apiBase;
+
+        public ApiInfoView(String status, String contextPath, String apiBase) {
+            this.status = status;
+            this.contextPath = contextPath;
+            this.apiBase = apiBase;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public String getContextPath() {
+            return contextPath;
+        }
+
+        public String getApiBase() {
+            return apiBase;
         }
     }
 
