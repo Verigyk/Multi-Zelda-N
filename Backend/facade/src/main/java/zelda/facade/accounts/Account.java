@@ -1,13 +1,21 @@
 package zelda.facade.accounts;
 
+import java.util.Collection;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import zelda.facade.matches.Match;
 
 @Entity
 public class Account {
     @Id
     String pseudo;
     String password;
+
+    @ManyToMany
+    Collection<Match> match_history;
+
 
     public Account() {}
 
@@ -32,4 +40,11 @@ public class Account {
         this.password = password;
     }
     
+    public Collection<Match> getMatch_history() {
+        return match_history;
+    }
+
+    public void setMatch_history(Collection<Match> match_history) {
+        this.match_history = match_history;
+    }
 }
