@@ -1,1 +1,1 @@
-~/Téléchargements/apache-tomcat-11.0.1/bin/shutdown.sh
+./apache-tomcat-11.0.1/bin/shutdown.sh

@@ -1,1 +1,1 @@
-tail -f ~/Téléchargements/apache-tomcat-11.0.1/logs/catalina.out
+tail -f apache-tomcat-11.0.1/logs/catalina.out
