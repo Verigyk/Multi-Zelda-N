@@ -1,2 +1,1 @@
 *.war
-/apache-tomcat-11.0.1/logs/*
