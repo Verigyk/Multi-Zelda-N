@@ -15,6 +15,24 @@
 
 
 <script>
+
+var movingBox = document.getElementById("box");
+
+
+var movingState = new Map();
+movingState.set("left", false);
+movingState.set("down", false);
+movingState.set("right", false);
+movingState.set("up", false);
+
+
+var movingControls = new Map();
+movingControls.set("q", "left");
+movingControls.set("s", "down");
+movingControls.set("d", "right");
+movingControls.set("z", "up");
+
+
 function move(element, direction, distance=5) {
    var topOrLeft = (direction=="left" || direction=="right") ? "left" : "top";
    if (direction=="up" || direction=="left") { distance *= -1; }
@@ -23,26 +41,57 @@ function move(element, direction, distance=5) {
    element.style[topOrLeft] = (Number(value) + distance) + "px";
 }
 
+
+
 document.addEventListener(
         "keydown",
         (event) => {
 
-          var movingControls = new Map();
-          movingControls.set("q", "left");
-          movingControls.set("s", "down");
-          movingControls.set("d", "right");
-          movingControls.set("z", "up");
+          console.log("lkjm");
 
           const typedKey = event.key;
 
           if (movingControls.has(typedKey)) {
-            var movingBox = document.getElementById("box");
-            move(movingBox, movingControls.get(typedKey));
-            return;
+            console.log("lkjsfdfsdfsd");
+            var direction = movingControls.get(typedKey);
+            movingState.set(direction, true);
           }
 
         }
         );
+
+document.addEventListener(
+        "keyup",
+        (event) => {
+          console.log("rstlkjsmfdkj");
+
+          const typedKey = event.key;
+
+          if (movingControls.has(typedKey)) {
+            console.log("lk22222222jsfdfsdfsd");
+            var direction = movingControls.get(typedKey);
+            movingState.set(direction, false);
+          }
+
+        }
+      );
+
+function update(){
+  for (const [direction, boolval] of movingState){
+    if (boolval) {
+      move(movingBox, direction); 
+    }
+  }
+  
+}
+
+function gameLoop(frameTime){
+    update();
+    requestAnimationFrame(gameLoop);
+
+}
+
+requestAnimationFrame(gameLoop);
 
 </script>
 
