@@ -3,6 +3,7 @@ package zelda.facade;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +34,8 @@ public class FacadeMatches {
     private static final int MAX_HISTORY = 100;
 
     private HashMap<String, Match> activeMatches = new HashMap<String,Match>(); 
+    private HashMap<String, HashSet<String>> activeMatchesPlayersIds = new HashMap<String,HashSet<String>>(); 
+
     @Autowired
     private MatchRepository historyMatches;
 
@@ -40,7 +43,8 @@ public class FacadeMatches {
     AccountRepository ar;
 
     @PostMapping("/create")
-    public Match createMatch(@RequestBody(required = false) matchShape.CreateMatchRequest request) {
+    public Match createMatch(Authentication authentication, @RequestBody(required = false) matchShape.CreateMatchRequest request) {
+        Account account = this.getAccount(authentication.getName());
         String id = UUID.randomUUID().toString().substring(0, 8);
         int maxPlayers = clampMaxPlayers(request == null ? null : request.maxPlayers());
         String title = (request == null || request.title() == null || request.title().isBlank())
@@ -50,24 +54,32 @@ public class FacadeMatches {
         Match match = new Match(id,
                                 title,
                                 "LOADING",
-                                1,
                                 maxPlayers,
                                 Instant.now().toString(),
                                 null,
                                 null,
                                 null
         );
+        HashSet<String> pseudos = new HashSet<String>();
+        pseudos.add(account.getPseudo()); 
+        match.setPlayersCount(pseudos.size());
+
         activeMatches.put(id, match);
+        activeMatchesPlayersIds.put(id, pseudos);
         return match;
     }
 
     @PostMapping("/{id}/join")
-    public ResponseEntity<Match> joinMatch(@PathVariable String id) {
+    public ResponseEntity<Match> joinMatch(Authentication authentication, @PathVariable String id) {
         Match match = activeMatches.get(id);
+        Account account = this.getAccount(authentication.getName());
+
+        HashSet<String> activeMatchPlayersIds = activeMatchesPlayersIds.get(id);
 
         synchronized (match) {
-            if (match.getPlayersCount() < match.getMaxPlayers()) {
-                match.setPlayersCount(match.getPlayersCount() + 1);
+            if (match.getPlayersCount() < match.getMaxPlayers() && !activeMatchesPlayersIds.get(id).contains(account.getPseudo())) {
+                activeMatchPlayersIds.add(account.getPseudo());
+                match.setPlayersCount(activeMatchPlayersIds.size());
             }
             return ResponseEntity.ok(match);
         }
@@ -88,7 +100,6 @@ public class FacadeMatches {
 
     @PostMapping("/{id}/finish")
     public ResponseEntity<Match> finishMatch(Authentication authentication, @PathVariable String id, @RequestBody(required = false) matchShape.FinishMatchRequest request) {
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Match match = activeMatches.get(id);
 
         synchronized (match) {
@@ -100,14 +111,17 @@ public class FacadeMatches {
             match.setWinner(winner);
         }
 
-        Account account = this.getAccount(authentication.getName());
-
         activeMatches.remove(id);
         
         historyMatches.save(match);
 
-        account.getMatch_history().add(match);
-        this.ar.save(account);
+        for (String pseudo : activeMatchesPlayersIds.get(id)) {
+            Account account = this.getAccount(pseudo);
+            account.getMatch_history().add(match);
+            this.ar.save(account);
+        }
+
+        activeMatchesPlayersIds.remove(id);
 
         return ResponseEntity.ok(match);
     }

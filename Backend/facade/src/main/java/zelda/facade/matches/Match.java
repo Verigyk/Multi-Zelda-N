@@ -1,6 +1,7 @@
 package zelda.facade.matches;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -32,7 +33,6 @@ public class Match {
         String id,
         String title,
         String state,
-        int playersCount,
         int maxPlayers,
         String createdAt,
         String startedAt,
@@ -42,7 +42,6 @@ public class Match {
         this.id = id;
         this.title = title;
         this.state = state;
-        this.playersCount = playersCount;
         this.maxPlayers = maxPlayers;
         this.createdAt = createdAt;
         this.startedAt = startedAt;

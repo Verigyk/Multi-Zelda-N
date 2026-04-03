@@ -14,7 +14,7 @@ public class JwtUtil {
     private static final String SECRET_KEY =
             "my-super-secure-secret-key-for-jwt-signing-12345";
 
-    private static final long EXPIRATION_MS = 15 * 60 * 1000;
+    public static final long EXPIRATION_MS = 15 * 60 * 1000;
 
     public String generateToken(String username) {
         return Jwts.builder()
