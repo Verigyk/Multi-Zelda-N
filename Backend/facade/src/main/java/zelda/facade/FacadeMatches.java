@@ -2,7 +2,9 @@ package zelda.facade;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import zelda.facade.RequestShape.matches.matchShape;
@@ -30,8 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FacadeMatches {
     private static final int MAX_HISTORY = 100;
 
-    @Autowired
-    private MatchRepository activeMatches; 
+    private HashMap<String, Match> activeMatches = new HashMap<String,Match>(); 
     @Autowired
     private MatchRepository historyMatches;
 
@@ -56,19 +57,13 @@ public class FacadeMatches {
                                 null,
                                 null
         );
-
-        activeMatches.save(match);
+        activeMatches.put(id, match);
         return match;
     }
 
     @PostMapping("/{id}/join")
     public ResponseEntity<Match> joinMatch(@PathVariable String id) {
-        Optional<Match> m = activeMatches.findById(id);
-        if (!m.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        Match match = m.get();
+        Match match = activeMatches.get(id);
 
         synchronized (match) {
             if (match.getPlayersCount() < match.getMaxPlayers()) {
@@ -80,12 +75,7 @@ public class FacadeMatches {
 
     @PostMapping("/{id}/start")
     public ResponseEntity<Match> startMatch(@PathVariable String id) {
-        Optional<Match> m = activeMatches.findById(id);
-        if (!m.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        Match match = m.get();
+        Match match = activeMatches.get(id);
 
         synchronized (match) {
             if ("LOADING".equals(match.getState())) {
@@ -99,12 +89,7 @@ public class FacadeMatches {
     @PostMapping("/{id}/finish")
     public ResponseEntity<Match> finishMatch(Authentication authentication, @PathVariable String id, @RequestBody(required = false) matchShape.FinishMatchRequest request) {
         //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Optional<Match> m = activeMatches.findById(id);
-        if (!m.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        Match match = m.get();
+        Match match = activeMatches.get(id);
 
         synchronized (match) {
             match.setState("FINISHED");
@@ -117,10 +102,10 @@ public class FacadeMatches {
 
         Account account = this.getAccount(authentication.getName());
 
-        activeMatches.delete(match);
+        activeMatches.remove(id);
+        
         historyMatches.save(match);
 
-        match.setId(null);
         account.getMatch_history().add(match);
         this.ar.save(account);
 
@@ -128,8 +113,8 @@ public class FacadeMatches {
     }
 
     @GetMapping("/active")
-    public List<Match> listActiveMatches() {
-        return activeMatches.findAll();
+    public Collection<Match> listActiveMatches() {
+        return activeMatches.values();
     }
 
 
