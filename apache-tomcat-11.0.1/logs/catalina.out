@@ -1581,3 +1581,98 @@ WebSocket error for session 1:
 02-Apr-2026 17:21:38.793 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager] de l'application web s'est terminé en [27] ms
 02-Apr-2026 17:21:38.795 INFO [main] org.apache.coyote.AbstractProtocol.start Démarrage du gestionnaire de protocole ["http-nio-8080"]
 02-Apr-2026 17:21:38.800 INFO [main] org.apache.catalina.startup.Catalina.start Le démarrage du serveur a pris [5512] millisecondes
+03-Apr-2026 13:09:43.441 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom version serveur :              Apache Tomcat/11.0.1
+03-Apr-2026 13:09:43.446 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Serveur compilé :                  Nov 6 2024 19:08:24 UTC
+03-Apr-2026 13:09:43.447 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version du serveur :               11.0.1.0
+03-Apr-2026 13:09:43.447 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom de l'OS :                      Linux
+03-Apr-2026 13:09:43.447 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version OS :                       6.14.0-37-generic
+03-Apr-2026 13:09:43.448 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture :                     amd64
+03-Apr-2026 13:09:43.448 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home :                        /home/ibt1144/jdk-25_linux-x64_bin/jdk-25.0.2
+03-Apr-2026 13:09:43.448 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version JVM :                      25.0.2+10-LTS-69
+03-Apr-2026 13:09:43.449 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Fournisseur de la JVM :            Oracle Corporation
+03-Apr-2026 13:09:43.449 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+03-Apr-2026 13:09:43.449 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+03-Apr-2026 13:09:43.593 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.config.file=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/conf/logging.properties
+03-Apr-2026 13:09:43.593 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+03-Apr-2026 13:09:43.594 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djdk.tls.ephemeralDHKeySize=2048
+03-Apr-2026 13:09:43.594 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+03-Apr-2026 13:09:43.594 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.lang=ALL-UNNAMED
+03-Apr-2026 13:09:43.595 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.io=ALL-UNNAMED
+03-Apr-2026 13:09:43.595 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util=ALL-UNNAMED
+03-Apr-2026 13:09:43.595 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+03-Apr-2026 13:09:43.595 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+03-Apr-2026 13:09:43.596 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --enable-native-access=ALL-UNNAMED
+03-Apr-2026 13:09:43.596 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.base=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+03-Apr-2026 13:09:43.596 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.home=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+03-Apr-2026 13:09:43.596 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.io.tmpdir=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/temp
+03-Apr-2026 13:09:43.606 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent La librairie Apache Tomcat Native basée sur APR qui permet des performances optimales dans les environnements de production n'a pas été trouvée sur le java.library.path : [/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib]
+03-Apr-2026 13:09:44.515 INFO [main] org.apache.coyote.AbstractProtocol.init Initialisation du gestionnaire de protocole ["http-nio-8080"]
+03-Apr-2026 13:09:44.647 INFO [main] org.apache.catalina.startup.Catalina.load L'initialisation du serveur a pris [2241] millisecondes
+03-Apr-2026 13:09:44.790 INFO [main] org.apache.catalina.core.StandardService.startInternal Démarrage du service [Catalina]
+03-Apr-2026 13:09:44.790 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Démarrage du moteur de Servlets : [Apache Tomcat/11.0.1]
+03-Apr-2026 13:09:44.863 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+03-Apr-2026 13:09:50.174 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.5)
+
+2026-04-03T13:09:51.386+02:00  INFO 719603 --- [facade] [           main] zelda.facade.ServletInitializer          : Starting ServletInitializer v0.0.1-SNAPSHOT using Java 25.0.2 with PID 719603 (/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade/WEB-INF/classes started by ibt1144 in /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N)
+2026-04-03T13:09:51.391+02:00  INFO 719603 --- [facade] [           main] zelda.facade.ServletInitializer          : No active profile set, falling back to 1 default profile: "default"
+2026-04-03T13:09:52.578+02:00  INFO 719603 --- [facade] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-03T13:09:52.676+02:00  INFO 719603 --- [facade] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 81 ms. Found 1 JPA repository interface.
+2026-04-03T13:09:53.007+02:00  INFO 719603 --- [facade] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1536 ms
+2026-04-03T13:09:53.403+02:00  INFO 719603 --- [facade] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-03T13:09:53.791+02:00  INFO 719603 --- [facade] [           main] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Driver does not support get/set network timeout for connections. (feature not supported)
+2026-04-03T13:09:53.793+02:00  INFO 719603 --- [facade] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.hsqldb.jdbc.JDBCConnection@7eb91b95
+2026-04-03T13:09:53.795+02:00  INFO 719603 --- [facade] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-03T13:09:53.867+02:00  INFO 719603 --- [facade] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-03T13:09:54.082+02:00  INFO 719603 --- [facade] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-04-03T13:09:55.195+02:00  INFO 719603 --- [facade] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-03T13:09:55.442+02:00  INFO 719603 --- [facade] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:hsqldb:mem:8667502b-0300-42bb-aef3-7c5f56946ee0]
+	Database driver: HSQL Database Engine Driver
+	Database dialect: HSQLDialect
+	Database version: 2.7.3
+	Default catalog/schema: PUBLIC/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-03T13:09:57.131+02:00  INFO 719603 --- [facade] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-03T13:09:57.187+02:00  INFO 719603 --- [facade] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-03T13:09:57.319+02:00  INFO 719603 --- [facade] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-03T13:09:57.509+02:00  WARN 719603 --- [facade] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-03T13:09:58.099+02:00  INFO 719603 --- [facade] [           main] zelda.facade.ServletInitializer          : Started ServletInitializer in 7.545 seconds (process running for 17.906)
+03-Apr-2026 13:09:58.216 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [13 351] ms
+03-Apr-2026 13:09:58.234 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+03-Apr-2026 13:10:02.695 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+03-Apr-2026 13:10:02.834 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [4 600] ms
+03-Apr-2026 13:10:02.836 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT]
+03-Apr-2026 13:10:02.884 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT] de l'application web s'est terminé en [48] ms
+03-Apr-2026 13:10:02.885 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager]
+03-Apr-2026 13:10:02.971 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager] de l'application web s'est terminé en [86] ms
+03-Apr-2026 13:10:02.973 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples]
+03-Apr-2026 13:10:03.738 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples] de l'application web s'est terminé en [765] ms
+03-Apr-2026 13:10:03.738 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs]
+03-Apr-2026 13:10:03.795 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs] de l'application web s'est terminé en [57] ms
+03-Apr-2026 13:10:03.796 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager]
+03-Apr-2026 13:10:03.870 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager] de l'application web s'est terminé en [74] ms
+03-Apr-2026 13:10:03.879 INFO [main] org.apache.coyote.AbstractProtocol.start Démarrage du gestionnaire de protocole ["http-nio-8080"]
+03-Apr-2026 13:10:03.906 INFO [main] org.apache.catalina.startup.Catalina.start Le démarrage du serveur a pris [19256] millisecondes
+03-Apr-2026 13:10:13.885 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/Controller_View]
+03-Apr-2026 13:10:15.128 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+03-Apr-2026 13:10:20.935 INFO [Catalina-utility-2] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+03-Apr-2026 13:10:21.069 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [5 941] ms
+03-Apr-2026 13:12:31.274 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/Controller_View]
+03-Apr-2026 13:12:32.914 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/facade]
+2026-04-03T13:12:32.927+02:00  INFO 719603 --- [facade] [alina-utility-2] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-03T13:12:33.031+02:00  INFO 719603 --- [facade] [alina-utility-2] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-03T13:12:33.035+02:00  INFO 719603 --- [facade] [alina-utility-2] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

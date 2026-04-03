@@ -1,0 +1,5 @@
+127.0.0.1 - - [03/Apr/2026:13:10:05 +0200] "GET / HTTP/1.1" 200 11235
+127.0.0.1 - - [03/Apr/2026:13:10:05 +0200] "GET /favicon.ico HTTP/1.1" 200 21630
+127.0.0.1 - - [03/Apr/2026:13:10:20 +0200] "GET /Controller_View/movingSquare.html HTTP/1.1" 404 718
+127.0.0.1 - - [03/Apr/2026:13:10:20 +0200] "GET /favicon.ico HTTP/1.1" 200 21630
+127.0.0.1 - - [03/Apr/2026:13:10:22 +0200] "GET /Controller_View/movingSquare.html HTTP/1.1" 200 1225
