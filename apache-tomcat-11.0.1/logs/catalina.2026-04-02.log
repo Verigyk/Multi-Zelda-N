@@ -1,0 +1,682 @@
+02-Apr-2026 15:25:18.905 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom version serveur :              Apache Tomcat/11.0.1
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Serveur compilé :                  Nov 6 2024 19:08:24 UTC
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version du serveur :               11.0.1.0
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom de l'OS :                      Linux
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version OS :                       6.14.0-37-generic
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture :                     amd64
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home :                        /home/ibt1144/jdk-25_linux-x64_bin/jdk-25.0.2
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version JVM :                      25.0.2+10-LTS-69
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Fournisseur de la JVM :            Oracle Corporation
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE :                    /home/ibt1144/apache-tomcat-11.0.1
+02-Apr-2026 15:25:18.909 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME :                    /home/ibt1144/apache-tomcat-11.0.1
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.config.file=/home/ibt1144/apache-tomcat-11.0.1/conf/logging.properties
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djdk.tls.ephemeralDHKeySize=2048
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.lang=ALL-UNNAMED
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.io=ALL-UNNAMED
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util=ALL-UNNAMED
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --enable-native-access=ALL-UNNAMED
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.base=/home/ibt1144/apache-tomcat-11.0.1
+02-Apr-2026 15:25:19.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.home=/home/ibt1144/apache-tomcat-11.0.1
+02-Apr-2026 15:25:19.039 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.io.tmpdir=/home/ibt1144/apache-tomcat-11.0.1/temp
+02-Apr-2026 15:25:19.047 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent La librairie Apache Tomcat Native basée sur APR qui permet des performances optimales dans les environnements de production n'a pas été trouvée sur le java.library.path : [/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib]
+02-Apr-2026 15:25:19.701 INFO [main] org.apache.coyote.AbstractProtocol.init Initialisation du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 15:25:19.819 INFO [main] org.apache.catalina.startup.Catalina.load L'initialisation du serveur a pris [1725] millisecondes
+02-Apr-2026 15:25:19.897 INFO [main] org.apache.catalina.core.StandardService.startInternal Démarrage du service [Catalina]
+02-Apr-2026 15:25:19.897 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Démarrage du moteur de Servlets : [Apache Tomcat/11.0.1]
+02-Apr-2026 15:25:19.978 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+02-Apr-2026 15:25:25.575 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 15:25:29.933 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [9 955] ms
+02-Apr-2026 15:25:29.953 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 15:25:34.584 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 15:25:34.730 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [4 778] ms
+02-Apr-2026 15:25:34.732 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/ROOT]
+02-Apr-2026 15:25:34.774 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/ROOT] de l'application web s'est terminé en [43] ms
+02-Apr-2026 15:25:34.774 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/manager]
+02-Apr-2026 15:25:34.851 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/manager] de l'application web s'est terminé en [77] ms
+02-Apr-2026 15:25:34.852 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/examples]
+02-Apr-2026 15:25:35.755 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/examples] de l'application web s'est terminé en [903] ms
+02-Apr-2026 15:25:35.755 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/docs]
+02-Apr-2026 15:25:35.805 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/docs] de l'application web s'est terminé en [50] ms
+02-Apr-2026 15:25:35.805 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/host-manager]
+02-Apr-2026 15:25:35.859 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/host-manager] de l'application web s'est terminé en [54] ms
+02-Apr-2026 15:25:35.866 INFO [main] org.apache.coyote.AbstractProtocol.start Démarrage du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 15:25:35.880 INFO [main] org.apache.catalina.startup.Catalina.start Le démarrage du serveur a pris [16059] millisecondes
+02-Apr-2026 16:58:23.767 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/Controller_View]
+02-Apr-2026 16:58:25.267 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 16:58:29.458 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 16:58:29.604 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [4 328] ms
+02-Apr-2026 16:58:36.610 INFO [main] org.apache.catalina.core.StandardServer.await Une commande d'arrêt valide a été reçue sur le port d'arrêt, arrêt de l'instance du serveur
+02-Apr-2026 16:58:36.611 INFO [main] org.apache.coyote.AbstractProtocol.pause Le gestionnaire de protocole ["http-nio-8080"] est mis en pause
+02-Apr-2026 16:58:36.616 INFO [main] org.apache.catalina.core.StandardService.stopInternal Arrêt du service [Catalina]
+02-Apr-2026 16:58:37.228 INFO [main] org.apache.coyote.AbstractProtocol.stop Arrêt du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 16:58:37.238 INFO [main] org.apache.coyote.AbstractProtocol.destroy Destruction du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 16:58:44.119 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom version serveur :              Apache Tomcat/11.0.1
+02-Apr-2026 16:58:44.120 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Serveur compilé :                  Nov 6 2024 19:08:24 UTC
+02-Apr-2026 16:58:44.120 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version du serveur :               11.0.1.0
+02-Apr-2026 16:58:44.120 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom de l'OS :                      Linux
+02-Apr-2026 16:58:44.120 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version OS :                       6.14.0-37-generic
+02-Apr-2026 16:58:44.120 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture :                     amd64
+02-Apr-2026 16:58:44.120 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home :                        /home/ibt1144/jdk-25_linux-x64_bin/jdk-25.0.2
+02-Apr-2026 16:58:44.121 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version JVM :                      25.0.2+10-LTS-69
+02-Apr-2026 16:58:44.121 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Fournisseur de la JVM :            Oracle Corporation
+02-Apr-2026 16:58:44.121 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE :                    /home/ibt1144/apache-tomcat-11.0.1
+02-Apr-2026 16:58:44.121 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME :                    /home/ibt1144/apache-tomcat-11.0.1
+02-Apr-2026 16:58:44.156 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.config.file=/home/ibt1144/apache-tomcat-11.0.1/conf/logging.properties
+02-Apr-2026 16:58:44.156 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+02-Apr-2026 16:58:44.156 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djdk.tls.ephemeralDHKeySize=2048
+02-Apr-2026 16:58:44.156 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+02-Apr-2026 16:58:44.156 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.lang=ALL-UNNAMED
+02-Apr-2026 16:58:44.156 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.io=ALL-UNNAMED
+02-Apr-2026 16:58:44.156 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util=ALL-UNNAMED
+02-Apr-2026 16:58:44.156 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+02-Apr-2026 16:58:44.157 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+02-Apr-2026 16:58:44.157 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --enable-native-access=ALL-UNNAMED
+02-Apr-2026 16:58:44.157 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.base=/home/ibt1144/apache-tomcat-11.0.1
+02-Apr-2026 16:58:44.157 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.home=/home/ibt1144/apache-tomcat-11.0.1
+02-Apr-2026 16:58:44.157 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.io.tmpdir=/home/ibt1144/apache-tomcat-11.0.1/temp
+02-Apr-2026 16:58:44.157 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent La librairie Apache Tomcat Native basée sur APR qui permet des performances optimales dans les environnements de production n'a pas été trouvée sur le java.library.path : [/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib]
+02-Apr-2026 16:58:44.425 INFO [main] org.apache.coyote.AbstractProtocol.init Initialisation du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 16:58:44.454 INFO [main] org.apache.catalina.startup.Catalina.load L'initialisation du serveur a pris [504] millisecondes
+02-Apr-2026 16:58:44.494 INFO [main] org.apache.catalina.core.StandardService.startInternal Démarrage du service [Catalina]
+02-Apr-2026 16:58:44.494 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Démarrage du moteur de Servlets : [Apache Tomcat/11.0.1]
+02-Apr-2026 16:58:44.516 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+02-Apr-2026 16:58:46.222 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 16:58:48.976 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [4 459] ms
+02-Apr-2026 16:58:48.979 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 16:58:50.128 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 16:58:50.256 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [1 277] ms
+02-Apr-2026 16:58:50.257 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/ROOT]
+02-Apr-2026 16:58:50.279 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/ROOT] de l'application web s'est terminé en [21] ms
+02-Apr-2026 16:58:50.279 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/manager]
+02-Apr-2026 16:58:50.316 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/manager] de l'application web s'est terminé en [37] ms
+02-Apr-2026 16:58:50.316 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/examples]
+02-Apr-2026 16:58:50.951 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/examples] de l'application web s'est terminé en [635] ms
+02-Apr-2026 16:58:50.951 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/docs]
+02-Apr-2026 16:58:50.985 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/docs] de l'application web s'est terminé en [34] ms
+02-Apr-2026 16:58:50.985 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/apache-tomcat-11.0.1/webapps/host-manager]
+02-Apr-2026 16:58:51.016 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/apache-tomcat-11.0.1/webapps/host-manager] de l'application web s'est terminé en [31] ms
+02-Apr-2026 16:58:51.018 INFO [main] org.apache.coyote.AbstractProtocol.start Démarrage du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 16:58:51.027 INFO [main] org.apache.catalina.startup.Catalina.start Le démarrage du serveur a pris [6570] millisecondes
+02-Apr-2026 17:08:32.008 INFO [Catalina-utility-2] org.apache.catalina.users.MemoryUserDatabase.backgroundProcess Rechargement de la base de données des utilisateurs [UserDatabase] à partir de la source mise à jour [file:/home/ibt1144/apache-tomcat-11.0.1/conf/tomcat-users.xml]
+02-Apr-2026 17:08:32.010 SEVERE [Catalina-utility-2] org.apache.catalina.users.MemoryUserDatabase.open La base d'utilisateurs spécifiée [conf/tomcat-users.xml] n'a pas été trouvée
+02-Apr-2026 17:08:32.010 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/Controller_View]
+02-Apr-2026 17:08:32.013 WARNING [Catalina-utility-2] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc Le désenregistrement du pilote JDBC a échoué pour l'application web [Controller_View]
+	java.lang.IllegalStateException: java.nio.file.NoSuchFileException: /home/ibt1144/apache-tomcat-11.0.1/webapps/Controller_View/WEB-INF/lib/resteasy-hibernatevalidator-provider-3.0.9.Final.jar
+		at org.apache.catalina.webresources.AbstractSingleArchiveResourceSet.getArchiveEntry(AbstractSingleArchiveResourceSet.java:99)
+		at org.apache.catalina.webresources.AbstractArchiveResourceSet.getResource(AbstractArchiveResourceSet.java:250)
+		at org.apache.catalina.webresources.StandardRoot.getResourceInternal(StandardRoot.java:272)
+		at org.apache.catalina.webresources.Cache.getResource(Cache.java:64)
+		at org.apache.catalina.webresources.StandardRoot.getResource(StandardRoot.java:211)
+		at org.apache.catalina.webresources.StandardRoot.getClassLoaderResource(StandardRoot.java:220)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResourceAsStream(WebappClassLoaderBase.java:952)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc(WebappClassLoaderBase.java:1451)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferences(WebappClassLoaderBase.java:1401)
+		at org.apache.catalina.loader.WebappClassLoaderBase.stop(WebappClassLoaderBase.java:1338)
+		at org.apache.catalina.loader.WebappLoader.stopInternal(WebappLoader.java:370)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:4666)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:626)
+		at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1447)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1376)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1629)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:263)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:940)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1139)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1143)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1121)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:369)
+		at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:310)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+		at java.base/java.lang.Thread.run(Thread.java:1474)
+	Caused by: java.nio.file.NoSuchFileException: /home/ibt1144/apache-tomcat-11.0.1/webapps/Controller_View/WEB-INF/lib/resteasy-hibernatevalidator-provider-3.0.9.Final.jar
+		at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
+		at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+		at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+		at java.base/sun.nio.fs.UnixFileAttributeViews$Basic.readAttributes(UnixFileAttributeViews.java:57)
+		at java.base/sun.nio.fs.UnixFileSystemProvider.readAttributes(UnixFileSystemProvider.java:161)
+		at java.base/sun.nio.fs.LinuxFileSystemProvider.readAttributes(LinuxFileSystemProvider.java:99)
+		at java.base/java.nio.file.Files.readAttributes(Files.java:1702)
+		at java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1493)
+		at java.base/java.util.zip.ZipFile$CleanableResource.<init>(ZipFile.java:704)
+		at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:204)
+		at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:150)
+		at java.base/java.util.jar.JarFile.<init>(JarFile.java:333)
+		at org.apache.catalina.webresources.AbstractArchiveResourceSet.openJarFile(AbstractArchiveResourceSet.java:299)
+		at org.apache.catalina.webresources.AbstractSingleArchiveResourceSet.getArchiveEntry(AbstractSingleArchiveResourceSet.java:95)
+		... 30 more
+02-Apr-2026 17:08:32.518 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte []
+02-Apr-2026 17:08:32.519 WARNING [Catalina-utility-2] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc Le désenregistrement du pilote JDBC a échoué pour l'application web [ROOT]
+	java.lang.NullPointerException: Cannot invoke "java.io.InputStream.read(byte[], int, int)" because "is" is null
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc(WebappClassLoaderBase.java:1452)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferences(WebappClassLoaderBase.java:1401)
+		at org.apache.catalina.loader.WebappClassLoaderBase.stop(WebappClassLoaderBase.java:1338)
+		at org.apache.catalina.loader.WebappLoader.stopInternal(WebappLoader.java:370)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:4666)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:626)
+		at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1447)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1376)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1629)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:263)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:940)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1139)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1143)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1121)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:369)
+		at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:310)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+		at java.base/java.lang.Thread.run(Thread.java:1474)
+02-Apr-2026 17:08:32.520 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/facade]
+02-Apr-2026 17:08:32.534 WARNING [Catalina-utility-2] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc Le désenregistrement du pilote JDBC a échoué pour l'application web [facade]
+	java.lang.IllegalStateException: java.nio.file.NoSuchFileException: /home/ibt1144/apache-tomcat-11.0.1/webapps/facade/WEB-INF/lib/spring-boot-jarmode-tools-4.0.5.jar
+		at org.apache.catalina.webresources.AbstractSingleArchiveResourceSet.getArchiveEntry(AbstractSingleArchiveResourceSet.java:99)
+		at org.apache.catalina.webresources.AbstractArchiveResourceSet.getResource(AbstractArchiveResourceSet.java:250)
+		at org.apache.catalina.webresources.StandardRoot.getResourceInternal(StandardRoot.java:272)
+		at org.apache.catalina.webresources.Cache.getResource(Cache.java:64)
+		at org.apache.catalina.webresources.StandardRoot.getResource(StandardRoot.java:211)
+		at org.apache.catalina.webresources.StandardRoot.getClassLoaderResource(StandardRoot.java:220)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResourceAsStream(WebappClassLoaderBase.java:952)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc(WebappClassLoaderBase.java:1451)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferences(WebappClassLoaderBase.java:1401)
+		at org.apache.catalina.loader.WebappClassLoaderBase.stop(WebappClassLoaderBase.java:1338)
+		at org.apache.catalina.loader.WebappLoader.stopInternal(WebappLoader.java:370)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:4666)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:626)
+		at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1447)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1376)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1629)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:263)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:940)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1139)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1143)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1121)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:369)
+		at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:310)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+		at java.base/java.lang.Thread.run(Thread.java:1474)
+	Caused by: java.nio.file.NoSuchFileException: /home/ibt1144/apache-tomcat-11.0.1/webapps/facade/WEB-INF/lib/spring-boot-jarmode-tools-4.0.5.jar
+		at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
+		at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+		at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+		at java.base/sun.nio.fs.UnixFileAttributeViews$Basic.readAttributes(UnixFileAttributeViews.java:57)
+		at java.base/sun.nio.fs.UnixFileSystemProvider.readAttributes(UnixFileSystemProvider.java:161)
+		at java.base/sun.nio.fs.LinuxFileSystemProvider.readAttributes(LinuxFileSystemProvider.java:99)
+		at java.base/java.nio.file.Files.readAttributes(Files.java:1702)
+		at java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1493)
+		at java.base/java.util.zip.ZipFile$CleanableResource.<init>(ZipFile.java:704)
+		at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:204)
+		at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:150)
+		at java.base/java.util.jar.JarFile.<init>(JarFile.java:333)
+		at org.apache.catalina.webresources.AbstractArchiveResourceSet.openJarFile(AbstractArchiveResourceSet.java:299)
+		at org.apache.catalina.webresources.AbstractSingleArchiveResourceSet.getArchiveEntry(AbstractSingleArchiveResourceSet.java:95)
+		... 30 more
+02-Apr-2026 17:08:33.035 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/examples]
+02-Apr-2026 17:08:33.036 WARNING [Catalina-utility-2] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc Le désenregistrement du pilote JDBC a échoué pour l'application web [examples]
+	java.lang.IllegalStateException: java.nio.file.NoSuchFileException: /home/ibt1144/apache-tomcat-11.0.1/webapps/examples/WEB-INF/lib/taglibs-standard-impl-1.2.5-migrated-0.0.1.jar
+		at org.apache.catalina.webresources.AbstractSingleArchiveResourceSet.getArchiveEntry(AbstractSingleArchiveResourceSet.java:99)
+		at org.apache.catalina.webresources.AbstractArchiveResourceSet.getResource(AbstractArchiveResourceSet.java:250)
+		at org.apache.catalina.webresources.StandardRoot.getResourceInternal(StandardRoot.java:272)
+		at org.apache.catalina.webresources.Cache.getResource(Cache.java:64)
+		at org.apache.catalina.webresources.StandardRoot.getResource(StandardRoot.java:211)
+		at org.apache.catalina.webresources.StandardRoot.getClassLoaderResource(StandardRoot.java:220)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResourceAsStream(WebappClassLoaderBase.java:952)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc(WebappClassLoaderBase.java:1451)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferences(WebappClassLoaderBase.java:1401)
+		at org.apache.catalina.loader.WebappClassLoaderBase.stop(WebappClassLoaderBase.java:1338)
+		at org.apache.catalina.loader.WebappLoader.stopInternal(WebappLoader.java:370)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:4666)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:626)
+		at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1447)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1376)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1629)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:263)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:940)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1139)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1143)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1121)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:369)
+		at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:310)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+		at java.base/java.lang.Thread.run(Thread.java:1474)
+	Caused by: java.nio.file.NoSuchFileException: /home/ibt1144/apache-tomcat-11.0.1/webapps/examples/WEB-INF/lib/taglibs-standard-impl-1.2.5-migrated-0.0.1.jar
+		at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
+		at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+		at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+		at java.base/sun.nio.fs.UnixFileAttributeViews$Basic.readAttributes(UnixFileAttributeViews.java:57)
+		at java.base/sun.nio.fs.UnixFileSystemProvider.readAttributes(UnixFileSystemProvider.java:161)
+		at java.base/sun.nio.fs.LinuxFileSystemProvider.readAttributes(LinuxFileSystemProvider.java:99)
+		at java.base/java.nio.file.Files.readAttributes(Files.java:1702)
+		at java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1493)
+		at java.base/java.util.zip.ZipFile$CleanableResource.<init>(ZipFile.java:704)
+		at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:204)
+		at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:150)
+		at java.base/java.util.jar.JarFile.<init>(JarFile.java:333)
+		at org.apache.catalina.webresources.AbstractArchiveResourceSet.openJarFile(AbstractArchiveResourceSet.java:299)
+		at org.apache.catalina.webresources.AbstractSingleArchiveResourceSet.getArchiveEntry(AbstractSingleArchiveResourceSet.java:95)
+		... 30 more
+02-Apr-2026 17:08:33.537 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/host-manager]
+02-Apr-2026 17:08:33.538 WARNING [Catalina-utility-2] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc Le désenregistrement du pilote JDBC a échoué pour l'application web [host-manager]
+	java.lang.NullPointerException: Cannot invoke "java.io.InputStream.read(byte[], int, int)" because "is" is null
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc(WebappClassLoaderBase.java:1452)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferences(WebappClassLoaderBase.java:1401)
+		at org.apache.catalina.loader.WebappClassLoaderBase.stop(WebappClassLoaderBase.java:1338)
+		at org.apache.catalina.loader.WebappLoader.stopInternal(WebappLoader.java:370)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:4666)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:626)
+		at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1447)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1376)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1629)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:263)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:940)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1139)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1143)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1121)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:369)
+		at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:310)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+		at java.base/java.lang.Thread.run(Thread.java:1474)
+02-Apr-2026 17:08:34.039 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/manager]
+02-Apr-2026 17:08:34.040 WARNING [Catalina-utility-2] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc Le désenregistrement du pilote JDBC a échoué pour l'application web [manager]
+	java.lang.NullPointerException: Cannot invoke "java.io.InputStream.read(byte[], int, int)" because "is" is null
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc(WebappClassLoaderBase.java:1452)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferences(WebappClassLoaderBase.java:1401)
+		at org.apache.catalina.loader.WebappClassLoaderBase.stop(WebappClassLoaderBase.java:1338)
+		at org.apache.catalina.loader.WebappLoader.stopInternal(WebappLoader.java:370)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:4666)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:626)
+		at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1447)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1376)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1629)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:263)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:940)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1139)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1143)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1121)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:369)
+		at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:310)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+		at java.base/java.lang.Thread.run(Thread.java:1474)
+02-Apr-2026 17:08:34.541 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/docs]
+02-Apr-2026 17:08:34.542 WARNING [Catalina-utility-2] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc Le désenregistrement du pilote JDBC a échoué pour l'application web [docs]
+	java.lang.NullPointerException: Cannot invoke "java.io.InputStream.read(byte[], int, int)" because "is" is null
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc(WebappClassLoaderBase.java:1452)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferences(WebappClassLoaderBase.java:1401)
+		at org.apache.catalina.loader.WebappClassLoaderBase.stop(WebappClassLoaderBase.java:1338)
+		at org.apache.catalina.loader.WebappLoader.stopInternal(WebappLoader.java:370)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:4666)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:235)
+		at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:626)
+		at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1447)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1376)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1629)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:263)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:940)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1139)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1143)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1121)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:369)
+		at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:310)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+		at java.base/java.lang.Thread.run(Thread.java:1474)
+02-Apr-2026 17:08:55.382 INFO [main] org.apache.catalina.core.StandardServer.await Une commande d'arrêt valide a été reçue sur le port d'arrêt, arrêt de l'instance du serveur
+02-Apr-2026 17:08:55.383 INFO [main] org.apache.coyote.AbstractProtocol.pause Le gestionnaire de protocole ["http-nio-8080"] est mis en pause
+02-Apr-2026 17:08:55.387 INFO [main] org.apache.catalina.core.StandardService.stopInternal Arrêt du service [Catalina]
+02-Apr-2026 17:08:55.395 INFO [main] org.apache.coyote.AbstractProtocol.stop Arrêt du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:08:55.398 INFO [main] org.apache.coyote.AbstractProtocol.destroy Destruction du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:16:04.489 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom version serveur :              Apache Tomcat/11.0.1
+02-Apr-2026 17:16:04.490 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Serveur compilé :                  Nov 6 2024 19:08:24 UTC
+02-Apr-2026 17:16:04.490 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version du serveur :               11.0.1.0
+02-Apr-2026 17:16:04.490 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom de l'OS :                      Linux
+02-Apr-2026 17:16:04.490 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version OS :                       6.14.0-37-generic
+02-Apr-2026 17:16:04.490 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture :                     amd64
+02-Apr-2026 17:16:04.490 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home :                        /home/ibt1144/jdk-25_linux-x64_bin/jdk-25.0.2
+02-Apr-2026 17:16:04.490 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version JVM :                      25.0.2+10-LTS-69
+02-Apr-2026 17:16:04.491 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Fournisseur de la JVM :            Oracle Corporation
+02-Apr-2026 17:16:04.491 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:16:04.491 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:16:04.502 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.config.file=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/conf/logging.properties
+02-Apr-2026 17:16:04.502 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djdk.tls.ephemeralDHKeySize=2048
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.lang=ALL-UNNAMED
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.io=ALL-UNNAMED
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util=ALL-UNNAMED
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --enable-native-access=ALL-UNNAMED
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.base=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.home=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:16:04.503 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.io.tmpdir=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/temp
+02-Apr-2026 17:16:04.507 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent La librairie Apache Tomcat Native basée sur APR qui permet des performances optimales dans les environnements de production n'a pas été trouvée sur le java.library.path : [/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib]
+02-Apr-2026 17:16:04.646 INFO [main] org.apache.coyote.AbstractProtocol.init Initialisation du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:16:04.667 INFO [main] org.apache.catalina.startup.Catalina.load L'initialisation du serveur a pris [318] millisecondes
+02-Apr-2026 17:16:04.694 INFO [main] org.apache.catalina.core.StandardService.startInternal Démarrage du service [Catalina]
+02-Apr-2026 17:16:04.694 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Démarrage du moteur de Servlets : [Apache Tomcat/11.0.1]
+02-Apr-2026 17:16:04.714 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+02-Apr-2026 17:16:04.734 INFO [main] org.apache.catalina.startup.ExpandWar.expand Un répertoire décompressé [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade] a été trouvé avec une date de dernière modification qui ne correspond pas au WAR associé, il sera effacé
+02-Apr-2026 17:16:12.733 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:16:15.853 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [11 139] ms
+02-Apr-2026 17:16:15.860 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 17:16:15.867 INFO [main] org.apache.catalina.startup.ExpandWar.expand Un répertoire décompressé [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View] a été trouvé avec une date de dernière modification qui ne correspond pas au WAR associé, il sera effacé
+02-Apr-2026 17:16:20.893 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:16:21.052 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [5 192] ms
+02-Apr-2026 17:16:21.054 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT]
+02-Apr-2026 17:16:21.081 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT] de l'application web s'est terminé en [27] ms
+02-Apr-2026 17:16:21.083 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager]
+02-Apr-2026 17:16:21.127 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager] de l'application web s'est terminé en [44] ms
+02-Apr-2026 17:16:21.129 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples]
+02-Apr-2026 17:16:21.808 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples] de l'application web s'est terminé en [679] ms
+02-Apr-2026 17:16:21.809 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs]
+02-Apr-2026 17:16:21.840 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs] de l'application web s'est terminé en [30] ms
+02-Apr-2026 17:16:21.840 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager]
+02-Apr-2026 17:16:21.872 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager] de l'application web s'est terminé en [32] ms
+02-Apr-2026 17:16:21.875 INFO [main] org.apache.coyote.AbstractProtocol.start Démarrage du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:16:21.879 INFO [main] org.apache.catalina.startup.Catalina.start Le démarrage du serveur a pris [17211] millisecondes
+02-Apr-2026 17:18:32.173 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/facade]
+02-Apr-2026 17:18:33.306 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+02-Apr-2026 17:18:37.772 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom version serveur :              Apache Tomcat/11.0.1
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Serveur compilé :                  Nov 6 2024 19:08:24 UTC
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version du serveur :               11.0.1.0
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom de l'OS :                      Linux
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version OS :                       6.14.0-37-generic
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture :                     amd64
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home :                        /home/ibt1144/jdk-25_linux-x64_bin/jdk-25.0.2
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version JVM :                      25.0.2+10-LTS-69
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Fournisseur de la JVM :            Oracle Corporation
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:18:37.773 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.config.file=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/conf/logging.properties
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djdk.tls.ephemeralDHKeySize=2048
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.lang=ALL-UNNAMED
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.io=ALL-UNNAMED
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util=ALL-UNNAMED
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --enable-native-access=ALL-UNNAMED
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.base=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.home=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:18:37.808 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.io.tmpdir=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/temp
+02-Apr-2026 17:18:37.809 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent La librairie Apache Tomcat Native basée sur APR qui permet des performances optimales dans les environnements de production n'a pas été trouvée sur le java.library.path : [/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib]
+02-Apr-2026 17:18:38.049 INFO [main] org.apache.coyote.AbstractProtocol.init Initialisation du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:18:38.078 SEVERE [main] org.apache.catalina.util.LifecycleBase.handleSubClassException Echec d'initialisation du composant [Connector["http-nio-8080"]]
+	org.apache.catalina.LifecycleException: L'initialisation du gestionnaire de protocole a échoué
+		at org.apache.catalina.connector.Connector.initInternal(Connector.java:1035)
+		at org.apache.catalina.util.LifecycleBase.init(LifecycleBase.java:122)
+		at org.apache.catalina.core.StandardService.initInternal(StandardService.java:525)
+		at org.apache.catalina.util.LifecycleBase.init(LifecycleBase.java:122)
+		at org.apache.catalina.core.StandardServer.initInternal(StandardServer.java:953)
+		at org.apache.catalina.util.LifecycleBase.init(LifecycleBase.java:122)
+		at org.apache.catalina.startup.Catalina.load(Catalina.java:706)
+		at org.apache.catalina.startup.Catalina.load(Catalina.java:729)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.load(Bootstrap.java:299)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:469)
+	Caused by: java.net.BindException: Adresse déjà utilisée
+		at java.base/sun.nio.ch.Net.bind0(Native Method)
+		at java.base/sun.nio.ch.Net.bind(Net.java:522)
+		at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(ServerSocketChannelImpl.java:335)
+		at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:297)
+		at org.apache.tomcat.util.net.NioEndpoint.initServerSocket(NioEndpoint.java:240)
+		at org.apache.tomcat.util.net.NioEndpoint.bind(NioEndpoint.java:195)
+		at org.apache.tomcat.util.net.AbstractEndpoint.bindWithCleanup(AbstractEndpoint.java:1472)
+		at org.apache.tomcat.util.net.AbstractEndpoint.init(AbstractEndpoint.java:1485)
+		at org.apache.coyote.AbstractProtocol.init(AbstractProtocol.java:633)
+		at org.apache.coyote.http11.AbstractHttp11Protocol.init(AbstractHttp11Protocol.java:83)
+		at org.apache.catalina.connector.Connector.initInternal(Connector.java:1033)
+		... 11 more
+02-Apr-2026 17:18:38.078 INFO [main] org.apache.catalina.startup.Catalina.load L'initialisation du serveur a pris [559] millisecondes
+02-Apr-2026 17:18:38.115 INFO [main] org.apache.catalina.core.StandardService.startInternal Démarrage du service [Catalina]
+02-Apr-2026 17:18:38.115 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Démarrage du moteur de Servlets : [Apache Tomcat/11.0.1]
+02-Apr-2026 17:18:38.130 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+02-Apr-2026 17:18:38.174 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:18:39.278 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:18:40.804 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [7 497] ms
+02-Apr-2026 17:18:41.697 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [3 567] ms
+02-Apr-2026 17:18:41.700 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 17:18:41.706 INFO [main] org.apache.catalina.startup.ExpandWar.expand Un répertoire décompressé [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View] a été trouvé avec une date de dernière modification qui ne correspond pas au WAR associé, il sera effacé
+02-Apr-2026 17:18:46.577 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:18:46.721 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [5 021] ms
+02-Apr-2026 17:18:46.722 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT]
+02-Apr-2026 17:18:46.741 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT] de l'application web s'est terminé en [18] ms
+02-Apr-2026 17:18:46.742 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager]
+02-Apr-2026 17:18:46.783 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager] de l'application web s'est terminé en [41] ms
+02-Apr-2026 17:18:46.785 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples]
+02-Apr-2026 17:18:47.242 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples] de l'application web s'est terminé en [457] ms
+02-Apr-2026 17:18:47.243 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs]
+02-Apr-2026 17:18:47.273 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs] de l'application web s'est terminé en [30] ms
+02-Apr-2026 17:18:47.274 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager]
+02-Apr-2026 17:18:47.308 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager] de l'application web s'est terminé en [34] ms
+02-Apr-2026 17:18:47.312 INFO [main] org.apache.catalina.startup.Catalina.start Le démarrage du serveur a pris [9232] millisecondes
+02-Apr-2026 17:18:47.328 SEVERE [main] org.apache.catalina.core.StandardServer.await Impossible de créer le sokcet d'arrêt du serveur à l'adresse [localhost] et au port [8005] (port de base [8005] et offset [0])
+	java.net.BindException: Adresse déjà utilisée
+		at java.base/sun.nio.ch.Net.bind0(Native Method)
+		at java.base/sun.nio.ch.Net.bind(Net.java:522)
+		at java.base/sun.nio.ch.Net.bind(Net.java:511)
+		at java.base/sun.nio.ch.NioSocketImpl.bind(NioSocketImpl.java:641)
+		at java.base/java.net.ServerSocket.bind(ServerSocket.java:326)
+		at java.base/java.net.ServerSocket.<init>(ServerSocket.java:222)
+		at org.apache.catalina.core.StandardServer.await(StandardServer.java:532)
+		at org.apache.catalina.startup.Catalina.await(Catalina.java:845)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:793)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:470)
+02-Apr-2026 17:18:47.329 INFO [main] org.apache.coyote.AbstractProtocol.pause Le gestionnaire de protocole ["http-nio-8080"] est mis en pause
+02-Apr-2026 17:18:47.329 INFO [main] org.apache.catalina.core.StandardService.stopInternal Arrêt du service [Catalina]
+02-Apr-2026 17:18:47.829 INFO [main] org.apache.coyote.AbstractProtocol.stop Arrêt du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:18:47.830 INFO [main] org.apache.coyote.AbstractProtocol.destroy Destruction du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:18:50.809 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/Controller_View]
+02-Apr-2026 17:18:51.833 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 17:18:56.303 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:18:56.479 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [4 645] ms
+02-Apr-2026 17:19:04.241 INFO [main] org.apache.catalina.core.StandardServer.await Une commande d'arrêt valide a été reçue sur le port d'arrêt, arrêt de l'instance du serveur
+02-Apr-2026 17:19:04.241 INFO [main] org.apache.coyote.AbstractProtocol.pause Le gestionnaire de protocole ["http-nio-8080"] est mis en pause
+02-Apr-2026 17:19:04.245 INFO [main] org.apache.catalina.core.StandardService.stopInternal Arrêt du service [Catalina]
+02-Apr-2026 17:19:04.776 INFO [main] org.apache.coyote.AbstractProtocol.stop Arrêt du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:19:04.785 INFO [main] org.apache.coyote.AbstractProtocol.destroy Destruction du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:19:18.064 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom version serveur :              Apache Tomcat/11.0.1
+02-Apr-2026 17:19:18.065 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Serveur compilé :                  Nov 6 2024 19:08:24 UTC
+02-Apr-2026 17:19:18.065 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version du serveur :               11.0.1.0
+02-Apr-2026 17:19:18.065 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom de l'OS :                      Linux
+02-Apr-2026 17:19:18.065 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version OS :                       6.14.0-37-generic
+02-Apr-2026 17:19:18.065 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture :                     amd64
+02-Apr-2026 17:19:18.065 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home :                        /home/ibt1144/jdk-25_linux-x64_bin/jdk-25.0.2
+02-Apr-2026 17:19:18.065 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version JVM :                      25.0.2+10-LTS-69
+02-Apr-2026 17:19:18.066 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Fournisseur de la JVM :            Oracle Corporation
+02-Apr-2026 17:19:18.066 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:19:18.066 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.config.file=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/conf/logging.properties
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djdk.tls.ephemeralDHKeySize=2048
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.lang=ALL-UNNAMED
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.io=ALL-UNNAMED
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util=ALL-UNNAMED
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --enable-native-access=ALL-UNNAMED
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.base=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:19:18.077 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.home=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:19:18.078 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.io.tmpdir=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/temp
+02-Apr-2026 17:19:18.078 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent La librairie Apache Tomcat Native basée sur APR qui permet des performances optimales dans les environnements de production n'a pas été trouvée sur le java.library.path : [/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib]
+02-Apr-2026 17:19:18.204 INFO [main] org.apache.coyote.AbstractProtocol.init Initialisation du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:19:18.220 INFO [main] org.apache.catalina.startup.Catalina.load L'initialisation du serveur a pris [237] millisecondes
+02-Apr-2026 17:19:18.242 INFO [main] org.apache.catalina.core.StandardService.startInternal Démarrage du service [Catalina]
+02-Apr-2026 17:19:18.242 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Démarrage du moteur de Servlets : [Apache Tomcat/11.0.1]
+02-Apr-2026 17:19:18.256 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+02-Apr-2026 17:19:19.376 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:19:21.680 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [3 424] ms
+02-Apr-2026 17:19:21.683 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 17:19:22.920 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:19:23.055 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [1 372] ms
+02-Apr-2026 17:19:23.056 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT]
+02-Apr-2026 17:19:23.077 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT] de l'application web s'est terminé en [21] ms
+02-Apr-2026 17:19:23.077 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager]
+02-Apr-2026 17:19:23.114 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager] de l'application web s'est terminé en [37] ms
+02-Apr-2026 17:19:23.114 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples]
+02-Apr-2026 17:19:23.626 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples] de l'application web s'est terminé en [512] ms
+02-Apr-2026 17:19:23.626 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs]
+02-Apr-2026 17:19:23.653 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs] de l'application web s'est terminé en [27] ms
+02-Apr-2026 17:19:23.653 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager]
+02-Apr-2026 17:19:23.679 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager] de l'application web s'est terminé en [26] ms
+02-Apr-2026 17:19:23.682 INFO [main] org.apache.coyote.AbstractProtocol.start Démarrage du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:19:23.689 INFO [main] org.apache.catalina.startup.Catalina.start Le démarrage du serveur a pris [5467] millisecondes
+02-Apr-2026 17:19:29.888 INFO [main] org.apache.catalina.core.StandardServer.await Une commande d'arrêt valide a été reçue sur le port d'arrêt, arrêt de l'instance du serveur
+02-Apr-2026 17:19:29.889 INFO [main] org.apache.coyote.AbstractProtocol.pause Le gestionnaire de protocole ["http-nio-8080"] est mis en pause
+02-Apr-2026 17:19:29.893 INFO [main] org.apache.catalina.core.StandardService.stopInternal Arrêt du service [Catalina]
+02-Apr-2026 17:19:30.309 INFO [main] org.apache.coyote.AbstractProtocol.stop Arrêt du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:19:30.311 INFO [main] org.apache.coyote.AbstractProtocol.destroy Destruction du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:19:37.141 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom version serveur :              Apache Tomcat/11.0.1
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Serveur compilé :                  Nov 6 2024 19:08:24 UTC
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version du serveur :               11.0.1.0
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom de l'OS :                      Linux
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version OS :                       6.14.0-37-generic
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture :                     amd64
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home :                        /home/ibt1144/jdk-25_linux-x64_bin/jdk-25.0.2
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version JVM :                      25.0.2+10-LTS-69
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Fournisseur de la JVM :            Oracle Corporation
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:19:37.142 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:19:37.153 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.config.file=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/conf/logging.properties
+02-Apr-2026 17:19:37.153 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djdk.tls.ephemeralDHKeySize=2048
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.lang=ALL-UNNAMED
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.io=ALL-UNNAMED
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util=ALL-UNNAMED
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --enable-native-access=ALL-UNNAMED
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.base=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.home=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:19:37.154 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.io.tmpdir=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/temp
+02-Apr-2026 17:19:37.155 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent La librairie Apache Tomcat Native basée sur APR qui permet des performances optimales dans les environnements de production n'a pas été trouvée sur le java.library.path : [/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib]
+02-Apr-2026 17:19:37.283 INFO [main] org.apache.coyote.AbstractProtocol.init Initialisation du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:19:37.298 INFO [main] org.apache.catalina.startup.Catalina.load L'initialisation du serveur a pris [241] millisecondes
+02-Apr-2026 17:19:37.318 INFO [main] org.apache.catalina.core.StandardService.startInternal Démarrage du service [Catalina]
+02-Apr-2026 17:19:37.318 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Démarrage du moteur de Servlets : [Apache Tomcat/11.0.1]
+02-Apr-2026 17:19:37.332 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+02-Apr-2026 17:19:38.397 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:19:40.690 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [3 358] ms
+02-Apr-2026 17:19:40.694 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 17:19:41.755 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:19:41.887 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [1 193] ms
+02-Apr-2026 17:19:41.887 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT]
+02-Apr-2026 17:19:41.903 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT] de l'application web s'est terminé en [16] ms
+02-Apr-2026 17:19:41.903 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager]
+02-Apr-2026 17:19:41.937 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager] de l'application web s'est terminé en [34] ms
+02-Apr-2026 17:19:41.937 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples]
+02-Apr-2026 17:19:42.317 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples] de l'application web s'est terminé en [379] ms
+02-Apr-2026 17:19:42.317 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs]
+02-Apr-2026 17:19:42.343 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs] de l'application web s'est terminé en [26] ms
+02-Apr-2026 17:19:42.343 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager]
+02-Apr-2026 17:19:42.374 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager] de l'application web s'est terminé en [31] ms
+02-Apr-2026 17:19:42.377 INFO [main] org.apache.coyote.AbstractProtocol.start Démarrage du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:19:42.384 INFO [main] org.apache.catalina.startup.Catalina.start Le démarrage du serveur a pris [5084] millisecondes
+02-Apr-2026 17:20:52.570 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/Controller_View]
+02-Apr-2026 17:20:53.496 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.undeploy Retrait de l'application web ayant pour chemin de contexte [/facade]
+02-Apr-2026 17:20:54.585 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+02-Apr-2026 17:20:59.798 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:21:02.410 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [7 825] ms
+02-Apr-2026 17:21:02.415 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 17:21:06.681 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:21:06.807 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [4 392] ms
+02-Apr-2026 17:21:24.313 INFO [main] org.apache.catalina.core.StandardServer.await Une commande d'arrêt valide a été reçue sur le port d'arrêt, arrêt de l'instance du serveur
+02-Apr-2026 17:21:24.313 INFO [main] org.apache.coyote.AbstractProtocol.pause Le gestionnaire de protocole ["http-nio-8080"] est mis en pause
+02-Apr-2026 17:21:24.317 INFO [main] org.apache.catalina.core.StandardService.stopInternal Arrêt du service [Catalina]
+02-Apr-2026 17:21:24.899 INFO [main] org.apache.coyote.AbstractProtocol.stop Arrêt du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:21:24.909 INFO [main] org.apache.coyote.AbstractProtocol.destroy Destruction du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:21:33.130 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom version serveur :              Apache Tomcat/11.0.1
+02-Apr-2026 17:21:33.131 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Serveur compilé :                  Nov 6 2024 19:08:24 UTC
+02-Apr-2026 17:21:33.131 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version du serveur :               11.0.1.0
+02-Apr-2026 17:21:33.132 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Nom de l'OS :                      Linux
+02-Apr-2026 17:21:33.132 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version OS :                       6.14.0-37-generic
+02-Apr-2026 17:21:33.132 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture :                     amd64
+02-Apr-2026 17:21:33.132 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home :                        /home/ibt1144/jdk-25_linux-x64_bin/jdk-25.0.2
+02-Apr-2026 17:21:33.132 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Version JVM :                      25.0.2+10-LTS-69
+02-Apr-2026 17:21:33.132 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Fournisseur de la JVM :            Oracle Corporation
+02-Apr-2026 17:21:33.132 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:21:33.132 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME :                    /home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.config.file=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/conf/logging.properties
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djdk.tls.ephemeralDHKeySize=2048
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.lang=ALL-UNNAMED
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.io=ALL-UNNAMED
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util=ALL-UNNAMED
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : --enable-native-access=ALL-UNNAMED
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.base=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:21:33.143 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Dcatalina.home=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1
+02-Apr-2026 17:21:33.144 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Argument de la ligne de commande : -Djava.io.tmpdir=/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/temp
+02-Apr-2026 17:21:33.144 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent La librairie Apache Tomcat Native basée sur APR qui permet des performances optimales dans les environnements de production n'a pas été trouvée sur le java.library.path : [/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib]
+02-Apr-2026 17:21:33.272 INFO [main] org.apache.coyote.AbstractProtocol.init Initialisation du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:21:33.286 INFO [main] org.apache.catalina.startup.Catalina.load L'initialisation du serveur a pris [245] millisecondes
+02-Apr-2026 17:21:33.306 INFO [main] org.apache.catalina.core.StandardService.startInternal Démarrage du service [Catalina]
+02-Apr-2026 17:21:33.306 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Démarrage du moteur de Servlets : [Apache Tomcat/11.0.1]
+02-Apr-2026 17:21:33.320 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] de l'application web
+02-Apr-2026 17:21:34.441 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:21:36.716 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/facade.war] s'est terminé en [3 395] ms
+02-Apr-2026 17:21:36.719 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Déploiement de l'archive [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] de l'application web
+02-Apr-2026 17:21:37.961 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars Au moins un fichier JAR a été analysé pour trouver des TLDs mais il n'en contenait pas, le mode "debug" du journal peut être activé pour obtenir une liste complète de JAR scannés sans succès ; éviter d'analyser des JARs inutilement peut améliorer sensiblement le temps de démarrage et le temps de compilation des JSPs
+02-Apr-2026 17:21:38.103 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Le déploiement de l'archive de l'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/Controller_View.war] s'est terminé en [1 384] ms
+02-Apr-2026 17:21:38.103 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT]
+02-Apr-2026 17:21:38.122 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/ROOT] de l'application web s'est terminé en [18] ms
+02-Apr-2026 17:21:38.122 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager]
+02-Apr-2026 17:21:38.160 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/manager] de l'application web s'est terminé en [38] ms
+02-Apr-2026 17:21:38.160 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples]
+02-Apr-2026 17:21:38.740 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/examples] de l'application web s'est terminé en [580] ms
+02-Apr-2026 17:21:38.740 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs]
+02-Apr-2026 17:21:38.765 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/docs] de l'application web s'est terminé en [25] ms
+02-Apr-2026 17:21:38.766 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Déploiement du répertoire d'application web [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager]
+02-Apr-2026 17:21:38.793 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Le déploiement du répertoire [/home/ibt1144/Documents/Annee2/AppliWeb/Projet/Multi-Zelda-N/apache-tomcat-11.0.1/webapps/host-manager] de l'application web s'est terminé en [27] ms
+02-Apr-2026 17:21:38.795 INFO [main] org.apache.coyote.AbstractProtocol.start Démarrage du gestionnaire de protocole ["http-nio-8080"]
+02-Apr-2026 17:21:38.800 INFO [main] org.apache.catalina.startup.Catalina.start Le démarrage du serveur a pris [5512] millisecondes

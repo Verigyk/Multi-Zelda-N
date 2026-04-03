@@ -36,8 +36,7 @@
                 container.scrollTop = container.scrollHeight;
             };
     
-            //const wsUrl = `ws://${location.host}/chat/ws`;
-            const wsUrl = `ws://localhost:8080/facade/ws`;
+            const wsUrl = `ws://localhost:8080/Controller_View/ws`;
             const ws = new WebSocket(wsUrl);
     
             ws.onopen = () => log("[client] connected to " + wsUrl, true);
