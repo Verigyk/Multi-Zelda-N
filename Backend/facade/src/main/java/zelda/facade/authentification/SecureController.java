@@ -1,3 +1,8 @@
+/****
+ * Not really useful...
+ * Use it as model
+ */
+
 package zelda.facade.authentification;
 
 import org.springframework.security.core.Authentication;

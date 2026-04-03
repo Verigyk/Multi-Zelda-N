@@ -2,6 +2,7 @@ package zelda.facade.matches;
 
 import java.util.Collection;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
@@ -22,6 +23,10 @@ public class Match {
 
     @ManyToMany(mappedBy = "match_history")
     private Collection<Account> participants;
+
+    public Match() {
+
+    }
 
     public Match(
         String id,

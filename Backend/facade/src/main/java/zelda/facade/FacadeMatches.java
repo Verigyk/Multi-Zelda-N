@@ -1,16 +1,21 @@
 package zelda.facade;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import zelda.facade.RequestShape.matches.matchShape;
+import zelda.facade.accounts.Account;
+import zelda.facade.accounts.AccountRepository;
 import zelda.facade.matches.Match;
 import zelda.facade.matches.MatchRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +32,9 @@ public class FacadeMatches {
 
     @Autowired
     private MatchRepository activeMatches; 
+
+    @Autowired
+    AccountRepository ar;
 
     @PostMapping("/create")
     public Match createMatch(@RequestBody(required = false) matchShape.CreateMatchRequest request) {
@@ -87,7 +95,8 @@ public class FacadeMatches {
     }
 
     @PostMapping("/{id}/finish")
-    public ResponseEntity<Match> finishMatch(@PathVariable String id, @RequestBody(required = false) matchShape.FinishMatchRequest request) {
+    public ResponseEntity<Match> finishMatch(Authentication authentication, @PathVariable String id, @RequestBody(required = false) matchShape.FinishMatchRequest request) {
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<Match> m = activeMatches.findById(id);
         if (!m.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -104,7 +113,14 @@ public class FacadeMatches {
             match.setWinner(winner);
         }
 
-        activeMatches.deleteById(id);
+        Account account = this.getAccount(authentication.getName());
+
+        activeMatches.delete(match);
+
+        match.setId(null);
+        account.getMatch_history().add(match);
+        this.ar.save(account);
+
 
         return ResponseEntity.ok(match);
     }
@@ -112,6 +128,22 @@ public class FacadeMatches {
     @GetMapping("/active")
     public List<Match> listActiveMatches() {
         return activeMatches.findAll();
+    }
+
+
+    // Trouver l'historique d'un compte
+    @GetMapping("/history")
+    public Collection<Match> listHistoryMatches(Authentication authentication) {
+        return this.getAccount(authentication.getName()).getMatch_history();
+    }
+
+    private Account getAccount(String pseudo) {
+        Optional<Account> a = ar.findById(pseudo);
+        if (a.isPresent()) {
+            return a.get();
+        }
+
+        throw new RuntimeException("Erreur : Compte non existant");
     }
 
     private int clampMaxPlayers(Integer value) {

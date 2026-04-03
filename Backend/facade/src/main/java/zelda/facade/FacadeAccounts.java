@@ -10,6 +10,7 @@ import zelda.facade.matches.Match;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,20 +51,5 @@ public class FacadeAccounts {
     @GetMapping("/listAccounts")
     public Collection<Account> listAccounts() {
         return ar.findAll();
-    }
-
-    // Trouver l'historique d'un compte
-    @GetMapping("/history")
-    public Collection<Match> listHistoryMatches(@RequestParam(name = "pseudo") String pseudo) {
-        return this.getAccount(pseudo).getMatch_history();
-    }
-
-    private Account getAccount(String pseudo) {
-        Optional<Account> a = ar.findById(pseudo);
-        if (a.isPresent()) {
-            return a.get();
-        }
-
-        throw new RuntimeException("Erreur : Compte non existant");
     }
 }
