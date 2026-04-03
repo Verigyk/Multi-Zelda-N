@@ -2,3 +2,4 @@
 apache-tomcat-11.0.1/logs/
 apache-tomcat-11.0.1/work/Catalina/localhost/ROOT/org/apache/jsp/index_jsp.java
 apache-tomcat-11.0.1/webapps/Controller_View/
+*.class
