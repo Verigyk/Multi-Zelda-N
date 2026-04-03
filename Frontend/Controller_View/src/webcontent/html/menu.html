@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Zelda Multijoueur</title>
+    <link rel="stylesheet" href="../css/menu.css">
+    <script src="../js/menu.js"></script>
+</head>
+<body>
+
+<div class="card">
+    <h1>⚔ Zelda Multi</h1>
+    <p class="subtitle">Jeu multijoueur en ligne</p>
+
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('login')">Se connecter</button>
+        <button class="tab" onclick="showTab('register')">Créer un compte</button>
+    </div>
+
+    <!-- Formulaire connexion -->
+    <div id="form-login">
+        <input type="text" id="login-pseudo" placeholder="Pseudo" />
+        <input type="password" id="login-password" placeholder="Mot de passe" />
+        <button class="submit" onclick="login()">Se connecter</button>
+    </div>
+
+    <!-- Formulaire inscription -->
+    <div id="form-register" style="display:none">
+        <input type="text" id="register-pseudo" placeholder="Choisir un pseudo" />
+        <input type="password" id="register-password" placeholder="Choisir un mot de passe" />
+        <button class="submit" onclick="register()">Créer le compte</button>
+    </div>
+
+    <div id="message"></div>
+</div>
+
+</body>
+</html>
