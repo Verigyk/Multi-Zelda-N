@@ -32,6 +32,8 @@ public class FacadeMatches {
 
     @Autowired
     private MatchRepository activeMatches; 
+    @Autowired
+    private MatchRepository historyMatches;
 
     @Autowired
     AccountRepository ar;
@@ -116,11 +118,11 @@ public class FacadeMatches {
         Account account = this.getAccount(authentication.getName());
 
         activeMatches.delete(match);
+        historyMatches.save(match);
 
         match.setId(null);
         account.getMatch_history().add(match);
         this.ar.save(account);
-
 
         return ResponseEntity.ok(match);
     }
