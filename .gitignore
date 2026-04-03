@@ -1,2 +1,2 @@
 *.war
-apache-tomcat-11.0.1/logs/*.*
+apache-tomcat-11.0.1/logs/
