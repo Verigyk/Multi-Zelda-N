@@ -13,6 +13,7 @@ import zelda.facade.accounts.Account;
 import zelda.facade.accounts.AccountRepository;
 import zelda.facade.matches.Match;
 import zelda.facade.matches.MatchRepository;
+import zelda.facade.matches.ModeleMatch;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "*")
@@ -41,6 +43,30 @@ public class FacadeMatches {
 
     @Autowired
     AccountRepository ar;
+
+    private ModeleMatch modeleMatch = new ModeleMatch(null, null);
+
+    @PostMapping("/play") 
+    public ResponseEntity<int[]> play(@RequestParam(name = "direction", required = false) String direction_value) {
+        switch (direction_value) {
+            case "s":
+                this.modeleMatch.translate(0, -1);
+                break;
+            case "d":
+                this.modeleMatch.translate(1, 0);
+                break;
+            case "q":
+                this.modeleMatch.translate(-1, 0);
+                break;
+            case "z":
+                this.modeleMatch.translate(0, 1);
+                break;
+            default:
+                break;
+        }
+
+        return ResponseEntity.ok(this.modeleMatch.getPoint());
+    }
 
     @PostMapping("/create")
     public Match createMatch(Authentication authentication, @RequestBody(required = false) matchShape.CreateMatchRequest request) {
