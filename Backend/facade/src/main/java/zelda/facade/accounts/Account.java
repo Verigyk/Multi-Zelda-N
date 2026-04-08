@@ -2,12 +2,15 @@ package zelda.facade.accounts;
 
 import java.util.Collection;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import zelda.facade.matches.Match;
 
 @Entity
+@EnableAutoConfiguration
 public class Account {
     @Id
     String pseudo;

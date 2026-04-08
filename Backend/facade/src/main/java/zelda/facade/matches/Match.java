@@ -3,6 +3,8 @@ package zelda.facade.matches;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,6 +12,7 @@ import jakarta.persistence.ManyToMany;
 import zelda.facade.accounts.Account;
 
 @Entity
+@EnableAutoConfiguration
 public class Match {
     @Id
     private String id;

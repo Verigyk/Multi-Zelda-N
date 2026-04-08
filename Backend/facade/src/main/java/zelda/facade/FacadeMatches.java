@@ -44,28 +44,22 @@ public class FacadeMatches {
     @Autowired
     AccountRepository ar;
 
-    private ModeleMatch modeleMatch = new ModeleMatch(null, null);
-
     @PostMapping("/play") 
-    public ResponseEntity<int[]> play(@RequestParam(name = "direction", required = false) String direction_value) {
+    public ResponseEntity<int[]> play(Authentication authentication, @RequestParam(name = "direction") String direction_value) {
+        String player_id = authentication.getName();
+
         switch (direction_value) {
-            case "s":
-                this.modeleMatch.translate(0, -1);
+            case direction.HAUT.label:
                 break;
-            case "d":
-                this.modeleMatch.translate(1, 0);
+            case direction.BAS.label:
                 break;
-            case "q":
-                this.modeleMatch.translate(-1, 0);
+            case direction.GAUCHE.label:
                 break;
-            case "z":
-                this.modeleMatch.translate(0, 1);
+            case direction.DROITE.label:
                 break;
             default:
                 break;
         }
-
-        return ResponseEntity.ok(this.modeleMatch.getPoint());
     }
 
     @PostMapping("/create")
