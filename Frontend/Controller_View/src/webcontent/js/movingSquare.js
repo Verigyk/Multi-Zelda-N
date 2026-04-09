@@ -1,5 +1,5 @@
-const app = new Vue({
-  el: "#app",
+const squareBox = new Vue({
+  el: "#squareBox",
   data: {
     top1: 50,
     left1: 50,
@@ -12,19 +12,11 @@ const app = new Vue({
 
     connection : null
   },
-  computed: {
-    squareStyle() {
-      return {
-        position: "absolute",
-        backgroundColor: "red",
-        width: "50px",
-        height: "50px",
-        top: this.top1 + "px",
-        left: this.left1 + "px"
-      };
-    }
-  },
+
+
   methods: {
+
+
     move(distance = 5) {
       direction_sum_vertical = - this.movement["up"] * distance +
                       this.movement["down"] * distance;
@@ -33,30 +25,46 @@ const app = new Vue({
 
       this.top1 += direction_sum_vertical;
       this.left1 += direction_sum_horizontal;
+
+      const squareBoxElt = document.getElementById("squareBox");
+      squareBoxElt.style.top = this.top1 + "px",
+      squareBoxElt.style.left = this.left1 + "px"
+
     },
+
+
+    keyMove(key, isPressed) {
+      if (key === "z") this.movement["up"] = isPressed;
+      if (key === "s") this.movement["down"] = isPressed;
+      if (key === "q") this.movement["left"] = isPressed;
+      if (key === "d") this.movement["right"] = isPressed;
+    }
   },
   
+
+});
+
+const game = new Vue({
+
+  el: "#game",
+
   mounted() {
+
     window.addEventListener("keydown", (e) => {
-      if (e.key === "z") this.movement["up"] = 1;
-      if (e.key === "s") this.movement["down"] = 1;
-      if (e.key === "q") this.movement["left"] = 1;
-      if (e.key === "d") this.movement["right"] = 1;
+      squareBox.keyMove(e.key, 1);
     });
 
     window.addEventListener("keyup", (e) => {
-      if (e.key === "z") this.movement["up"] = 0;
-      if (e.key === "s") this.movement["down"] = 0;
-      if (e.key === "q") this.movement["left"] = 0;
-      if (e.key === "d") this.movement["right"] = 0;
+      squareBox.keyMove(e.key, 0);
     });
 
     const loop = () => {
-      this.move();
+      squareBox.move();
       requestAnimationFrame(loop);
     };
 
     loop();
-  }
 
+  }
 });
+
