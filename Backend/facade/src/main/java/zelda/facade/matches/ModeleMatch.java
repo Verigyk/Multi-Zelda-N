@@ -16,6 +16,10 @@ public class ModeleMatch {
         this.initialize_coordinates(players_id);
     }
 
+    public Match getMatch() {
+        return this.match;
+    }
+
     public void translate(String player_id, int x, int y) {
         this.players_coordinates.get(player_id)[0] += x;
         this.players_coordinates.get(player_id)[1] += y;

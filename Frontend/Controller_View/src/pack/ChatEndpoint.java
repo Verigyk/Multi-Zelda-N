@@ -23,7 +23,7 @@ public class ChatEndpoint{
         JSONObject json = new JSONObject();
         json.put("senderId", myName);
         json.put("text", "welcome " + session.getId());
-
+        
         sessions.add(session);
         session.getBasicRemote().sendText(json.toString());
 
