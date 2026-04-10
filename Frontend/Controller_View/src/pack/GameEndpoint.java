@@ -22,13 +22,12 @@ import jakarta.websocket.server.ServerEndpoint;
 public class GameEndpoint{
     private static final Set<Session> sessions = ConcurrentHashMap.newKeySet();
 
-    private static ConcurrentHashMap<String, int[]> coordinatesPlayers = new ConcurrentHashMap<String, int[]>();
-    
     private static ConcurrentHashMap<Session, String> sessionToPlayer = new ConcurrentHashMap<Session, String>(); 
     private static ConcurrentHashMap<String, Integer> nbSessionsToAccount = new ConcurrentHashMap<String, Integer>();
 
-    private static int coordinate_x = 50;
     private static int n = 0;
+
+    private static ModelMatch modelMatch = new ModelMatch();
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
@@ -38,25 +37,22 @@ public class GameEndpoint{
         String id = Integer.toString(n);
         n += 1;
 
-        int[] new_player_position = new int[]{coordinate_x, 50};
-
         if (nbSessionsToAccount.containsKey(id)) {
             nbSessionsToAccount.put(id, nbSessionsToAccount.get(id));
         } else {
             nbSessionsToAccount.put(id, 1);
         }
 
-        coordinate_x += 100;
-
-        JSONObject oldJSONPlyersData = this.getJSONPlayersData(coordinatesPlayers, "Players");
+        JSONObject oldJSONPlyersData = this.getJSONPlayersData(modelMatch.getCoordinatesPlayers(), "Players");
         session.getBasicRemote().sendText(oldJSONPlyersData.toString());
 
         sessionToPlayer.put(session, id);
-        coordinatesPlayers.put(id, new_player_position);
+        modelMatch.addPlayer(id);
 
-        JSONObject JSON_new_player = this.getJSONPlayersData(Map.ofEntries(
-            entry(id, new_player_position)
-        ), "Players");
+        JSONObject JSON_new_player = this.getJSONPlayersData(
+            modelMatch.getInformationPlayer(id),
+            "Players");
+
         broadcast(JSON_new_player);
     }
 
@@ -64,26 +60,13 @@ public class GameEndpoint{
     public void onMessage(String message, Session session) throws IOException {
         String id = sessionToPlayer.get(session);
 
-        switch (message) {
-            case "HAUT":
-                coordinatesPlayers.get(id)[1] -= 5;
-                break;
-            case "BAS":
-                coordinatesPlayers.get(id)[1] += 5;
-                break;
-            case "GAUCHE":
-                coordinatesPlayers.get(id)[0] -= 5;
-                break;
-            case "DROITE":
-                coordinatesPlayers.get(id)[0] += 5;
-                break;
-        }
+        modelMatch.move(id, message);
 
         JSONObject json = new JSONObject();
 
-        json.put("data", new JSONObject(Map.ofEntries(
-            entry(id, coordinatesPlayers.get(id))
-        )));
+        json.put("data", new JSONObject(
+            modelMatch.getInformationPlayer(id)
+        ));
 
         json.put("type", "Players");
 
@@ -98,9 +81,8 @@ public class GameEndpoint{
         sessionToPlayer.remove(session);
 
         if (nbSessionsToAccount.get(id) == 1) {
-            coordinate_x -= 100;
             nbSessionsToAccount.remove(id);
-            coordinatesPlayers.remove(id);
+            modelMatch.removePlayer(id);
 
             ArrayList<String> remove_ids = new ArrayList<String>();
             remove_ids.add(id);
