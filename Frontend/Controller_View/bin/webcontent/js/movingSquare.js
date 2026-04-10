@@ -20,6 +20,17 @@ const game = new Vue({
     },
 
     updateState: function(data) {
+      switch (data["type"]) {
+        case "Players":
+          game.updatePositions(data["data"]);
+          break;
+        case "RemovePlayers":
+          game.removePlayers(data["data"]);
+          break;
+      }
+    },
+
+    updatePositions: function(data) {
       for (const [key, coords] of Object.entries(data)) {
         const element = this.$el.querySelector(`#s${key}`);
 
@@ -45,6 +56,13 @@ const game = new Vue({
         }
       }
     },
+
+    removePlayers: function(data) {
+      console.log(data)
+      for (const id of data) {
+        this.$el.querySelector(`#s${id}`).remove();
+      }
+    }
   },
 
   created : function() {
@@ -54,14 +72,14 @@ const game = new Vue({
     this.connection.onmessage = function(event) {
       console.log(event);
 
-      game.updateState(JSON.parse(event.data)["data"]);
+      game.updateState(JSON.parse(event.data));
     }
 
     this.connection.onopen = function(event) {
       console.log(event)
       console.log("Successfully connected to the echo websocket server...")
 
-      game.updateState(JSON.parse(event.data)["data"]);
+      game.updateState(JSON.parse(event.data));
     }
   },
 
