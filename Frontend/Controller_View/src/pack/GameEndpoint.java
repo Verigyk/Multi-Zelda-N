@@ -95,7 +95,7 @@ public class GameEndpoint{
         }
     }
 
-    private JSONObject getJSONPlayersData(Map playersdata) {
+    private JSONObject getJSONPlayersData(Map<?, ?> playersdata) {
         JSONObject json = new JSONObject();
 
         json.put("data", new JSONObject(coordinatesPlayers));

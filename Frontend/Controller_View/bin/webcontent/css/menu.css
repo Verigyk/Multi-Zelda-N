@@ -1,0 +1,110 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: #0d0d1a;
+    color: #e0e0ff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    background: #1a1a2e;
+    border: 2px solid #4444aa;
+    border-radius: 12px;
+    padding: 40px;
+    width: 360px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 1.8rem;
+    color: #aaaaff;
+    margin-bottom: 8px;
+}
+
+p.subtitle {
+    color: #8888aa;
+    margin-bottom: 28px;
+    font-size: 0.9rem;
+}
+
+/* Onglets */
+.tabs {
+    display: flex;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #4444aa;
+}
+
+.tab {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #8888aa;
+    font-size: 1rem;
+}
+
+.tab.active {
+    color: #aaaaff;
+    border-bottom: 3px solid #aaaaff;
+    margin-bottom: -2px;
+    font-weight: bold;
+}
+
+/* Formulaire */
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 14px;
+    background: #0d0d1a;
+    border: 1px solid #4444aa;
+    border-radius: 6px;
+    color: #e0e0ff;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: #aaaaff;
+}
+
+button.submit {
+    width: 100%;
+    padding: 12px;
+    background: #4444aa;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+button.submit:hover {
+    background: #6666cc;
+}
+
+/* Message retour */
+#message {
+    margin-top: 18px;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: none;
+}
+
+#message.success {
+    background: #1a3a1a;
+    color: #66ff66;
+    border: 1px solid #44aa44;
+}
+
+#message.error {
+    background: #3a1a1a;
+    color: #ff6666;
+    border: 1px solid #aa4444;
+}
