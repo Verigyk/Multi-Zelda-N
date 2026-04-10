@@ -20,10 +20,10 @@ import jakarta.websocket.server.ServerEndpoint;
 public class GameEndpoint{
     private static final Set<Session> sessions = ConcurrentHashMap.newKeySet();
 
-    private HashMap<String, int[]> coordinatesPlayers = new HashMap<String, int[]>();
-    private HashMap<Session, String> sessionToPlayer = new HashMap<Session, String>(); 
+    private static ConcurrentHashMap<String, int[]> coordinatesPlayers = new ConcurrentHashMap<String, int[]>();
+    private static ConcurrentHashMap<Session, String> sessionToPlayer = new ConcurrentHashMap<Session, String>(); 
 
-    private int coordinate_x = 50;
+    private static int coordinate_x = 50;
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
@@ -31,18 +31,20 @@ public class GameEndpoint{
         sessions.add(session);
 
         String id = Integer.toString(sessions.size());
-
-        sessionToPlayer.put(session, id);
-        coordinatesPlayers.put(id, new int[]{coordinate_x, 50});
+        int[] new_player_position = new int[]{coordinate_x, 50};
 
         coordinate_x += 50;
-        
-        JSONObject json = new JSONObject();
 
-        json.put("data", new JSONObject(coordinatesPlayers));
-        json.put("type", "Players");
+        JSONObject oldJSONPlyersData = this.getJSONPlayersData(coordinatesPlayers);
+        session.getBasicRemote().sendText(oldJSONPlyersData.toString());
 
-        session.getBasicRemote().sendText(json.toString());
+        sessionToPlayer.put(session, id);
+        coordinatesPlayers.put(id, new_player_position);
+
+        JSONObject JSON_new_player = this.getJSONPlayersData(Map.ofEntries(
+            entry(id, new_player_position)
+        ));
+        broadcast(JSON_new_player);
     }
 
     @OnMessage
@@ -91,5 +93,14 @@ public class GameEndpoint{
         for (Session client : sessions) {
             client.getBasicRemote().sendText(json.toString());
         }
+    }
+
+    private JSONObject getJSONPlayersData(Map playersdata) {
+        JSONObject json = new JSONObject();
+
+        json.put("data", new JSONObject(coordinatesPlayers));
+        json.put("type", "Players");
+
+        return json;
     }
 }

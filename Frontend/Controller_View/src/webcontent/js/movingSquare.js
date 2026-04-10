@@ -23,6 +23,9 @@ const game = new Vue({
       for (const [key, coords] of Object.entries(data)) {
         const element = this.$el.querySelector(`#s${key}`);
 
+        let top = coords[1];
+        let left = coords[0];
+
         if (element === null) {
           // créer un div
           const child = document.createElement('div')
@@ -31,14 +34,14 @@ const game = new Vue({
           child.setAttribute('id', `s${key}`)
           child.setAttribute('class', 'squareBox')
 
+          child.style.top = top + "px",
+          child.style.left = left + "px"
+
           // l'ajouter au parent
           this.$el.appendChild(child)
         } else {
-          let top1 = coords[1];
-          let left1 = coords[0];
-          
-          element.style.top = top1 + "px",
-          element.style.left = left1 + "px"
+          element.style.top = top + "px",
+          element.style.left = left + "px"
         }
       }
     },
