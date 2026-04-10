@@ -44,24 +44,6 @@ public class FacadeMatches {
     @Autowired
     AccountRepository ar;
 
-    @PostMapping("/play") 
-    public ResponseEntity<int[]> play(Authentication authentication, @RequestParam(name = "direction") String direction_value) {
-        String player_id = authentication.getName();
-
-        switch (direction_value) {
-            case direction.HAUT.label:
-                break;
-            case direction.BAS.label:
-                break;
-            case direction.GAUCHE.label:
-                break;
-            case direction.DROITE.label:
-                break;
-            default:
-                break;
-        }
-    }
-
     @PostMapping("/create")
     public Match createMatch(Authentication authentication, @RequestBody(required = false) matchShape.CreateMatchRequest request) {
         Account account = this.getAccount(authentication.getName());
