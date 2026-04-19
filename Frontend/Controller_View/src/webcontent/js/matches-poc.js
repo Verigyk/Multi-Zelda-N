@@ -1,21 +1,83 @@
-const API = "http://localhost:8080/facade/matches";
 const state = {
     active: [],
     history: [],
     selectedId: null
 };
 
-async function api(path, options = {}) {
-    const response = await fetch(API + path, {
-        headers: { "Content-Type": "application/json" },
-        credentials : 'include',
-        ...options
-    });
-    if (!response.ok) {
-        throw new Error("HTTP " + response.status);
+let ws = null;
+let reconnectTimer = null;
+
+function status(text) {
+    document.getElementById("statusMsg").textContent = text;
+}
+
+function wsUrl() {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const context = window.location.pathname.split("/")[1] || "Controller_View";
+    return `${protocol}://${window.location.host}/${context}/matches/ws`;
+}
+
+function connectWs() {
+    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+        return;
     }
-    if (response.status === 204) return null;
-    return response.json();
+
+    const url = wsUrl();
+    status("Connexion WS: " + url);
+    ws = new WebSocket(url);
+
+    ws.onopen = () => {
+        status("WebSocket connecté");
+        sendAction({ action: "refresh" });
+    };
+
+    ws.onmessage = (event) => {
+        try {
+            const msg = JSON.parse(event.data);
+            if (msg.type === "snapshot") {
+                state.active = Array.isArray(msg.active) ? msg.active : [];
+                state.history = Array.isArray(msg.history) ? msg.history : [];
+
+                const exists = selectedMatch();
+                if (!exists) {
+                    if (state.active.length > 0) {
+                        state.selectedId = state.active[0].id;
+                    } else if (state.history.length > 0) {
+                        state.selectedId = state.history[0].id;
+                    } else {
+                        state.selectedId = null;
+                    }
+                }
+
+                renderAll();
+                return;
+            }
+
+            if (msg.type === "error") {
+                status("Erreur: " + msg.message);
+            }
+        } catch (error) {
+            status("Message WS invalide");
+        }
+    };
+
+    ws.onerror = () => {
+        status("Erreur WebSocket");
+    };
+
+    ws.onclose = () => {
+        status("WebSocket déconnecté, reconnexion...");
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connectWs, 1500);
+    };
+}
+
+function sendAction(payload) {
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+        status("WebSocket non connecté");
+        return;
+    }
+    ws.send(JSON.stringify(payload));
 }
 
 function formatDate(value) {
@@ -134,61 +196,27 @@ function renderAll() {
     renderScreen();
 }
 
-async function refreshData() {
-    try {
-        const [active, history] = await Promise.all([
-            api("/active"),
-            api("/history")
-        ]);
-        state.active = active;
-        state.history = history;
-
-        const exists = selectedMatch();
-        if (!exists && state.active.length > 0) {
-            state.selectedId = state.active[0].id;
-        }
-        renderAll();
-    } catch (error) {
-        document.getElementById("statusMsg").textContent =
-            "Erreur API: " + error.message + " (backend démarré ?)";
-    }
-}
-
-async function createMatch() {
+function createMatch() {
     const title = document.getElementById("titleInput").value;
     const maxPlayers = Number(document.getElementById("maxPlayersInput").value);
-    await api("/create", {
-        method: "POST",
-        body: JSON.stringify({ title, maxPlayers })
-    });
+    sendAction({ action: "create", title, maxPlayers });
     document.getElementById("titleInput").value = "";
-    await refreshData();
 }
 
-async function handleAction(action, id) {
-    try {
-        if (action === "join") {
-            await api("/" + id + "/join", { method: "POST" });
-        } else if (action === "start") {
-            await api("/" + id + "/start", { method: "POST" });
-        } else if (action === "finish") {
-            const winner = prompt("Nom du vainqueur (optionnel):", "");
-            await api("/" + id + "/finish", {
-                method: "POST",
-                body: JSON.stringify({ winner: winner || "" })
-            });
-            state.selectedId = id;
-        }
-        await refreshData();
-    } catch (error) {
-        document.getElementById("statusMsg").textContent =
-            "Action impossible: " + error.message;
+function handleAction(action, id) {
+    if (action === "join") {
+        sendAction({ action: "join", id });
+    } else if (action === "start") {
+        sendAction({ action: "start", id });
+    } else if (action === "finish") {
+        const winner = prompt("Nom du vainqueur (optionnel):", "");
+        sendAction({ action: "finish", id, winner: winner || "" });
+        state.selectedId = id;
     }
 }
 
 window.onload = function() {
-    console.log(document.getElementById("createBtn"));
     document.getElementById("createBtn").addEventListener("click", createMatch);
-    refreshData();
-    setInterval(refreshData, 2000);
+    renderAll();
+    connectWs();
 }
