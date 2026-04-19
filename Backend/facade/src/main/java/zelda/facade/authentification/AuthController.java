@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import zelda.facade.accounts.Account;
 import zelda.facade.accounts.AccountRepository;
@@ -29,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest, HttpServletResponse response) {
         Optional<Account> a = ar.findById(request.username());
 
         if (!a.isPresent()) {
@@ -45,8 +46,8 @@ public class AuthController {
         String token = jwtUtil.generateToken(request.username());
 
         Cookie cookie = new Cookie("Token", token);
-        cookie.setMaxAge((int) JwtUtil.EXPIRATION_MS); // 1 hour
-        cookie.setSecure(true); // use HTTPS in production!
+        cookie.setMaxAge((int) (JwtUtil.EXPIRATION_MS / 1000)); // seconds
+        cookie.setSecure(httpRequest.isSecure()); // HTTPS only in production
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);

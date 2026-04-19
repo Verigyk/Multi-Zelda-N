@@ -11,7 +11,7 @@ function showTab(tab) {
 
 function showMessage(text, type) {
     const el = document.getElementById("message");
-    el.textContent = text;
+    el.textContent = text || (type === "error" ? "Erreur inconnue." : "OK");
     el.className = type;  // "success" ou "error"
     el.style.display = "block";
 }
@@ -46,7 +46,7 @@ async function login() {
                 window.location.href = "game.html?pseudo=" + encodeURIComponent(pseudo);
             }, 1500);
         } else {
-            showMessage(text, "error");
+            showMessage(text || ("Erreur HTTP " + response.status), "error");
         }
     } catch (e) {
         showMessage("Impossible de contacter le serveur.", "error");
@@ -81,7 +81,7 @@ async function register() {
             showMessage("Compte créé ! Tu peux maintenant te connecter.", "success");
             setTimeout(() => showTab_name("login"), 1500);
         } else {
-            showMessage(text, "error");
+            showMessage(text || ("Erreur HTTP " + response.status), "error");
         }
     } catch (e) {
         showMessage("Impossible de contacter le serveur.", "error");
