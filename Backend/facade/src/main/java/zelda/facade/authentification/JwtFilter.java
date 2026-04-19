@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -28,9 +29,13 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+        String servletPath = request.getServletPath();
+        if (servletPath != null && servletPath.startsWith("/auth/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (request.getCookies() != null && request.getCookies().length > 0) {
-
             Cookie cookie_token = null;
 
             for (Cookie cookie : request.getCookies()) {
@@ -41,14 +46,22 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             
             if (cookie_token != null) {
-            
-                String token = cookie_token.getValue();
-                String username = jwtUtil.extractUsername(token);
+                try {
+                    String token = cookie_token.getValue();
+                    String username = jwtUtil.extractUsername(token);
 
-                var auth = new UsernamePasswordAuthenticationToken(
-                        username, null, List.of());
+                    var auth = new UsernamePasswordAuthenticationToken(
+                            username, null, List.of());
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } catch (JwtException | IllegalArgumentException ex) {
+                    SecurityContextHolder.clearContext();
+                    Cookie expired = new Cookie("Token", "");
+                    expired.setPath("/");
+                    expired.setHttpOnly(true);
+                    expired.setMaxAge(0);
+                    response.addCookie(expired);
+                }
             }
         }
 
