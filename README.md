@@ -64,3 +64,4 @@ Copy .war file into your Apache Tomcat directory
  cp ./Controller_View.war {apache_directory}/webapps/Controller_View.war
  ```
 
+Now you can enjoy the game!
