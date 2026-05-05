@@ -19,6 +19,9 @@ public class Account {
     @ManyToMany
     Collection<Match> match_history;
 
+    //@OneToOne
+    //@MapsId
+    //Player player;
 
     public Account() {}
 

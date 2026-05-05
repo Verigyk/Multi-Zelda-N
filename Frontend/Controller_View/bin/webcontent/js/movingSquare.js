@@ -78,8 +78,6 @@ const game = new Vue({
     this.connection.onopen = function(event) {
       console.log(event)
       console.log("Successfully connected to the echo websocket server...")
-
-      game.updateState(JSON.parse(event.data));
     }
   },
 

@@ -3,12 +3,18 @@ package pack;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import static java.util.Map.entry;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.UriBuilder;
 
 import org.json.JSONObject;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.json.JSONArray;
 
 import jakarta.websocket.OnClose;
@@ -17,6 +23,8 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
+
+import pack.backendObjects.Player;
 
 @ServerEndpoint("/GameEndpoint/ws")
 public class GameEndpoint{
@@ -27,7 +35,12 @@ public class GameEndpoint{
 
     private static int n = 0;
 
-    private static ModelMatch modelMatch = new ModelMatch();
+    private static final String path = "http://localhost:8080/facade/activeMatch/";
+
+    private static Client client = ClientBuilder.newBuilder().build();
+    private static WebTarget target = client.target(UriBuilder.fromPath(path));
+
+    private static FacadeActiveMatch facadeActiveMatch = ((ResteasyWebTarget) target).proxy(FacadeActiveMatch.class);
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
@@ -43,14 +56,24 @@ public class GameEndpoint{
             nbSessionsToAccount.put(id, 1);
         }
 
-        JSONObject oldJSONPlyersData = this.getJSONPlayersData(modelMatch.getCoordinatesPlayers(), "Players");
-        session.getBasicRemote().sendText(oldJSONPlyersData.toString());
+        JSONObject oldJSONPlayersData = this.getJSONPlayersCoordinates(
+            facadeActiveMatch.getPlayers());
+
+        session.getBasicRemote().sendText(oldJSONPlayersData.toString());
 
         sessionToPlayer.put(session, id);
-        modelMatch.addPlayer(id);
+        facadeActiveMatch.addPlayer(id);
+
+        Player new_player = facadeActiveMatch.getPlayer(id);
 
         JSONObject JSON_new_player = this.getJSONPlayersData(
-            modelMatch.getInformationPlayer(id),
+            Map.ofEntries(
+              Map.entry(
+                new_player.getName(), 
+                new int[]{new_player.getX(),
+                          new_player.getY()}
+                )  
+            ),
             "Players");
 
         broadcast(JSON_new_player);
@@ -60,12 +83,20 @@ public class GameEndpoint{
     public void onMessage(String message, Session session) throws IOException {
         String id = sessionToPlayer.get(session);
 
-        modelMatch.move(id, message);
+        facadeActiveMatch.move(id, message);
 
         JSONObject json = new JSONObject();
 
+        Player player = facadeActiveMatch.getPlayer(id);
+
         json.put("data", new JSONObject(
-            modelMatch.getInformationPlayer(id)
+            Map.ofEntries(
+              Map.entry(
+                player.getName(), 
+                new int[]{player.getX(),
+                          player.getY()}
+                )  
+            )
         ));
 
         json.put("type", "Players");
@@ -82,7 +113,7 @@ public class GameEndpoint{
 
         if (nbSessionsToAccount.get(id) == 1) {
             nbSessionsToAccount.remove(id);
-            modelMatch.removePlayer(id);
+            facadeActiveMatch.removePlayer(id);
 
             ArrayList<String> remove_ids = new ArrayList<String>();
             remove_ids.add(id);
@@ -99,6 +130,7 @@ public class GameEndpoint{
     @OnError
     public void onError(Session session, Throwable throwable) {
         System.err.println("WebSocket error for session " + session.getId() + ":");
+        throwable.printStackTrace();
     }
 
     private void broadcast(JSONObject json) throws IOException {
@@ -124,5 +156,30 @@ public class GameEndpoint{
         json.put("type", type);
 
         return json;
+    }
+
+    private JSONObject getJSONPlayersCoordinates(Collection<Player> players) {
+        JSONObject JSONPlayersCoordinates = new JSONObject();
+            
+        Player player;
+        Iterator<Player> iterator = players.iterator();
+
+        while (iterator.hasNext()) {
+            player = iterator.next();
+
+            JSONPlayersCoordinates.put(
+                player.getName(),
+                new JSONArray(new int[]{
+                    player.getX(),
+                    player.getY()
+                }));
+        }
+
+        JSONObject JSONWrapper = new JSONObject();
+
+        JSONWrapper.put("data", JSONPlayersCoordinates);
+        JSONWrapper.put("type", "Players");
+
+        return JSONWrapper;
     }
 }

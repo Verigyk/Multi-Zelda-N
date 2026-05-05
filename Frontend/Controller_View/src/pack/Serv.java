@@ -10,7 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/Serv")
 public class Serv extends HttpServlet {
- 
+
+    public Serv() {
+        
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
