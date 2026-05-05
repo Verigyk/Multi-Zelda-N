@@ -1,3 +1,4 @@
 */*.war
 /*/*.class
 .vscode
+*/*.lck
