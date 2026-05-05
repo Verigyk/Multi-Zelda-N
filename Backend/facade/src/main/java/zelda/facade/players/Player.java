@@ -2,9 +2,7 @@ package zelda.facade.players;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
-import zelda.facade.accounts.Account;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
@@ -21,10 +19,15 @@ public class Player {
     int x;
     int y;
 
+    int initial_x;
+    int initial_y;
+
+    String orientation;
+
     @Transient
     public static final int walk_step = 5;
     @Transient
-    public static final int cote = 25;
+    public static final int demicote = 25;
 
     public Player() {
 
@@ -35,6 +38,11 @@ public class Player {
 
         this.x = x;
         this.y = y;
+
+        this.initial_x = x;
+        this.initial_y = y;
+
+        this.orientation = "BAS";
     }
 
     public String getName() {
@@ -57,11 +65,24 @@ public class Player {
         this.y = y;
     }
 
+    public String getOrientation() {
+        return this.orientation;
+    }
+
     public void translateX(int x) {
         this.x += x;
     }
     
     public void translateY(int y) {
         this.y += y;
+    }
+
+    public void setOrientation(String orientation) {
+        this.orientation = orientation;
+    }
+
+    public void reset() {
+        this.x = initial_x;
+        this.y = initial_y;
     }
 }

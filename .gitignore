@@ -1,4 +1,5 @@
-*/*.war
-/*/*.class
+**/*.war
+**/*.class
 .vscode
-*/*.lck
+**/*.lck
+**/*.log

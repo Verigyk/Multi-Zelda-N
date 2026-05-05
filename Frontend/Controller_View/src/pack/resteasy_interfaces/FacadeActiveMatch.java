@@ -1,4 +1,4 @@
-package pack;
+package pack.resteasy_interfaces;
 
 import java.util.Collection;
 
@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import pack.backendObjects.Player;
+import pack.backendObjects.SocketConvention;
 
 @Path("/")
 public interface FacadeActiveMatch {
@@ -17,8 +18,8 @@ public interface FacadeActiveMatch {
     public Collection<Player> getPlayers();
 
     @POST
-    @Path("/move")
-    public void move(@QueryParam("name") String name, @QueryParam("direction") String direction);
+    @Path("/act")
+    public SocketConvention act(@QueryParam("name") String name, @QueryParam("direction") String direction);
 
     @POST
     @Path("/addPlayer")

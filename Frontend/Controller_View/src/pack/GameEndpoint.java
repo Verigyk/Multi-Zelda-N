@@ -25,6 +25,8 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
 import pack.backendObjects.Player;
+import pack.backendObjects.SocketConvention;
+import pack.resteasy_interfaces.FacadeActiveMatch;
 
 @ServerEndpoint("/GameEndpoint/ws")
 public class GameEndpoint{
@@ -35,6 +37,7 @@ public class GameEndpoint{
 
     private static int n = 0;
 
+    //Resteasy
     private static final String path = "http://localhost:8080/facade/activeMatch/";
 
     private static Client client = ClientBuilder.newBuilder().build();
@@ -83,25 +86,16 @@ public class GameEndpoint{
     public void onMessage(String message, Session session) throws IOException {
         String id = sessionToPlayer.get(session);
 
-        facadeActiveMatch.move(id, message);
+        SocketConvention result = facadeActiveMatch.act(id, message);
 
-        JSONObject json = new JSONObject();
+        if (result.getSend()) {
+            JSONObject json = new JSONObject();
 
-        Player player = facadeActiveMatch.getPlayer(id);
+            json.put("data", result.getPlayers());
+            json.put("type", "Players");
 
-        json.put("data", new JSONObject(
-            Map.ofEntries(
-              Map.entry(
-                player.getName(), 
-                new int[]{player.getX(),
-                          player.getY()}
-                )  
-            )
-        ));
-
-        json.put("type", "Players");
-
-        broadcast(json);
+            broadcast(json);
+        }
     }
 
     @OnClose

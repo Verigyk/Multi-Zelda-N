@@ -1,7 +1,9 @@
 package zelda.facade;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import zelda.facade.accounts.AccountRepository;
+import zelda.facade.RequestShape.SocketConvention;
 import zelda.facade.matches.ModelMatch;
 import zelda.facade.players.Player;
 import zelda.facade.players.PlayerRepository;
@@ -21,8 +23,6 @@ import zelda.facade.players.PlayerRepository;
 @RestController
 @RequestMapping("/activeMatch")
 public class FacadeActiveMatch {
-
-    private final AccountRepository accountRepository;
 
     @Autowired
     PlayerRepository players;
@@ -34,35 +34,53 @@ public class FacadeActiveMatch {
         new int[]{900, 400, 200, 300}
     };
 
-    FacadeActiveMatch(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
+    final int attack_range = 75;
 
     @GetMapping("/getPlayers")
     public Collection<Player> getPlayers() {
         return players.findAll();
     }
 
-    @PostMapping("/move")
-    public void move(@RequestParam String name, @RequestParam String direction) {
+    @PostMapping("/act")
+    public SocketConvention act(@RequestParam String name, @RequestParam String direction) {
         Player player = getPlayer(name);
+
+        SocketConvention socketSent = new SocketConvention();
+        Map<String, int[]> players_moved;
 
         switch (direction) {
             case "HAUT":
-                translate(player, 0, -Player.walk_step);
+                players_moved = translate(player, 0, -Player.walk_step);
+                setOrientation(player, "HAUT");
                 break;
             case "BAS":
-                translate(player, 0, Player.walk_step);
+                players_moved = translate(player, 0, Player.walk_step);
+                setOrientation(player, "BAS");
                 break;
             case "GAUCHE":
-                translate(player, -Player.walk_step, 0);
+                players_moved = translate(player, -Player.walk_step, 0);
+                setOrientation(player, "GAUCHE");
                 break;
             case "DROITE":
-                translate(player, Player.walk_step, 0);
+                players_moved = translate(player, Player.walk_step, 0);
+                setOrientation(player, "DROITE");
+                break;
+            case "ATTAQUE":
+                players_moved = attaqueBy(player);
                 break;
             default:
                 throw new RuntimeException("Erreur : Direction inexistante. Impossible de prendre cette direction");
+
         }
+
+        boolean arePlayers_moved = !players_moved.isEmpty();
+        socketSent.setSend(arePlayers_moved);
+
+        if (arePlayers_moved) {
+            socketSent.setPlayers(players_moved);
+        }
+
+        return socketSent;
     }
 
     @PostMapping("/addPlayer")
@@ -96,7 +114,9 @@ public class FacadeActiveMatch {
         }
     }
 
-    private void translate(Player translated_player, int x, int y) {
+    private Map<String, int[]> translate(Player translated_player, int x, int y) {
+        Map<String, int[]> player_moved = new HashMap<String, int[]>();
+
         String name = translated_player.getName();
         int x_new = translated_player.getX() + x;
         int y_new = translated_player.getY() + y;
@@ -110,8 +130,8 @@ public class FacadeActiveMatch {
             Player player = iterator.next();
 
             if (player.getName() != name) {
-                if (Math.abs(player.getX() - x_new) < 2 * Player.cote &&
-                        Math.abs(player.getY() - y_new) < 2 * Player.cote) {
+                if (Math.abs(player.getX() - x_new) < 2 * Player.demicote &&
+                        Math.abs(player.getY() - y_new) < 2 * Player.demicote) {
                     direction_possible = false;
                 }
             }
@@ -121,7 +141,7 @@ public class FacadeActiveMatch {
         while (i < n && direction_possible) {
             int[] rectangle = obstacles[i];
 
-            if (this.checkCollisions(x_new, y_new, Player.cote, rectangle)) {
+            if (this.checkCollisions(x_new, y_new, Player.demicote, rectangle)) {
                 direction_possible = false;
             }
 
@@ -133,7 +153,14 @@ public class FacadeActiveMatch {
             translated_player.setY(y_new);
 
             this.players.save(translated_player);
+
+            player_moved.put(translated_player.getName(), 
+                    new int[]{translated_player.getX(),
+                            translated_player.getY()
+                    });
         }
+
+        return player_moved;
     }
 
     @PostMapping("/getPlayer")
@@ -153,4 +180,49 @@ public class FacadeActiveMatch {
                 Math.abs(rectangle[1] - y) < rectangle[3] + cote);
     }
 
+    private void setOrientation(Player player, String new_orientation) {
+        player.setOrientation(new_orientation);
+
+        players.save(player);
+    }
+
+    private Map<String, int[]> attaqueBy(Player player) {
+        Map<String, int[]> playersAttacked = new HashMap<String, int[]>();
+
+        int x_attack = player.getX();
+        int y_attack = player.getY();
+
+        switch (player.getOrientation()) {
+            case "HAUT":
+                y_attack -= attack_range;
+                break;
+            case "GAUCHE":
+                x_attack -= attack_range;
+                break;
+            case "DROITE":
+                x_attack += attack_range;
+                break;
+            case "BAS":
+                y_attack += attack_range;
+                break;
+        }
+
+        Collection<Player> collection_players = getPlayers();
+
+        Iterator<Player> iterator = collection_players.iterator();
+
+        while (iterator.hasNext()) {
+            Player other_player = iterator.next();
+
+            if (!other_player.getName().equals(player.getName())) {
+                if (checkCollisions(other_player.getX(), other_player.getY(), Player.demicote, new int[]{x_attack, y_attack, Player.demicote, Player.demicote})) {
+                    other_player.reset();
+                    players.save(other_player);
+                    playersAttacked.put(other_player.getName(), new int[]{other_player.getX(), other_player.getY()});
+                }
+            }
+        }
+
+        return playersAttacked;
+    }
 }

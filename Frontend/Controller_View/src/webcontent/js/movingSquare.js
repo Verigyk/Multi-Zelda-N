@@ -12,6 +12,7 @@ const game = new Vue({
       if (key === "s") this.sendMessage("BAS");
       if (key === "q") this.sendMessage("GAUCHE");
       if (key === "d") this.sendMessage("DROITE");
+      if (key === "p") this.sendMessage("ATTAQUE");
     },
 
     sendMessage: function(message) {
