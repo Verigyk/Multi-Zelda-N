@@ -19,6 +19,12 @@ import jakarta.websocket.server.ServerEndpoint;
 
 @ServerEndpoint("/GameEndpoint/{matchId}/ws")
 public class GameEndpoint {
+    private static final int PLAYER_HALF_SIZE = 25;
+    private static final int[][] OBSTACLES = new int[][]{
+        new int[]{300, 500, 200, 150},
+        new int[]{900, 400, 200, 300}
+    };
+
     private static final Map<String, GameRoom> rooms = new ConcurrentHashMap<>();
     private static final Map<Session, PlayerRef> sessionToPlayer = new ConcurrentHashMap<>();
 
@@ -46,7 +52,7 @@ public class GameEndpoint {
         PlayerState player = room.players.get(ref.playerId);
         if (player == null) return;
 
-        if (move(player, message)) {
+        if (move(room, player, message)) {
             room.broadcast(playersMessage(Map.of(player.id, player)));
         }
     }
@@ -74,23 +80,58 @@ public class GameEndpoint {
         System.err.println("Game WebSocket error for session " + id + ": " + throwable.getMessage());
     }
 
-    private boolean move(PlayerState player, String direction) {
+    private boolean move(GameRoom room, PlayerState player, String direction) {
+        int nextX = player.x;
+        int nextY = player.y;
+
         switch (direction) {
             case "HAUT":
-                player.y -= PlayerState.WALK_STEP;
-                return true;
+                nextY -= PlayerState.WALK_STEP;
+                break;
             case "BAS":
-                player.y += PlayerState.WALK_STEP;
-                return true;
+                nextY += PlayerState.WALK_STEP;
+                break;
             case "GAUCHE":
-                player.x -= PlayerState.WALK_STEP;
-                return true;
+                nextX -= PlayerState.WALK_STEP;
+                break;
             case "DROITE":
-                player.x += PlayerState.WALK_STEP;
-                return true;
+                nextX += PlayerState.WALK_STEP;
+                break;
             default:
                 return false;
         }
+
+        if (!canMove(room, player, nextX, nextY)) {
+            return false;
+        }
+
+        player.x = nextX;
+        player.y = nextY;
+        return true;
+    }
+
+    private boolean canMove(GameRoom room, PlayerState movedPlayer, int nextX, int nextY) {
+        for (PlayerState player : room.players.values()) {
+            if (!player.id.equals(movedPlayer.id) && collidesPlayerWithRect(nextX, nextY, player.x + PLAYER_HALF_SIZE, player.y + PLAYER_HALF_SIZE, PLAYER_HALF_SIZE, PLAYER_HALF_SIZE)) {
+                return false;
+            }
+        }
+
+        for (int[] obstacle : OBSTACLES) {
+            if (collidesPlayerWithRect(nextX, nextY, obstacle[0], obstacle[1], obstacle[2], obstacle[3])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean collidesPlayerWithRect(int playerLeft, int playerTop, int rectCenterX, int rectCenterY, int rectHalfWidth, int rectHalfHeight) {
+        int playerCenterX = playerLeft + PLAYER_HALF_SIZE;
+        int playerCenterY = playerTop + PLAYER_HALF_SIZE;
+
+        return Math.abs(rectCenterX - playerCenterX) < rectHalfWidth + PLAYER_HALF_SIZE
+            && Math.abs(rectCenterY - playerCenterY) < rectHalfHeight + PLAYER_HALF_SIZE;
     }
 
     private JSONObject playersMessage(Map<String, PlayerState> players) {

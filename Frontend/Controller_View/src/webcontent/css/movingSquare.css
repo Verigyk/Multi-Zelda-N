@@ -1,10 +1,28 @@
 .squareBox {
-
     position: absolute;
     background: red;
     width: 50px;
     height: 50px;
     top: 50px;
     left: 50px;
+}
 
+.obstacle {
+    position: absolute;
+    background: #334155;
+    border: 2px solid #64748b;
+}
+
+.obstacle-a {
+    left: 100px;
+    top: 350px;
+    width: 400px;
+    height: 300px;
+}
+
+.obstacle-b {
+    left: 700px;
+    top: 100px;
+    width: 400px;
+    height: 600px;
 }
