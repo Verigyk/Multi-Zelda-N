@@ -6,7 +6,7 @@ function createChatWidget(options) {
 
     let socket = null;
     let connected = false;
-    let senderId = options.senderId || crypto.randomUUID();
+    let senderId = options.senderId || createClientId();
     let displayName = options.displayName || senderId;
 
     function setStatus(text) {
@@ -24,6 +24,13 @@ function createChatWidget(options) {
         const protocol = window.location.protocol === "https:" ? "wss" : "ws";
         const context = window.location.pathname.split("/")[1] || "Controller_View";
         return `${protocol}://${window.location.host}/${context}/ws`;
+    }
+
+    function createClientId() {
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+            return window.crypto.randomUUID();
+        }
+        return "guest-" + Date.now() + "-" + Math.floor(Math.random() * 100000);
     }
 
     function appendMessage(message, isMine) {

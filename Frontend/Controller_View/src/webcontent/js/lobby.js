@@ -6,7 +6,7 @@ const state = {
     pseudo: null
 };
 
-const API_BASE = "http://localhost:8080/facade";
+const API_BASE = `${window.location.origin}/facade`;
 let ws = null;
 let reconnectTimer = null;
 let lobbyChat = null;
@@ -293,7 +293,7 @@ async function checkAuth() {
     }
 }
 
-window.onload = function() {
+function initLobby() {
     lobbyChat = createChatWidget({
         logId: "chatLog",
         inputId: "chatInput",
@@ -308,3 +308,5 @@ window.onload = function() {
     updateAuthBox();
     checkAuth();
 }
+
+document.addEventListener("DOMContentLoaded", initLobby);

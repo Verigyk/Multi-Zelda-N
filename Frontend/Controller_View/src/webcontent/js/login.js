@@ -1,5 +1,5 @@
 
-const BASE_URL = "http://localhost:8080/facade/auth";
+const BASE_URL = `${window.location.origin}/facade/auth`;
 
 function showTab(tab) {
     document.getElementById("form-login").style.display   = tab === "login"    ? "block" : "none";
@@ -33,6 +33,7 @@ async function login() {
         const response = await fetch(BASE_URL + "/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ "username" : pseudo,
                                    "password" : password })
         });
@@ -71,6 +72,7 @@ async function register() {
         const response = await fetch(BASE_URL + "/addAccount", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ "pseudo" : pseudo,
                                    "password" : password })
         });
