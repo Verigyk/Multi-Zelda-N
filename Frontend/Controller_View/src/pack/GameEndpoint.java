@@ -38,7 +38,9 @@ public class GameEndpoint {
         room.sessions.put(session, player.id);
 
         session.getBasicRemote().sendText(playersMessage(room.players).toString());
+        session.getBasicRemote().sendText(youAreMessage(player.id).toString());
         room.broadcast(playersMessage(Map.of(player.id, player)));
+        room.broadcast(roomStateMessage(room));
     }
 
     @OnMessage
@@ -51,6 +53,19 @@ public class GameEndpoint {
 
         PlayerState player = room.players.get(ref.playerId);
         if (player == null) return;
+
+        if ("READY".equals(message)) {
+            player.ready = true;
+            if (room.allPlayersReady()) {
+                room.state = "RUNNING";
+            }
+            room.broadcast(roomStateMessage(room));
+            return;
+        }
+
+        if (!"RUNNING".equals(room.state)) {
+            return;
+        }
 
         if (move(room, player, message)) {
             room.broadcast(playersMessage(Map.of(player.id, player)));
@@ -68,6 +83,7 @@ public class GameEndpoint {
         room.sessions.remove(session);
         room.players.remove(ref.playerId);
         room.broadcast(removePlayersMessage(ref.playerId));
+        room.broadcast(roomStateMessage(room));
 
         if (room.sessions.isEmpty()) {
             rooms.remove(ref.matchId);
@@ -146,6 +162,27 @@ public class GameEndpoint {
         return json;
     }
 
+    private JSONObject youAreMessage(String playerId) {
+        JSONObject json = new JSONObject();
+        json.put("type", "YouAre");
+        json.put("playerId", playerId);
+        return json;
+    }
+
+    private JSONObject roomStateMessage(GameRoom room) {
+        JSONObject ready = new JSONObject();
+        for (PlayerState player : room.players.values()) {
+            ready.put(player.id, player.ready);
+        }
+
+        JSONObject json = new JSONObject();
+        json.put("type", "RoomState");
+        json.put("state", room.state);
+        json.put("ready", ready);
+        json.put("playersCount", room.players.size());
+        return json;
+    }
+
     private JSONObject removePlayersMessage(String playerId) {
         ArrayList<String> ids = new ArrayList<>();
         ids.add(playerId);
@@ -160,12 +197,17 @@ public class GameEndpoint {
         private final Map<Session, String> sessions = new ConcurrentHashMap<>();
         private final Map<String, PlayerState> players = new ConcurrentHashMap<>();
         private final AtomicInteger nextPlayerId = new AtomicInteger(0);
+        private String state = "WAITING";
 
         private PlayerState addPlayer() {
             int id = nextPlayerId.getAndIncrement();
             PlayerState player = new PlayerState("p" + id, 50 + id * 100, 50);
             players.put(player.id, player);
             return player;
+        }
+
+        private boolean allPlayersReady() {
+            return !players.isEmpty() && players.values().stream().allMatch(player -> player.ready);
         }
 
         private void broadcast(JSONObject json) throws IOException {
@@ -193,11 +235,13 @@ public class GameEndpoint {
         private final String id;
         private int x;
         private int y;
+        private boolean ready;
 
         private PlayerState(String id, int x, int y) {
             this.id = id;
             this.x = x;
             this.y = y;
+            this.ready = false;
         }
     }
 }

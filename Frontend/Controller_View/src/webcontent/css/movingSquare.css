@@ -1,3 +1,52 @@
+#gameHud {
+    height: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: #111827;
+    color: #e5e7eb;
+    border-bottom: 1px solid #334155;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+#matchState {
+    display: block;
+    margin-bottom: 4px;
+}
+
+#readyState {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.hud-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.hud-actions button {
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 9px 14px;
+    color: #e5e7eb;
+    cursor: pointer;
+}
+
+#readyBtn {
+    background: #166534;
+}
+
+#quitBtn {
+    background: #7f1d1d;
+}
+
+.hud-actions button:disabled {
+    cursor: not-allowed;
+    filter: grayscale(0.8);
+    opacity: 0.55;
+}
+
 .squareBox {
     position: absolute;
     background: red;

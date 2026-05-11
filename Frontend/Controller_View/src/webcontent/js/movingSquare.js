@@ -4,11 +4,16 @@ const game = new Vue({
   
   data: {
     connection : null,
-    matchId: new URLSearchParams(window.location.search).get("matchId")
+    matchId: new URLSearchParams(window.location.search).get("matchId"),
+    playerId: null,
+    ready: false,
+    roomState: "WAITING",
+    quitting: false
   },
 
   methods : {
     keyMove(key, isPressed) {
+      if (this.roomState !== "RUNNING") return;
       if (key === "z") this.sendMessage("HAUT");
       if (key === "s") this.sendMessage("BAS");
       if (key === "q") this.sendMessage("GAUCHE");
@@ -30,7 +35,28 @@ const game = new Vue({
         case "RemovePlayers":
           game.removePlayers(data["data"]);
           break;
+        case "YouAre":
+          game.playerId = data["playerId"];
+          break;
+        case "RoomState":
+          game.updateRoomState(data);
+          break;
       }
+    },
+
+    updateRoomState: function(data) {
+      this.roomState = data["state"];
+      if (this.playerId && data["ready"] && data["ready"][this.playerId] !== undefined) {
+        this.ready = data["ready"][this.playerId];
+      }
+
+      const matchState = document.getElementById("matchState");
+      const readyState = document.getElementById("readyState");
+      const readyBtn = document.getElementById("readyBtn");
+
+      matchState.textContent = this.roomState === "RUNNING" ? "Game started" : "Waiting for players";
+      readyState.textContent = this.ready ? "Ready" : "Not ready";
+      readyBtn.disabled = this.ready || this.roomState === "RUNNING";
     },
 
     updatePositions: function(data) {
@@ -89,9 +115,28 @@ const game = new Vue({
       console.log(event)
       console.log("Successfully connected to the echo websocket server...")
     }
+
+    this.connection.onclose = function() {
+      if (!game.quitting) {
+        console.log("Game websocket closed");
+      }
+    }
   },
 
   mounted() {
+    document.getElementById("readyBtn").addEventListener("click", () => {
+      if (!game.ready) {
+        game.sendMessage("READY");
+      }
+    });
+
+    document.getElementById("quitBtn").addEventListener("click", () => {
+      game.quitting = true;
+      if (game.connection) {
+        game.connection.close();
+      }
+      window.location.href = "lobby.html";
+    });
 
     window.addEventListener("keydown", (e) => {
       game.keyMove(e.key, 1);
