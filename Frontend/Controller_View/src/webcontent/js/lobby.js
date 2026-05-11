@@ -98,6 +98,19 @@ function selectedMatch() {
         || null;
 }
 
+function selectedActiveMatch() {
+    return state.active.find(m => m.id === state.selectedId) || null;
+}
+
+function updateConnectButton() {
+    const btn = document.getElementById("connectBtn");
+    if (!btn) return;
+
+    const match = selectedActiveMatch();
+    btn.disabled = !match;
+    btn.textContent = match ? "Join game: " + match.title : "Join game";
+}
+
 function renderScreen() {
     const screen = document.getElementById("screen");
     const match = selectedMatch();
@@ -194,6 +207,7 @@ function renderAll() {
     renderList("activeList", state.active, true);
     renderList("historyList", state.history, false);
     renderScreen();
+    updateConnectButton();
 }
 
 function createMatch() {
@@ -215,8 +229,23 @@ function handleAction(action, id) {
     }
 }
 
+function connectToGame() {
+    const match = selectedActiveMatch();
+    if (!match) {
+        status("Selectionne une partie active avant de te connecter.");
+        return;
+    }
+
+    sendAction({ action: "join", id: match.id });
+
+    const params = new URLSearchParams(window.location.search);
+    params.set("matchId", match.id);
+    window.location.href = "movingSquare.html?" + params.toString();
+}
+
 window.onload = function() {
     document.getElementById("createBtn").addEventListener("click", createMatch);
+    document.getElementById("connectBtn").addEventListener("click", connectToGame);
     renderAll();
     connectWs();
 }

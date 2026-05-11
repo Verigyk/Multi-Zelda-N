@@ -69,6 +69,18 @@ button:hover { filter: brightness(1.15); }
 .btn-ok { background: #166534; }
 .btn-warn { background: #92400e; }
 .btn-danger { background: #7f1d1d; }
+.btn-connect {
+    width: 100%;
+    margin-top: 12px;
+    background: #0e7490;
+    font-weight: 700;
+}
+
+.btn-connect:disabled {
+    cursor: not-allowed;
+    filter: grayscale(0.8);
+    opacity: 0.5;
+}
 
 .list {
     display: grid;
