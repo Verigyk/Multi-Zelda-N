@@ -3,7 +3,8 @@ const game = new Vue({
   el: "#game",
   
   data: {
-    connection : null
+    connection : null,
+    matchId: new URLSearchParams(window.location.search).get("matchId")
   },
 
   methods : {
@@ -16,8 +17,9 @@ const game = new Vue({
     },
 
     sendMessage: function(message) {
-      console.log(this.connection);
-      this.connection.send(message);
+      if (this.connection && this.connection.readyState === WebSocket.OPEN) {
+        this.connection.send(message);
+      }
     },
 
     updateState: function(data) {
@@ -67,8 +69,15 @@ const game = new Vue({
   },
 
   created : function() {
+    if (!this.matchId) {
+      console.error("Missing matchId in URL");
+      return;
+    }
+
     console.log("Starting connection to WebSocket Server")
-    this.connection = new WebSocket("ws://localhost:8080/Controller_View/GameEndpoint/ws")
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const context = window.location.pathname.split("/")[1] || "Controller_View";
+    this.connection = new WebSocket(`${protocol}://${window.location.host}/${context}/GameEndpoint/${encodeURIComponent(this.matchId)}/ws`)
 
     this.connection.onmessage = function(event) {
       console.log(event);
@@ -90,4 +99,3 @@ const game = new Vue({
 
   }
 });
-
