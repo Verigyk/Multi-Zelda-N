@@ -48,6 +48,11 @@ function createChatWidget(options) {
 
         socket.onopen = () => {
             connected = true;
+            socket.send(JSON.stringify({
+                type: "join",
+                senderId,
+                displayName
+            }));
             setEnabled(true);
             setStatus("Chat connected");
         };
@@ -84,6 +89,7 @@ function createChatWidget(options) {
         if (!text || !connected) return;
 
         socket.send(JSON.stringify({
+            type: "message",
             senderId,
             displayName,
             text
