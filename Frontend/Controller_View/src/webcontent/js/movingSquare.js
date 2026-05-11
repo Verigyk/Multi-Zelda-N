@@ -5,6 +5,7 @@ const game = new Vue({
   data: {
     connection : null,
     matchId: new URLSearchParams(window.location.search).get("matchId"),
+    apiBase: `${window.location.origin}/facade`,
     playerId: null,
     ready: false,
     roomState: "WAITING",
@@ -91,6 +92,23 @@ const game = new Vue({
       for (const id of data) {
         this.$el.querySelector(`#s${id}`).remove();
       }
+    },
+
+    leaveMatch: async function() {
+      if (!this.matchId) return;
+      try {
+        await fetch(`${this.apiBase}/matches/${encodeURIComponent(this.matchId)}/leave`, {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (error) {
+        console.error("Unable to leave match", error);
+      }
+    },
+
+    leaveMatchOnUnload: function() {
+      if (!this.matchId || !navigator.sendBeacon) return;
+      navigator.sendBeacon(`${this.apiBase}/matches/${encodeURIComponent(this.matchId)}/leave`);
     }
   },
 
@@ -130,8 +148,9 @@ const game = new Vue({
       }
     });
 
-    document.getElementById("quitBtn").addEventListener("click", () => {
+    document.getElementById("quitBtn").addEventListener("click", async () => {
       game.quitting = true;
+      await game.leaveMatch();
       if (game.connection) {
         game.connection.close();
       }
@@ -140,6 +159,12 @@ const game = new Vue({
 
     window.addEventListener("keydown", (e) => {
       game.keyMove(e.key, 1);
+    });
+
+    window.addEventListener("beforeunload", () => {
+      if (!game.quitting) {
+        game.leaveMatchOnUnload();
+      }
     });
 
   }

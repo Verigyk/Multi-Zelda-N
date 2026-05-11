@@ -14,6 +14,7 @@ import zelda.facade.matches.Match;
 import zelda.facade.matches.MatchRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -66,6 +67,13 @@ public class FacadeMatches {
     @PostMapping("/{id}/join")
     public ResponseEntity<Match> joinMatch(Authentication authentication, @PathVariable String id) {
         Match match = activeMatches.get(id);
+        if (match == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if (!"LOADING".equals(match.getState())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(match);
+        }
+
         Account account = this.getAccount(authentication.getName());
 
         HashSet<String> activeMatchPlayersIds = activeMatchesPlayersIds.get(id);
@@ -73,6 +81,24 @@ public class FacadeMatches {
         synchronized (match) {
             if (match.getPlayersCount() < match.getMaxPlayers() && !activeMatchesPlayersIds.get(id).contains(account.getPseudo())) {
                 activeMatchPlayersIds.add(account.getPseudo());
+                match.setPlayersCount(activeMatchPlayersIds.size());
+            }
+            return ResponseEntity.ok(match);
+        }
+    }
+
+    @PostMapping("/{id}/leave")
+    public ResponseEntity<Match> leaveMatch(Authentication authentication, @PathVariable String id) {
+        Match match = activeMatches.get(id);
+        if (match == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        Account account = this.getAccount(authentication.getName());
+        HashSet<String> activeMatchPlayersIds = activeMatchesPlayersIds.get(id);
+
+        synchronized (match) {
+            if (activeMatchPlayersIds != null && activeMatchPlayersIds.remove(account.getPseudo())) {
                 match.setPlayersCount(activeMatchPlayersIds.size());
             }
             return ResponseEntity.ok(match);

@@ -70,6 +70,9 @@ public class MatchesEndpoint {
                 case "join":
                     handleIdAction(payload, session, "join");
                     break;
+                case "leave":
+                    handleIdAction(payload, session, "leave");
+                    break;
                 case "start":
                     handleIdAction(payload, session, "start");
                     break;

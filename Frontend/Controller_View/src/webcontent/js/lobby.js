@@ -163,8 +163,8 @@ function renderList(containerId, matches, withActions) {
             ${match.winner ? `<div class="small">Winner: ${match.winner}</div>` : ""}
             ${withActions ? `
                 <div class="actions">
-                    <button class="btn-ok" data-action="join" data-id="${match.id}" ${match.joined ? "disabled" : ""}>
-                        ${match.joined ? "Already joined" : "Join"}
+                    <button class="btn-ok" data-action="join" data-id="${match.id}" ${match.joined || match.state !== "LOADING" ? "disabled" : ""}>
+                        ${joinLabel(match)}
                     </button>
                     <button class="btn-warn" data-action="start" data-id="${match.id}">Start</button>
                     <button class="btn-danger" data-action="finish" data-id="${match.id}">Finish</button>
@@ -191,6 +191,12 @@ function renderList(containerId, matches, withActions) {
     }
 }
 
+function joinLabel(match) {
+    if (match.joined) return "Already joined";
+    if (match.state !== "LOADING") return "Started";
+    return "Join";
+}
+
 function renderAll() {
     renderList("activeList", state.active, true);
     renderList("historyList", state.history, false);
@@ -211,7 +217,7 @@ function createMatch() {
 function handleAction(action, id) {
     if (action === "join") {
         const match = state.active.find(m => m.id === id);
-        if (!match || match.joined) {
+        if (!match || match.joined || match.state !== "LOADING") {
             return;
         }
         if (sendAction({ action: "join", id })) {
