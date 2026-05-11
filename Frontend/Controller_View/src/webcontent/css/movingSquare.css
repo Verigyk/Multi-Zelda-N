@@ -10,6 +10,11 @@
     font-family: "Segoe UI", Arial, sans-serif;
 }
 
+body {
+    margin: 0;
+    background: #020617;
+}
+
 #matchState {
     display: block;
     margin-bottom: 4px;
@@ -18,6 +23,11 @@
 #readyState {
     color: #94a3b8;
     font-size: 0.9rem;
+}
+
+.hud-separator {
+    color: #475569;
+    margin: 0 10px;
 }
 
 .hud-actions {
@@ -49,17 +59,35 @@
 
 .squareBox {
     position: absolute;
-    background: red;
     width: 50px;
     height: 50px;
     top: 50px;
     left: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.65);
+    box-sizing: border-box;
+    z-index: 3;
+}
+
+#game {
+    position: relative;
+    width: 1200px;
+    height: 760px;
+    margin: 14px auto;
+    overflow: hidden;
+    background:
+        linear-gradient(rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.72)),
+        repeating-linear-gradient(0deg, transparent 0, transparent 39px, rgba(148, 163, 184, 0.12) 40px),
+        repeating-linear-gradient(90deg, transparent 0, transparent 39px, rgba(148, 163, 184, 0.12) 40px);
+    border: 4px solid #334155;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
 }
 
 .obstacle {
     position: absolute;
     background: #334155;
     border: 2px solid #64748b;
+    box-sizing: border-box;
+    z-index: 2;
 }
 
 .obstacle-a {
@@ -74,4 +102,21 @@
     top: 100px;
     width: 400px;
     height: 600px;
+}
+
+#gemLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.gem {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: #38bdf8;
+    border: 2px solid #e0f2fe;
+    box-sizing: border-box;
+    transform: rotate(45deg);
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.75);
 }

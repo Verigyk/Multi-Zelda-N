@@ -9,6 +9,7 @@ const game = new Vue({
     playerId: null,
     ready: false,
     roomState: "WAITING",
+    playerGems: 0,
     quitting: false
   },
 
@@ -42,6 +43,9 @@ const game = new Vue({
         case "RoomState":
           game.updateRoomState(data);
           break;
+        case "Gems":
+          game.updateGems(data["data"]);
+          break;
       }
     },
 
@@ -61,36 +65,69 @@ const game = new Vue({
     },
 
     updatePositions: function(data) {
-      for (const [key, coords] of Object.entries(data)) {
+      for (const [key, player] of Object.entries(data)) {
         const element = this.$el.querySelector(`#s${key}`);
 
-        let top = coords[1];
-        let left = coords[0];
+        const top = Array.isArray(player) ? player[1] : player.y;
+        const left = Array.isArray(player) ? player[0] : player.x;
+        const color = Array.isArray(player) ? "red" : player.color;
+        const gems = Array.isArray(player) ? 0 : player.gems;
 
         if (element === null) {
-          // créer un div
           const child = document.createElement('div')
 
-          // ajouter un attribut
           child.setAttribute('id', `s${key}`)
           child.setAttribute('class', 'squareBox')
 
-          child.style.top = top + "px",
-          child.style.left = left + "px"
+          child.style.top = top + "px";
+          child.style.left = left + "px";
+          child.style.backgroundColor = color;
 
-          // l'ajouter au parent
           this.$el.appendChild(child)
         } else {
-          element.style.top = top + "px",
-          element.style.left = left + "px"
+          element.style.top = top + "px";
+          element.style.left = left + "px";
+          element.style.backgroundColor = color;
+        }
+
+        if (key === this.playerId) {
+          this.playerGems = gems;
+          document.getElementById("gemCount").textContent = String(this.playerGems);
         }
       }
+    },
+
+    updateGems: function(data) {
+      const gemLayer = document.getElementById("gemLayer");
+      const existing = new Set();
+
+      for (const [key, gem] of Object.entries(data)) {
+        existing.add(`gem-${key}`);
+        let element = gemLayer.querySelector(`#gem-${key}`);
+        if (element === null) {
+          element = document.createElement("div");
+          element.setAttribute("id", `gem-${key}`);
+          element.setAttribute("class", "gem");
+          gemLayer.appendChild(element);
+        }
+        element.style.left = gem.x + "px";
+        element.style.top = gem.y + "px";
+      }
+
+      gemLayer.querySelectorAll(".gem").forEach((element) => {
+        if (!existing.has(element.id)) {
+          element.remove();
+        }
+      });
     },
 
     removePlayers: function(data) {
       console.log(data)
       for (const id of data) {
-        this.$el.querySelector(`#s${id}`).remove();
+        const element = this.$el.querySelector(`#s${id}`);
+        if (element) {
+          element.remove();
+        }
       }
     },
 

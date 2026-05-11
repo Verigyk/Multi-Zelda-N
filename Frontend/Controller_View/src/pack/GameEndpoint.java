@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,7 +33,16 @@ public class GameEndpoint {
     private static final String MATCHES_API_BASE = System.getProperty("facade.matches.url",
             "http://localhost:8080/facade/matches");
     private static final Client REST_CLIENT = new ResteasyClientBuilder().build();
+    private static final int PLAYFIELD_WIDTH = 1200;
+    private static final int PLAYFIELD_HEIGHT = 760;
+    private static final int PLAYER_SIZE = 50;
     private static final int PLAYER_HALF_SIZE = 25;
+    private static final int GEM_SIZE = 22;
+    private static final int GEM_HALF_SIZE = 11;
+    private static final int GEM_COUNT = 8;
+    private static final String[] PLAYER_COLORS = new String[]{
+        "#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#06b6d4", "#f97316", "#ec4899"
+    };
     private static final int[][] OBSTACLES = new int[][]{
         new int[]{300, 500, 200, 150},
         new int[]{900, 400, 200, 300}
@@ -65,6 +75,7 @@ public class GameEndpoint {
 
         session.getBasicRemote().sendText(playersMessage(room.players).toString());
         session.getBasicRemote().sendText(youAreMessage(player.id).toString());
+        session.getBasicRemote().sendText(gemsMessage(room.gems).toString());
         room.broadcast(playersMessage(Map.of(player.id, player)));
         room.broadcast(roomStateMessage(room));
     }
@@ -94,8 +105,12 @@ public class GameEndpoint {
             return;
         }
 
-        if (move(room, player, message)) {
+        MoveResult result = move(room, player, message);
+        if (result.moved) {
             room.broadcast(playersMessage(Map.of(player.id, player)));
+            if (result.gemPickedUp) {
+                room.broadcast(gemsMessage(room.gems));
+            }
         }
     }
 
@@ -177,7 +192,7 @@ public class GameEndpoint {
         return cookieHeader.toString();
     }
 
-    private boolean move(GameRoom room, PlayerState player, String direction) {
+    private MoveResult move(GameRoom room, PlayerState player, String direction) {
         int nextX = player.x;
         int nextY = player.y;
 
@@ -195,19 +210,24 @@ public class GameEndpoint {
                 nextX += PlayerState.WALK_STEP;
                 break;
             default:
-                return false;
+                return MoveResult.noMove();
         }
 
         if (!canMove(room, player, nextX, nextY)) {
-            return false;
+            return MoveResult.noMove();
         }
 
         player.x = nextX;
         player.y = nextY;
-        return true;
+        boolean gemPickedUp = collectGemIfNeeded(room, player);
+        return new MoveResult(true, gemPickedUp);
     }
 
     private boolean canMove(GameRoom room, PlayerState movedPlayer, int nextX, int nextY) {
+        if (nextX < 0 || nextY < 0 || nextX + PLAYER_SIZE > PLAYFIELD_WIDTH || nextY + PLAYER_SIZE > PLAYFIELD_HEIGHT) {
+            return false;
+        }
+
         for (PlayerState player : room.players.values()) {
             if (!player.id.equals(movedPlayer.id) && collidesPlayerWithRect(nextX, nextY, player.x + PLAYER_HALF_SIZE, player.y + PLAYER_HALF_SIZE, PLAYER_HALF_SIZE, PLAYER_HALF_SIZE)) {
                 return false;
@@ -223,6 +243,25 @@ public class GameEndpoint {
         return true;
     }
 
+    private boolean collectGemIfNeeded(GameRoom room, PlayerState player) {
+        String collectedId = null;
+        for (GemState gem : room.gems.values()) {
+            if (collidesPlayerWithRect(player.x, player.y, gem.x + GEM_HALF_SIZE, gem.y + GEM_HALF_SIZE, GEM_HALF_SIZE, GEM_HALF_SIZE)) {
+                collectedId = gem.id;
+                break;
+            }
+        }
+
+        if (collectedId == null) {
+            return false;
+        }
+
+        room.gems.remove(collectedId);
+        player.gems++;
+        room.spawnMissingGems();
+        return true;
+    }
+
     private boolean collidesPlayerWithRect(int playerLeft, int playerTop, int rectCenterX, int rectCenterY, int rectHalfWidth, int rectHalfHeight) {
         int playerCenterX = playerLeft + PLAYER_HALF_SIZE;
         int playerCenterY = playerTop + PLAYER_HALF_SIZE;
@@ -234,7 +273,12 @@ public class GameEndpoint {
     private JSONObject playersMessage(Map<String, PlayerState> players) {
         JSONObject data = new JSONObject();
         for (PlayerState player : players.values()) {
-            data.put(player.id, new JSONArray(new int[]{player.x, player.y}));
+            JSONObject playerData = new JSONObject();
+            playerData.put("x", player.x);
+            playerData.put("y", player.y);
+            playerData.put("color", player.color);
+            playerData.put("gems", player.gems);
+            data.put(player.id, playerData);
         }
 
         JSONObject json = new JSONObject();
@@ -274,17 +318,109 @@ public class GameEndpoint {
         return json;
     }
 
+    private JSONObject gemsMessage(Map<String, GemState> gems) {
+        JSONObject data = new JSONObject();
+        for (GemState gem : gems.values()) {
+            JSONObject gemData = new JSONObject();
+            gemData.put("x", gem.x);
+            gemData.put("y", gem.y);
+            data.put(gem.id, gemData);
+        }
+
+        JSONObject json = new JSONObject();
+        json.put("type", "Gems");
+        json.put("data", data);
+        return json;
+    }
+
     private static class GameRoom {
         private final Map<Session, String> sessions = new ConcurrentHashMap<>();
         private final Map<String, PlayerState> players = new ConcurrentHashMap<>();
+        private final Map<String, GemState> gems = new ConcurrentHashMap<>();
         private final AtomicInteger nextPlayerId = new AtomicInteger(0);
+        private final AtomicInteger nextGemId = new AtomicInteger(0);
+        private final Random random = new Random();
         private String state = "WAITING";
+
+        private GameRoom() {
+            spawnMissingGems();
+        }
 
         private PlayerState addPlayer() {
             int id = nextPlayerId.getAndIncrement();
-            PlayerState player = new PlayerState("p" + id, 50 + id * 100, 50);
+            PlayerState player = new PlayerState("p" + id, 50 + id * 100, 50, PLAYER_COLORS[id % PLAYER_COLORS.length]);
             players.put(player.id, player);
+            removeGemsCollidingWith(player);
+            spawnMissingGems();
             return player;
+        }
+
+        private void removeGemsCollidingWith(PlayerState player) {
+            ArrayList<String> removedGemIds = new ArrayList<>();
+            for (GemState gem : gems.values()) {
+                boolean onPlayer = Math.abs(player.x + PLAYER_HALF_SIZE - (gem.x + GEM_HALF_SIZE)) < PLAYER_HALF_SIZE + GEM_HALF_SIZE
+                    && Math.abs(player.y + PLAYER_HALF_SIZE - (gem.y + GEM_HALF_SIZE)) < PLAYER_HALF_SIZE + GEM_HALF_SIZE;
+                if (onPlayer) {
+                    removedGemIds.add(gem.id);
+                }
+            }
+
+            for (String gemId : removedGemIds) {
+                gems.remove(gemId);
+            }
+        }
+
+        private void spawnMissingGems() {
+            while (gems.size() < GEM_COUNT) {
+                GemState gem = randomGem();
+                if (gem != null) {
+                    gems.put(gem.id, gem);
+                } else {
+                    return;
+                }
+            }
+        }
+
+        private GemState randomGem() {
+            for (int attempt = 0; attempt < 100; attempt++) {
+                int x = random.nextInt(PLAYFIELD_WIDTH - GEM_SIZE);
+                int y = random.nextInt(PLAYFIELD_HEIGHT - GEM_SIZE);
+                if (isValidGemPosition(x, y)) {
+                    return new GemState("g" + nextGemId.getAndIncrement(), x, y);
+                }
+            }
+            return null;
+        }
+
+        private boolean isValidGemPosition(int x, int y) {
+            int centerX = x + GEM_HALF_SIZE;
+            int centerY = y + GEM_HALF_SIZE;
+
+            for (int[] obstacle : OBSTACLES) {
+                boolean inObstacle = Math.abs(obstacle[0] - centerX) < obstacle[2] + GEM_HALF_SIZE
+                    && Math.abs(obstacle[1] - centerY) < obstacle[3] + GEM_HALF_SIZE;
+                if (inObstacle) {
+                    return false;
+                }
+            }
+
+            for (PlayerState player : players.values()) {
+                boolean onPlayer = Math.abs(player.x + PLAYER_HALF_SIZE - centerX) < PLAYER_HALF_SIZE + GEM_HALF_SIZE
+                    && Math.abs(player.y + PLAYER_HALF_SIZE - centerY) < PLAYER_HALF_SIZE + GEM_HALF_SIZE;
+                if (onPlayer) {
+                    return false;
+                }
+            }
+
+            for (GemState gem : gems.values()) {
+                boolean onGem = Math.abs(gem.x + GEM_HALF_SIZE - centerX) < GEM_SIZE
+                    && Math.abs(gem.y + GEM_HALF_SIZE - centerY) < GEM_SIZE;
+                if (onGem) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private boolean allPlayersReady() {
@@ -314,15 +450,45 @@ public class GameEndpoint {
         private static final int WALK_STEP = 5;
 
         private final String id;
+        private final String color;
         private int x;
         private int y;
+        private int gems;
         private boolean ready;
 
-        private PlayerState(String id, int x, int y) {
+        private PlayerState(String id, int x, int y, String color) {
+            this.id = id;
+            this.color = color;
+            this.x = x;
+            this.y = y;
+            this.gems = 0;
+            this.ready = false;
+        }
+    }
+
+    private static class GemState {
+        private final String id;
+        private final int x;
+        private final int y;
+
+        private GemState(String id, int x, int y) {
             this.id = id;
             this.x = x;
             this.y = y;
-            this.ready = false;
+        }
+    }
+
+    private static class MoveResult {
+        private final boolean moved;
+        private final boolean gemPickedUp;
+
+        private MoveResult(boolean moved, boolean gemPickedUp) {
+            this.moved = moved;
+            this.gemPickedUp = gemPickedUp;
+        }
+
+        private static MoveResult noMove() {
+            return new MoveResult(false, false);
         }
     }
 }

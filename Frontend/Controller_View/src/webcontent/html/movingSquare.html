@@ -13,6 +13,8 @@
     <div>
       <strong id="matchState">Waiting for players</strong>
       <span id="readyState">Not ready</span>
+      <span class="hud-separator">|</span>
+      <span>Gems: <strong id="gemCount">0</strong></span>
     </div>
     <div class="hud-actions">
       <button id="readyBtn">Ready</button>
@@ -23,6 +25,7 @@
   <div id="game">
     <div class="obstacle obstacle-a"></div>
     <div class="obstacle obstacle-b"></div>
+    <div id="gemLayer"></div>
   </div>
   
   <script src="../js/movingSquare.js"></script>
