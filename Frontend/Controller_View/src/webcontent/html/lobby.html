@@ -12,9 +12,17 @@
 <body>
     <div class="layout">
         <section class="panel">
-            <h1>Lobby</h1>
-            <p class="small">Choisis une partie active ou crée une nouvelle partie.</p>
-            <p class="small">Connexion requise: passe d'abord par la page de connexion pour avoir le cookie JWT.</p>
+            <div class="topbar">
+                <div>
+                    <h1>Lobby</h1>
+                    <p class="small">Choisis une partie active ou crée une nouvelle partie.</p>
+                </div>
+                <div class="auth-box" id="authBox">
+                    <span id="authLabel">Verification...</span>
+                    <button class="btn-auth" id="loginBtn">Login</button>
+                    <button class="btn-auth btn-logout" id="logoutBtn">Logout</button>
+                </div>
+            </div>
 
             <div class="create-row">
                 <input id="titleInput" placeholder="Nom de la partie (optionnel)" />

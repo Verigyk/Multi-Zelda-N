@@ -1,9 +1,12 @@
 const state = {
     active: [],
     history: [],
-    selectedId: null
+    selectedId: null,
+    authenticated: false,
+    pseudo: null
 };
 
+const API_BASE = "http://localhost:8080/facade";
 let ws = null;
 let reconnectTimer = null;
 
@@ -18,6 +21,10 @@ function wsUrl() {
 }
 
 function connectWs() {
+    if (!state.authenticated) {
+        return;
+    }
+
     if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
         return;
     }
@@ -66,6 +73,9 @@ function connectWs() {
     };
 
     ws.onclose = () => {
+        if (!state.authenticated) {
+            return;
+        }
         status("WebSocket déconnecté, reconnexion...");
         clearTimeout(reconnectTimer);
         reconnectTimer = setTimeout(connectWs, 1500);
@@ -73,6 +83,11 @@ function connectWs() {
 }
 
 function sendAction(payload) {
+    if (!state.authenticated) {
+        status("Connecte-toi pour utiliser le lobby.");
+        return;
+    }
+
     if (!ws || ws.readyState !== WebSocket.OPEN) {
         status("WebSocket non connecté");
         return;
@@ -107,8 +122,29 @@ function updateConnectButton() {
     if (!btn) return;
 
     const match = selectedActiveMatch();
-    btn.disabled = !match;
+    btn.disabled = !state.authenticated || !match;
     btn.textContent = match ? "Join game: " + match.title : "Join game";
+}
+
+function updateAuthBox() {
+    const label = document.getElementById("authLabel");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const createBtn = document.getElementById("createBtn");
+
+    if (state.authenticated) {
+        label.textContent = "Connected as " + state.pseudo;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        createBtn.disabled = false;
+    } else {
+        label.textContent = "Not connected";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        createBtn.disabled = true;
+    }
+
+    updateConnectButton();
 }
 
 function renderScreen() {
@@ -211,6 +247,11 @@ function renderAll() {
 }
 
 function createMatch() {
+    if (!state.authenticated) {
+        status("Connecte-toi avant de creer une partie.");
+        return;
+    }
+
     const title = document.getElementById("titleInput").value;
     const maxPlayers = Number(document.getElementById("maxPlayersInput").value);
     sendAction({ action: "create", title, maxPlayers });
@@ -230,6 +271,11 @@ function handleAction(action, id) {
 }
 
 function connectToGame() {
+    if (!state.authenticated) {
+        goToLogin();
+        return;
+    }
+
     const match = selectedActiveMatch();
     if (!match) {
         status("Selectionne une partie active avant de te connecter.");
@@ -243,9 +289,63 @@ function connectToGame() {
     window.location.href = "movingSquare.html?" + params.toString();
 }
 
+function goToLogin() {
+    window.location.href = "login.html";
+}
+
+async function logout() {
+    try {
+        await fetch(API_BASE + "/auth/logout", {
+            method: "POST",
+            credentials: "include"
+        });
+    } finally {
+        state.authenticated = false;
+        state.pseudo = null;
+        state.active = [];
+        state.history = [];
+        state.selectedId = null;
+        clearTimeout(reconnectTimer);
+        if (ws) {
+            ws.close();
+            ws = null;
+        }
+        status("Disconnected");
+        renderAll();
+        updateAuthBox();
+    }
+}
+
+async function checkAuth() {
+    try {
+        const response = await fetch(API_BASE + "/api/me", {
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            throw new Error("Not authenticated");
+        }
+
+        const user = await response.json();
+        state.authenticated = true;
+        state.pseudo = user.pseudo;
+        updateAuthBox();
+        connectWs();
+    } catch (error) {
+        state.authenticated = false;
+        state.pseudo = null;
+        status("Connecte-toi pour voir et rejoindre les parties.");
+        renderAll();
+        updateAuthBox();
+    }
+}
+
 window.onload = function() {
     document.getElementById("createBtn").addEventListener("click", createMatch);
     document.getElementById("connectBtn").addEventListener("click", connectToGame);
+    document.getElementById("loginBtn").addEventListener("click", goToLogin);
+    document.getElementById("logoutBtn").addEventListener("click", logout);
     renderAll();
-    connectWs();
+    updateAuthBox();
+    checkAuth();
 }

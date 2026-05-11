@@ -55,6 +55,18 @@ public class AuthController {
         return ResponseEntity.ok("Login successsful");
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest httpRequest, HttpServletResponse response) {
+        Cookie cookie = new Cookie("Token", "");
+        cookie.setMaxAge(0);
+        cookie.setSecure(httpRequest.isSecure());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok("Logout successful");
+    }
+
     // Créer un compte
     @PostMapping("/addAccount")
     public ResponseEntity<String> addAccount(@RequestBody Account a) {

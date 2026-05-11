@@ -40,6 +40,30 @@ h1, h2, h3 { margin: 0 0 12px; }
 h1 { font-size: 1.5rem; color: var(--accent); }
 h2 { font-size: 1.1rem; }
 
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.auth-box {
+    min-width: 190px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+#authLabel {
+    width: 100%;
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: right;
+}
+
 .create-row {
     display: flex;
     gap: 8px;
@@ -69,6 +93,8 @@ button:hover { filter: brightness(1.15); }
 .btn-ok { background: #166534; }
 .btn-warn { background: #92400e; }
 .btn-danger { background: #7f1d1d; }
+.btn-auth { background: #0e7490; }
+.btn-logout { background: #4b5563; }
 .btn-connect {
     width: 100%;
     margin-top: 12px;
@@ -77,6 +103,12 @@ button:hover { filter: brightness(1.15); }
 }
 
 .btn-connect:disabled {
+    cursor: not-allowed;
+    filter: grayscale(0.8);
+    opacity: 0.5;
+}
+
+button:disabled {
     cursor: not-allowed;
     filter: grayscale(0.8);
     opacity: 0.5;
@@ -158,4 +190,10 @@ button:hover { filter: brightness(1.15); }
 
 @media (max-width: 900px) {
     .layout { grid-template-columns: 1fr; }
+    .topbar { flex-direction: column; }
+    .auth-box {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    #authLabel { text-align: left; }
 }
