@@ -1,6 +1,7 @@
 package zelda.facade;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ public class FacadeMatches {
 
     private HashMap<String, Match> activeMatches = new HashMap<String,Match>(); 
     private HashMap<String, HashSet<String>> activeMatchesPlayersIds = new HashMap<String,HashSet<String>>(); 
+    private HashMap<String, HashSet<String>> matchParticipantsIds = new HashMap<String,HashSet<String>>();
 
     @Autowired
     private MatchRepository historyMatches;
@@ -61,6 +63,7 @@ public class FacadeMatches {
 
         activeMatches.put(id, match);
         activeMatchesPlayersIds.put(id, pseudos);
+        matchParticipantsIds.put(id, new HashSet<String>());
         return match;
     }
 
@@ -79,8 +82,12 @@ public class FacadeMatches {
         HashSet<String> activeMatchPlayersIds = activeMatchesPlayersIds.get(id);
 
         synchronized (match) {
-            if (match.getPlayersCount() < match.getMaxPlayers() && !activeMatchesPlayersIds.get(id).contains(account.getPseudo())) {
+            if (activeMatchPlayersIds == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            if (match.getPlayersCount() < match.getMaxPlayers() && !activeMatchPlayersIds.contains(account.getPseudo())) {
                 activeMatchPlayersIds.add(account.getPseudo());
+                matchParticipantsIds.computeIfAbsent(id, key -> new HashSet<String>()).add(account.getPseudo());
                 match.setPlayersCount(activeMatchPlayersIds.size());
             }
             return ResponseEntity.ok(match);
@@ -101,6 +108,9 @@ public class FacadeMatches {
             if (activeMatchPlayersIds != null && activeMatchPlayersIds.remove(account.getPseudo())) {
                 match.setPlayersCount(activeMatchPlayersIds.size());
             }
+            if (activeMatchPlayersIds == null || activeMatchPlayersIds.isEmpty()) {
+                finishAndArchiveMatch(id, match, "Inconnu");
+            }
             return ResponseEntity.ok(match);
         }
     }
@@ -108,6 +118,9 @@ public class FacadeMatches {
     @PostMapping("/{id}/start")
     public ResponseEntity<Match> startMatch(@PathVariable String id) {
         Match match = activeMatches.get(id);
+        if (match == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
         synchronized (match) {
             if ("LOADING".equals(match.getState())) {
@@ -121,27 +134,17 @@ public class FacadeMatches {
     @PostMapping("/{id}/finish")
     public ResponseEntity<Match> finishMatch(Authentication authentication, @PathVariable String id, @RequestBody(required = false) matchShape.FinishMatchRequest request) {
         Match match = activeMatches.get(id);
+        if (match == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String winner = (request == null || request.winner() == null || request.winner().isBlank())
+            ? "Inconnu"
+            : request.winner().trim();
 
         synchronized (match) {
-            match.setState("FINISHED");
-            match.setEndedAt(Instant.now().toString());
-            String winner = (request == null || request.winner() == null || request.winner().isBlank())
-                ? "Inconnu"
-                : request.winner().trim();
-            match.setWinner(winner);
+            finishAndArchiveMatch(id, match, winner);
         }
-
-        activeMatches.remove(id);
-        
-        historyMatches.save(match);
-
-        for (String pseudo : activeMatchesPlayersIds.get(id)) {
-            Account account = this.getAccount(pseudo);
-            account.getMatch_history().add(match);
-            this.ar.save(account);
-        }
-
-        activeMatchesPlayersIds.remove(id);
 
         return ResponseEntity.ok(match);
     }
@@ -159,10 +162,42 @@ public class FacadeMatches {
     // Trouver l'historique d'un compte
     @GetMapping("/history")
     public Collection<matchShape.LobbyMatchResponse> listHistoryMatches(Authentication authentication) {
-        return this.getAccount(authentication.getName()).getMatch_history()
+        Collection<Match> history = this.getAccount(authentication.getName()).getMatch_history();
+        if (history == null) {
+            return new ArrayList<matchShape.LobbyMatchResponse>();
+        }
+        return history
             .stream()
             .map(match -> toHistoryMatchResponse(match))
             .collect(Collectors.toList());
+    }
+
+    private void finishAndArchiveMatch(String id, Match match, String winner) {
+        match.setState("FINISHED");
+        match.setEndedAt(Instant.now().toString());
+        match.setWinner(winner);
+        match.setPlayersCount(0);
+
+        activeMatches.remove(id);
+        historyMatches.save(match);
+
+        HashSet<String> participants = matchParticipantsIds.get(id);
+        if (participants == null) {
+            participants = activeMatchesPlayersIds.get(id);
+        }
+        if (participants != null) {
+            for (String pseudo : participants) {
+                Account account = this.getAccount(pseudo);
+                if (account.getMatch_history() == null) {
+                    account.setMatch_history(new ArrayList<Match>());
+                }
+                account.getMatch_history().add(match);
+                this.ar.save(account);
+            }
+        }
+
+        activeMatchesPlayersIds.remove(id);
+        matchParticipantsIds.remove(id);
     }
 
     private Account getAccount(String pseudo) {

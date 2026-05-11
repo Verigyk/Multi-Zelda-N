@@ -68,7 +68,7 @@ public class MatchesEndpoint {
                     handleCreate(payload, session);
                     break;
                 case "join":
-                    handleIdAction(payload, session, "join");
+                    sendActionResult(session, "join", handleIdAction(payload, session, "join"));
                     break;
                 case "leave":
                     handleIdAction(payload, session, "leave");
@@ -112,12 +112,13 @@ public class MatchesEndpoint {
         doPost("/create", request, session);
     }
 
-    private void handleIdAction(JSONObject payload, Session session, String action) {
+    private JSONObject handleIdAction(JSONObject payload, Session session, String action) {
         String id = payload.optString("id", "").trim();
         if (id.isEmpty()) {
             throw new IllegalArgumentException("id manquant");
         }
-        doPost("/" + id + "/" + action, null, session);
+        String body = doPost("/" + id + "/" + action, null, session);
+        return body == null || body.isBlank() ? new JSONObject() : new JSONObject(body);
     }
 
     private void handleFinish(JSONObject payload, Session session) {
@@ -142,6 +143,10 @@ public class MatchesEndpoint {
         send(session, message);
     }
 
+    public static void broadcastSnapshotsToOpenSessions() {
+        new MatchesEndpoint().broadcastSnapshots();
+    }
+
     private void broadcastSnapshots() {
         for (Session session : sessions) {
             try {
@@ -160,12 +165,12 @@ public class MatchesEndpoint {
         return extractBody(path, response);
     }
 
-    private void doPost(String path, JSONObject body, Session session) {
+    private String doPost(String path, JSONObject body, Session session) {
         Response response = REST_CLIENT.target(MATCHES_API_BASE + path)
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Cookie", getCookieHeader(session))
                 .post(Entity.entity(body == null ? "" : body.toString(), MediaType.APPLICATION_JSON));
-        extractBody(path, response);
+        return extractBody(path, response);
     }
 
     private String extractBody(String path, Response response) {
@@ -193,6 +198,14 @@ public class MatchesEndpoint {
         error.put("type", "error");
         error.put("message", message);
         send(session, error);
+    }
+
+    private void sendActionResult(Session session, String action, JSONObject match) {
+        JSONObject result = new JSONObject();
+        result.put("type", "actionResult");
+        result.put("action", action);
+        result.put("match", match);
+        send(session, result);
     }
 
     private void send(Session session, JSONObject message) {

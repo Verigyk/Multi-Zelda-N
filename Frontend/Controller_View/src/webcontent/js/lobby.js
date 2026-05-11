@@ -66,6 +66,15 @@ function connectWs() {
 
             if (msg.type === "error") {
                 status("Erreur: " + msg.message);
+                sendAction({ action: "refresh" });
+                return;
+            }
+
+            if (msg.type === "actionResult" && msg.action === "join") {
+                const matchId = msg.match && msg.match.id;
+                if (matchId) {
+                    goToGame(matchId);
+                }
             }
         } catch (error) {
             status("Message WS invalide");
@@ -220,9 +229,8 @@ function handleAction(action, id) {
         if (!match || match.joined || match.state !== "LOADING") {
             return;
         }
-        if (sendAction({ action: "join", id })) {
-            goToGame(id);
-        }
+        status("Connexion à la partie...");
+        sendAction({ action: "join", id });
     } else if (action === "start") {
         sendAction({ action: "start", id });
     } else if (action === "finish") {

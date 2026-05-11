@@ -2,23 +2,36 @@ package pack;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
+import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.ServerEndpointConfig;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-@ServerEndpoint("/GameEndpoint/{matchId}/ws")
+@ServerEndpoint(value = "/GameEndpoint/{matchId}/ws", configurator = GameEndpoint.Config.class)
 public class GameEndpoint {
+    private static final String COOKIE_HEADER_KEY = "cookieHeader";
+    private static final String MATCHES_API_BASE = System.getProperty("facade.matches.url",
+            "http://localhost:8080/facade/matches");
+    private static final Client REST_CLIENT = new ResteasyClientBuilder().build();
     private static final int PLAYER_HALF_SIZE = 25;
     private static final int[][] OBSTACLES = new int[][]{
         new int[]{300, 500, 200, 150},
@@ -27,6 +40,19 @@ public class GameEndpoint {
 
     private static final Map<String, GameRoom> rooms = new ConcurrentHashMap<>();
     private static final Map<Session, PlayerRef> sessionToPlayer = new ConcurrentHashMap<>();
+
+    public static class Config extends ServerEndpointConfig.Configurator {
+        @Override
+        public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
+            List<String> cookieHeaders = request.getHeaders().get("cookie");
+            if (cookieHeaders == null || cookieHeaders.isEmpty()) {
+                cookieHeaders = request.getHeaders().get("Cookie");
+            }
+            if (cookieHeaders != null && !cookieHeaders.isEmpty()) {
+                sec.getUserProperties().put(COOKIE_HEADER_KEY, cookieHeaders.get(0));
+            }
+        }
+    }
 
     @OnOpen
     public void onOpen(Session session, @PathParam("matchId") String matchId) throws IOException {
@@ -56,7 +82,8 @@ public class GameEndpoint {
 
         if ("READY".equals(message)) {
             player.ready = true;
-            if (room.allPlayersReady()) {
+            if ("WAITING".equals(room.state) && room.allPlayersReady()) {
+                startMatch(ref.matchId, session);
                 room.state = "RUNNING";
             }
             room.broadcast(roomStateMessage(room));
@@ -82,8 +109,14 @@ public class GameEndpoint {
 
         room.sessions.remove(session);
         room.players.remove(ref.playerId);
+        try {
+            leaveMatch(ref.matchId, session);
+        } catch (Exception exception) {
+            System.err.println("Unable to leave match " + ref.matchId + ": " + exception.getMessage());
+        }
         room.broadcast(removePlayersMessage(ref.playerId));
         room.broadcast(roomStateMessage(room));
+        MatchesEndpoint.broadcastSnapshotsToOpenSessions();
 
         if (room.sessions.isEmpty()) {
             rooms.remove(ref.matchId);
@@ -94,6 +127,54 @@ public class GameEndpoint {
     public void onError(Session session, Throwable throwable) {
         String id = session == null ? "unknown" : session.getId();
         System.err.println("Game WebSocket error for session " + id + ": " + throwable.getMessage());
+    }
+
+    private void startMatch(String matchId, Session session) {
+        doPost("/" + matchId + "/start", session);
+        MatchesEndpoint.broadcastSnapshotsToOpenSessions();
+    }
+
+    private void leaveMatch(String matchId, Session session) {
+        Response response = REST_CLIENT.target(MATCHES_API_BASE + "/" + matchId + "/leave")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Cookie", getCookieHeader(session))
+                .post(Entity.entity("", MediaType.APPLICATION_JSON));
+        try {
+            if (response.getStatus() == 404) {
+                return;
+            }
+            extractBody("/" + matchId + "/leave", response);
+        } finally {
+            response.close();
+        }
+    }
+
+    private void doPost(String path, Session session) {
+        Response response = REST_CLIENT.target(MATCHES_API_BASE + path)
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Cookie", getCookieHeader(session))
+                .post(Entity.entity("", MediaType.APPLICATION_JSON));
+        extractBody(path, response);
+    }
+
+    private String extractBody(String path, Response response) {
+        try {
+            String body = response.hasEntity() ? response.readEntity(String.class) : "";
+            if (response.getStatus() >= 200 && response.getStatus() < 300) {
+                return body;
+            }
+            throw new RuntimeException("HTTP " + response.getStatus() + " sur " + path);
+        } finally {
+            response.close();
+        }
+    }
+
+    private String getCookieHeader(Session session) {
+        Object cookieHeader = session.getUserProperties().get(COOKIE_HEADER_KEY);
+        if (cookieHeader == null) {
+            throw new RuntimeException("Token absent: connecte-toi avant de lancer la partie");
+        }
+        return cookieHeader.toString();
     }
 
     private boolean move(GameRoom room, PlayerState player, String direction) {
