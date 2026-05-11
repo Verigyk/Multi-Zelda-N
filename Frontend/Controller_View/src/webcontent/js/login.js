@@ -41,9 +41,9 @@ async function login() {
 
         if (response.ok) {
             showMessage("Bienvenue, " + pseudo + " ! Redirection...", "success");
-            // Redirige vers le jeu dans 1.5 secondes
+            // Redirige vers le lobby dans 1.5 secondes
             setTimeout(() => {
-                window.location.href = "game.html?pseudo=" + encodeURIComponent(pseudo);
+                window.location.href = "lobby.html?pseudo=" + encodeURIComponent(pseudo);
             }, 1500);
         } else {
             showMessage(text || ("Erreur HTTP " + response.status), "error");
