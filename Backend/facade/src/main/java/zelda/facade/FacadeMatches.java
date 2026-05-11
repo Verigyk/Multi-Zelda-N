@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import zelda.facade.RequestShape.matches.matchShape;
 import zelda.facade.accounts.Account;
 import zelda.facade.accounts.AccountRepository;
@@ -39,7 +40,6 @@ public class FacadeMatches {
 
     @PostMapping("/create")
     public Match createMatch(Authentication authentication, @RequestBody(required = false) matchShape.CreateMatchRequest request) {
-        Account account = this.getAccount(authentication.getName());
         String id = UUID.randomUUID().toString().substring(0, 8);
         int maxPlayers = clampMaxPlayers(request == null ? null : request.maxPlayers());
         String title = (request == null || request.title() == null || request.title().isBlank())
@@ -56,7 +56,6 @@ public class FacadeMatches {
                                 null
         );
         HashSet<String> pseudos = new HashSet<String>();
-        pseudos.add(account.getPseudo()); 
         match.setPlayersCount(pseudos.size());
 
         activeMatches.put(id, match);
@@ -122,15 +121,22 @@ public class FacadeMatches {
     }
 
     @GetMapping("/active")
-    public Collection<Match> listActiveMatches() {
-        return activeMatches.values();
+    public Collection<matchShape.LobbyMatchResponse> listActiveMatches(Authentication authentication) {
+        String pseudo = authentication.getName();
+        return activeMatches.values()
+            .stream()
+            .map(match -> toLobbyMatchResponse(match, pseudo))
+            .collect(Collectors.toList());
     }
 
 
     // Trouver l'historique d'un compte
     @GetMapping("/history")
-    public Collection<Match> listHistoryMatches(Authentication authentication) {
-        return this.getAccount(authentication.getName()).getMatch_history();
+    public Collection<matchShape.LobbyMatchResponse> listHistoryMatches(Authentication authentication) {
+        return this.getAccount(authentication.getName()).getMatch_history()
+            .stream()
+            .map(match -> toHistoryMatchResponse(match))
+            .collect(Collectors.toList());
     }
 
     private Account getAccount(String pseudo) {
@@ -147,5 +153,30 @@ public class FacadeMatches {
             return 4;
         }
         return Math.max(2, Math.min(16, value));
+    }
+
+    private matchShape.LobbyMatchResponse toLobbyMatchResponse(Match match, String pseudo) {
+        HashSet<String> players = activeMatchesPlayersIds.get(match.getId());
+        boolean joined = players != null && players.contains(pseudo);
+        return toLobbyMatchResponse(match, joined);
+    }
+
+    private matchShape.LobbyMatchResponse toHistoryMatchResponse(Match match) {
+        return toLobbyMatchResponse(match, true);
+    }
+
+    private matchShape.LobbyMatchResponse toLobbyMatchResponse(Match match, boolean joined) {
+        return new matchShape.LobbyMatchResponse(
+            match.getId(),
+            match.getTitle(),
+            match.getState(),
+            match.getPlayersCount(),
+            match.getMaxPlayers(),
+            match.getCreatedAt(),
+            match.getStartedAt(),
+            match.getEndedAt(),
+            match.getWinner(),
+            joined
+        );
     }
 }

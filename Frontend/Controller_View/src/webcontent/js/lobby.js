@@ -163,7 +163,9 @@ function renderList(containerId, matches, withActions) {
             ${match.winner ? `<div class="small">Winner: ${match.winner}</div>` : ""}
             ${withActions ? `
                 <div class="actions">
-                    <button class="btn-ok" data-action="join" data-id="${match.id}">Join</button>
+                    <button class="btn-ok" data-action="join" data-id="${match.id}" ${match.joined ? "disabled" : ""}>
+                        ${match.joined ? "Already joined" : "Join"}
+                    </button>
                     <button class="btn-warn" data-action="start" data-id="${match.id}">Start</button>
                     <button class="btn-danger" data-action="finish" data-id="${match.id}">Finish</button>
                 </div>
@@ -208,6 +210,10 @@ function createMatch() {
 
 function handleAction(action, id) {
     if (action === "join") {
+        const match = state.active.find(m => m.id === id);
+        if (!match || match.joined) {
+            return;
+        }
         if (sendAction({ action: "join", id })) {
             goToGame(id);
         }
