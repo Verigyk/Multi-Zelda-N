@@ -33,20 +33,20 @@
     border: 2px solid rebeccapurple;
 }
 
-.message {
+.chat-message {
   border-radius: 18px;
   word-break: break-word;
   white-space: pre-wrap;
 }
 
-.message.sent {
+.chat-message.sent {
   align-self: flex-end;
   color: #e2d8d1;
 
   width:200px;
 }
 
-.message.received {
+.chat-message.received {
   align-self: flex-start;
   color: #e2d8d1;
 

@@ -9,6 +9,7 @@ const state = {
 const API_BASE = "http://localhost:8080/facade";
 let ws = null;
 let reconnectTimer = null;
+let lobbyChat = null;
 
 function status(text) {
     document.getElementById("statusMsg").textContent = text;
@@ -147,51 +148,6 @@ function updateAuthBox() {
     updateConnectButton();
 }
 
-function renderScreen() {
-    const screen = document.getElementById("screen");
-    const match = selectedMatch();
-    if (!match) {
-        screen.innerHTML = `
-            <div>
-                <h3>Aucune partie sélectionnée</h3>
-                <p class="small">Clique sur une partie active ou historique.</p>
-            </div>`;
-        return;
-    }
-
-    if (match.state === "LOADING") {
-        screen.innerHTML = `
-            <div>
-                <h3>Chargement de ${match.title}</h3>
-                <p class="small">Partie ${match.id} • ${match.playersCount}/${match.maxPlayers} joueurs</p>
-                <div style="margin-top:12px;">
-                    <span class="loading-dot"></span>
-                    <span class="loading-dot"></span>
-                    <span class="loading-dot"></span>
-                </div>
-            </div>`;
-        return;
-    }
-
-    if (match.state === "RUNNING") {
-        screen.innerHTML = `
-            <div>
-                <h3>Partie en cours</h3>
-                <p>${match.title}</p>
-                <p class="small">Démarrée à: ${formatDate(match.startedAt)}</p>
-            </div>`;
-        return;
-    }
-
-    screen.innerHTML = `
-        <div>
-            <h3>Écran de fin</h3>
-            <p>Partie: ${match.title}</p>
-            <p>Vainqueur: <strong>${match.winner || "Inconnu"}</strong></p>
-            <p class="small">Terminée à: ${formatDate(match.endedAt)}</p>
-        </div>`;
-}
-
 function renderList(containerId, matches, withActions) {
     const container = document.getElementById(containerId);
     if (matches.length === 0) {
@@ -242,7 +198,6 @@ function renderList(containerId, matches, withActions) {
 function renderAll() {
     renderList("activeList", state.active, true);
     renderList("historyList", state.history, false);
-    renderScreen();
     updateConnectButton();
 }
 
@@ -310,6 +265,9 @@ async function logout() {
             ws.close();
             ws = null;
         }
+        if (lobbyChat) {
+            lobbyChat.disconnect();
+        }
         status("Disconnected");
         renderAll();
         updateAuthBox();
@@ -331,9 +289,16 @@ async function checkAuth() {
         state.pseudo = user.pseudo;
         updateAuthBox();
         connectWs();
+        lobbyChat.connect({
+            senderId: user.pseudo,
+            displayName: user.pseudo
+        });
     } catch (error) {
         state.authenticated = false;
         state.pseudo = null;
+        if (lobbyChat) {
+            lobbyChat.disconnect();
+        }
         status("Connecte-toi pour voir et rejoindre les parties.");
         renderAll();
         updateAuthBox();
@@ -341,6 +306,13 @@ async function checkAuth() {
 }
 
 window.onload = function() {
+    lobbyChat = createChatWidget({
+        logId: "chatLog",
+        inputId: "chatInput",
+        sendButtonId: "chatSendBtn",
+        statusId: "chatStatus"
+    });
+
     document.getElementById("createBtn").addEventListener("click", createMatch);
     document.getElementById("connectBtn").addEventListener("click", connectToGame);
     document.getElementById("loginBtn").addEventListener("click", goToLogin);

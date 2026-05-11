@@ -6,6 +6,7 @@
     <title>Zelda Multi - Lobby</title>
 
     <link rel="stylesheet" href="../css/lobby.css" />
+    <script src="../js/chat-widget.js"></script>
     <script src="../js/lobby.js"></script>
 
 </head>
@@ -38,14 +39,14 @@
         </section>
 
         <section class="panel">
-            <h2>Écran de Simulation</h2>
-            <div id="screen" class="screen">
-                <div>
-                    <h3>Aucune partie sélectionnée</h3>
-                    <p class="small">Clique sur une partie active ou historique.</p>
-                </div>
+            <h2>Chat</h2>
+            <div id="chatLog" class="chat-log"></div>
+            <div class="chat-row">
+                <input id="chatInput" placeholder="Message..." disabled />
+                <button id="chatSendBtn" disabled>Send</button>
             </div>
             <button class="btn-connect" id="connectBtn" disabled>Join game</button>
+            <div id="chatStatus">Connecte-toi pour utiliser le chat.</div>
             <div id="statusMsg">WebSocket en attente...</div>
         </section>
     </div>
