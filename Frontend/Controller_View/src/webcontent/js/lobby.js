@@ -12,7 +12,10 @@ let reconnectTimer = null;
 let lobbyChat = null;
 
 function status(text) {
-    document.getElementById("statusMsg").textContent = text;
+    const element = document.getElementById("statusMsg");
+    if (element) {
+        element.textContent = text;
+    }
 }
 
 function wsUrl() {
@@ -86,14 +89,15 @@ function connectWs() {
 function sendAction(payload) {
     if (!state.authenticated) {
         status("Connecte-toi pour utiliser le lobby.");
-        return;
+        return false;
     }
 
     if (!ws || ws.readyState !== WebSocket.OPEN) {
         status("WebSocket non connecté");
-        return;
+        return false;
     }
     ws.send(JSON.stringify(payload));
+    return true;
 }
 
 function formatDate(value) {
@@ -118,15 +122,6 @@ function selectedActiveMatch() {
     return state.active.find(m => m.id === state.selectedId) || null;
 }
 
-function updateConnectButton() {
-    const btn = document.getElementById("connectBtn");
-    if (!btn) return;
-
-    const match = selectedActiveMatch();
-    btn.disabled = !state.authenticated || !match;
-    btn.textContent = match ? "Join game: " + match.title : "Join game";
-}
-
 function updateAuthBox() {
     const label = document.getElementById("authLabel");
     const loginBtn = document.getElementById("loginBtn");
@@ -145,7 +140,6 @@ function updateAuthBox() {
         createBtn.disabled = true;
     }
 
-    updateConnectButton();
 }
 
 function renderList(containerId, matches, withActions) {
@@ -198,7 +192,6 @@ function renderList(containerId, matches, withActions) {
 function renderAll() {
     renderList("activeList", state.active, true);
     renderList("historyList", state.history, false);
-    updateConnectButton();
 }
 
 function createMatch() {
@@ -215,7 +208,9 @@ function createMatch() {
 
 function handleAction(action, id) {
     if (action === "join") {
-        sendAction({ action: "join", id });
+        if (sendAction({ action: "join", id })) {
+            goToGame(id);
+        }
     } else if (action === "start") {
         sendAction({ action: "start", id });
     } else if (action === "finish") {
@@ -225,22 +220,9 @@ function handleAction(action, id) {
     }
 }
 
-function connectToGame() {
-    if (!state.authenticated) {
-        goToLogin();
-        return;
-    }
-
-    const match = selectedActiveMatch();
-    if (!match) {
-        status("Selectionne une partie active avant de te connecter.");
-        return;
-    }
-
-    sendAction({ action: "join", id: match.id });
-
+function goToGame(matchId) {
     const params = new URLSearchParams(window.location.search);
-    params.set("matchId", match.id);
+    params.set("matchId", matchId);
     window.location.href = "movingSquare.html?" + params.toString();
 }
 
@@ -310,11 +292,10 @@ window.onload = function() {
         logId: "chatLog",
         inputId: "chatInput",
         sendButtonId: "chatSendBtn",
-        statusId: "chatStatus"
+        statusId: null
     });
 
     document.getElementById("createBtn").addEventListener("click", createMatch);
-    document.getElementById("connectBtn").addEventListener("click", connectToGame);
     document.getElementById("loginBtn").addEventListener("click", goToLogin);
     document.getElementById("logoutBtn").addEventListener("click", logout);
     renderAll();

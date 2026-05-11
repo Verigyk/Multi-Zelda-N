@@ -95,18 +95,6 @@ button:hover { filter: brightness(1.15); }
 .btn-danger { background: #7f1d1d; }
 .btn-auth { background: #0e7490; }
 .btn-logout { background: #4b5563; }
-.btn-connect {
-    width: 100%;
-    margin-top: 12px;
-    background: #0e7490;
-    font-weight: 700;
-}
-
-.btn-connect:disabled {
-    cursor: not-allowed;
-    filter: grayscale(0.8);
-    opacity: 0.5;
-}
 
 button:disabled {
     cursor: not-allowed;
@@ -195,13 +183,6 @@ button:disabled {
 
 .chat-message.received {
     align-self: flex-start;
-}
-
-#statusMsg,
-#chatStatus {
-    margin-top: 10px;
-    color: var(--muted);
-    font-size: 0.9rem;
 }
 
 @media (max-width: 900px) {
