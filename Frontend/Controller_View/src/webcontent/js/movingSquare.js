@@ -123,6 +123,7 @@ const game = new Vue({
         const color = Array.isArray(player) ? "red" : player.color;
         const gems = Array.isArray(player) ? 0 : player.gems;
         const hasBomb = !Array.isArray(player) && player.hasBomb;
+        const dead = !Array.isArray(player) && player.dead;
         let playerElement = element;
 
         if (element === null) {
@@ -148,6 +149,7 @@ const game = new Vue({
           document.getElementById("gemCount").textContent = String(this.playerGems);
         }
 
+        playerElement.classList.toggle("dead", dead);
         this.updateCarriedBomb(playerElement, hasBomb);
       }
     },

@@ -53,6 +53,8 @@ public class GameEndpoint {
     private static final int BOMB_SPAWN_COOLDOWN_MS = 7000;
     private static final int PROJECTILE_SPEED = 14;
     private static final int PROJECTILE_MAX_AGE_MS = 1800;
+    private static final int PLAYER_DEAD_DURATION_MS = 5000;
+    private static final int GEMS_DROPPED_ON_HIT = 5;
     private static final int[][] BOMB_SPAWN_POINTS = new int[][]{
         new int[]{150, 140},
         new int[]{570, 120},
@@ -206,6 +208,9 @@ public class GameEndpoint {
                 if (tick.projectilesChanged) {
                     room.broadcast(projectilesMessage(room.projectiles));
                 }
+                if (tick.gemsChanged) {
+                    room.broadcast(gemsMessage(room.gems));
+                }
                 if (tick.playersChanged) {
                     room.broadcast(playersMessage(room.players));
                 }
@@ -299,6 +304,10 @@ public class GameEndpoint {
     }
 
     private MoveResult move(GameRoom room, PlayerState player, String message) {
+        if (player.isDead()) {
+            return MoveResult.noMove();
+        }
+
         MoveVector vector = parseMoveVector(message);
         if (vector.isIdle()) {
             return MoveResult.noMove();
@@ -349,12 +358,15 @@ public class GameEndpoint {
     }
 
     private boolean canMove(GameRoom room, PlayerState movedPlayer, int nextX, int nextY) {
+        if (movedPlayer.isDead()) {
+            return false;
+        }
         if (nextX < 0 || nextY < 0 || nextX + PLAYER_SIZE > PLAYFIELD_WIDTH || nextY + PLAYER_SIZE > PLAYFIELD_HEIGHT) {
             return false;
         }
 
         for (PlayerState player : room.players.values()) {
-            if (!player.id.equals(movedPlayer.id) && collidesPlayerWithRect(nextX, nextY, player.x + PLAYER_HALF_SIZE, player.y + PLAYER_HALF_SIZE, PLAYER_HALF_SIZE, PLAYER_HALF_SIZE)) {
+            if (!player.id.equals(movedPlayer.id) && !player.isDead() && collidesPlayerWithRect(nextX, nextY, player.x + PLAYER_HALF_SIZE, player.y + PLAYER_HALF_SIZE, PLAYER_HALF_SIZE, PLAYER_HALF_SIZE)) {
                 return false;
             }
         }
@@ -369,6 +381,10 @@ public class GameEndpoint {
     }
 
     private boolean collectGemIfNeeded(GameRoom room, PlayerState player) {
+        if (player.isDead()) {
+            return false;
+        }
+
         String collectedId = null;
         for (GemState gem : room.gems.values()) {
             if (collidesPlayerWithRect(player.x, player.y, gem.x + GEM_HALF_SIZE, gem.y + GEM_HALF_SIZE, GEM_HALF_SIZE, GEM_HALF_SIZE)) {
@@ -388,7 +404,7 @@ public class GameEndpoint {
     }
 
     private boolean collectBombIfNeeded(GameRoom room, PlayerState player) {
-        if (player.hasBomb) {
+        if (player.hasBomb || player.isDead()) {
             return false;
         }
 
@@ -415,7 +431,7 @@ public class GameEndpoint {
     }
 
     private boolean throwBomb(GameRoom room, PlayerState player) {
-        if (!player.hasBomb) {
+        if (!player.hasBomb || player.isDead()) {
             return false;
         }
 
@@ -442,6 +458,7 @@ public class GameEndpoint {
             playerData.put("pseudo", player.pseudo);
             playerData.put("gems", player.gems);
             playerData.put("hasBomb", player.hasBomb);
+            playerData.put("dead", player.isDead());
             data.put(player.id, playerData);
         }
 
@@ -713,6 +730,7 @@ public class GameEndpoint {
 
         private RoomTickResult tick() {
             boolean bombsChanged = refreshBombSpawns();
+            boolean deadStatesChanged = refreshDeadPlayers();
             ProjectileUpdateResult projectileResult = updateProjectiles();
             int remaining = remainingSeconds();
             boolean remainingSecondsChanged = remaining != lastBroadcastRemainingSeconds;
@@ -720,9 +738,20 @@ public class GameEndpoint {
             return new RoomTickResult(
                 bombsChanged,
                 projectileResult.projectilesChanged,
-                projectileResult.playersChanged,
+                projectileResult.gemsChanged,
+                projectileResult.playersChanged || deadStatesChanged,
                 remainingSecondsChanged
             );
+        }
+
+        private boolean refreshDeadPlayers() {
+            boolean changed = false;
+            for (PlayerState player : players.values()) {
+                if (player.reviveIfNeeded()) {
+                    changed = true;
+                }
+            }
+            return changed;
         }
 
         private boolean refreshBombSpawns() {
@@ -739,10 +768,11 @@ public class GameEndpoint {
 
         private ProjectileUpdateResult updateProjectiles() {
             if (projectiles.isEmpty()) {
-                return new ProjectileUpdateResult(false, false);
+                return new ProjectileUpdateResult(false, false, false);
             }
 
             boolean playersChanged = false;
+            boolean gemsChanged = false;
             ArrayList<String> removedProjectileIds = new ArrayList<>();
             long now = System.currentTimeMillis();
 
@@ -757,10 +787,12 @@ public class GameEndpoint {
 
                 PlayerState hitPlayer = hitPlayer(projectile);
                 if (hitPlayer != null) {
-                    if (hitPlayer.gems > 0) {
-                        hitPlayer.gems--;
-                        playersChanged = true;
-                    }
+                    int droppedGems = Math.min(GEMS_DROPPED_ON_HIT, hitPlayer.gems);
+                    hitPlayer.gems -= droppedGems;
+                    hitPlayer.kill();
+                    dropGemsAround(hitPlayer, droppedGems);
+                    playersChanged = true;
+                    gemsChanged = droppedGems > 0;
                     removedProjectileIds.add(projectile.id);
                 }
             }
@@ -769,7 +801,36 @@ public class GameEndpoint {
                 projectiles.remove(projectileId);
             }
 
-            return new ProjectileUpdateResult(true, playersChanged);
+            return new ProjectileUpdateResult(true, playersChanged, gemsChanged);
+        }
+
+        private void dropGemsAround(PlayerState player, int count) {
+            for (int i = 0; i < count; i++) {
+                GemState gem = droppedGemNear(player, i, count);
+                if (gem != null) {
+                    gems.put(gem.id, gem);
+                }
+            }
+        }
+
+        private GemState droppedGemNear(PlayerState player, int index, int total) {
+            double baseAngle = (2 * Math.PI * index) / Math.max(1, total);
+            int centerX = player.x + PLAYER_HALF_SIZE;
+            int centerY = player.y + PLAYER_HALF_SIZE;
+
+            for (int attempt = 0; attempt < 80; attempt++) {
+                double angle = baseAngle + random.nextDouble() * Math.PI / 3;
+                int distance = 48 + random.nextInt(44);
+                int x = centerX - GEM_HALF_SIZE + (int) Math.round(Math.cos(angle) * distance);
+                int y = centerY - GEM_HALF_SIZE + (int) Math.round(Math.sin(angle) * distance);
+                x = Math.max(0, Math.min(PLAYFIELD_WIDTH - GEM_SIZE, x));
+                y = Math.max(0, Math.min(PLAYFIELD_HEIGHT - GEM_SIZE, y));
+                if (isValidGemPosition(x, y)) {
+                    return new GemState("g" + nextGemId.getAndIncrement(), x, y);
+                }
+            }
+
+            return null;
         }
 
         private boolean projectileOutOfBounds(ProjectileState projectile) {
@@ -792,7 +853,7 @@ public class GameEndpoint {
 
         private PlayerState hitPlayer(ProjectileState projectile) {
             for (PlayerState player : players.values()) {
-                if (projectile.ownerId.equals(player.id)) {
+                if (projectile.ownerId.equals(player.id) || player.isDead()) {
                     continue;
                 }
                 boolean hit = Math.abs(player.x + PLAYER_HALF_SIZE - (projectile.x + BOMB_HALF_SIZE)) < PLAYER_HALF_SIZE + BOMB_HALF_SIZE
@@ -834,6 +895,7 @@ public class GameEndpoint {
         private boolean hasBomb;
         private int facingX;
         private int facingY;
+        private long deadUntilMillis;
 
         private PlayerState(String id, String pseudo, int x, int y, String color) {
             this.id = id;
@@ -846,6 +908,7 @@ public class GameEndpoint {
             this.hasBomb = false;
             this.facingX = 1;
             this.facingY = 0;
+            this.deadUntilMillis = 0;
         }
 
         private void updateFacing(int axisX, int axisY) {
@@ -853,6 +916,22 @@ public class GameEndpoint {
                 this.facingX = axisX;
                 this.facingY = axisY;
             }
+        }
+
+        private boolean isDead() {
+            return deadUntilMillis > System.currentTimeMillis();
+        }
+
+        private void kill() {
+            this.deadUntilMillis = System.currentTimeMillis() + PLAYER_DEAD_DURATION_MS;
+        }
+
+        private boolean reviveIfNeeded() {
+            if (deadUntilMillis == 0 || System.currentTimeMillis() < deadUntilMillis) {
+                return false;
+            }
+            deadUntilMillis = 0;
+            return true;
         }
     }
 
@@ -972,12 +1051,14 @@ public class GameEndpoint {
     private static class RoomTickResult {
         private final boolean bombsChanged;
         private final boolean projectilesChanged;
+        private final boolean gemsChanged;
         private final boolean playersChanged;
         private final boolean remainingSecondsChanged;
 
-        private RoomTickResult(boolean bombsChanged, boolean projectilesChanged, boolean playersChanged, boolean remainingSecondsChanged) {
+        private RoomTickResult(boolean bombsChanged, boolean projectilesChanged, boolean gemsChanged, boolean playersChanged, boolean remainingSecondsChanged) {
             this.bombsChanged = bombsChanged;
             this.projectilesChanged = projectilesChanged;
+            this.gemsChanged = gemsChanged;
             this.playersChanged = playersChanged;
             this.remainingSecondsChanged = remainingSecondsChanged;
         }
@@ -986,10 +1067,12 @@ public class GameEndpoint {
     private static class ProjectileUpdateResult {
         private final boolean projectilesChanged;
         private final boolean playersChanged;
+        private final boolean gemsChanged;
 
-        private ProjectileUpdateResult(boolean projectilesChanged, boolean playersChanged) {
+        private ProjectileUpdateResult(boolean projectilesChanged, boolean playersChanged, boolean gemsChanged) {
             this.projectilesChanged = projectilesChanged;
             this.playersChanged = playersChanged;
+            this.gemsChanged = gemsChanged;
         }
     }
 }
