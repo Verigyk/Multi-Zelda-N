@@ -31,6 +31,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/matches")
 public class FacadeMatches {
 
+    private static final HashMap<String, Integer> MAP_MAX_PLAYERS = new HashMap<String, Integer>();
+    static {
+        MAP_MAX_PLAYERS.put("classic", 4);
+        MAP_MAX_PLAYERS.put("duel", 2);
+    }
+
     private HashMap<String, Match> activeMatches = new HashMap<String,Match>(); 
     private HashMap<String, HashSet<String>> activeMatchesPlayersIds = new HashMap<String,HashSet<String>>(); 
     private HashMap<String, HashSet<String>> matchParticipantsIds = new HashMap<String,HashSet<String>>();
@@ -44,7 +50,8 @@ public class FacadeMatches {
     @PostMapping("/create")
     public Match createMatch(Authentication authentication, @RequestBody(required = false) matchShape.CreateMatchRequest request) {
         String id = UUID.randomUUID().toString().substring(0, 8);
-        int maxPlayers = clampMaxPlayers(request == null ? null : request.maxPlayers());
+        String mapName = normalizeMapName(request == null ? null : request.mapName());
+        int maxPlayers = clampMaxPlayers(request == null ? null : request.maxPlayers(), mapName);
         String title = (request == null || request.title() == null || request.title().isBlank())
             ? "Partie " + id
             : request.title().trim();
@@ -56,7 +63,8 @@ public class FacadeMatches {
                                 Instant.now().toString(),
                                 null,
                                 null,
-                                null
+                                null,
+                                mapName
         );
         HashSet<String> pseudos = new HashSet<String>();
         match.setPlayersCount(pseudos.size());
@@ -65,6 +73,29 @@ public class FacadeMatches {
         activeMatchesPlayersIds.put(id, pseudos);
         matchParticipantsIds.put(id, new HashSet<String>());
         return match;
+    }
+
+    @GetMapping("/maps")
+    public Collection<matchShape.MapOptionResponse> listMaps() {
+        return MAP_MAX_PLAYERS.entrySet()
+            .stream()
+            .map(entry -> new matchShape.MapOptionResponse(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<matchShape.LobbyMatchResponse> getMatch(Authentication authentication, @PathVariable String id) {
+        Match activeMatch = activeMatches.get(id);
+        if (activeMatch != null) {
+            return ResponseEntity.ok(toLobbyMatchResponse(activeMatch, authentication.getName()));
+        }
+
+        Optional<Match> archivedMatch = historyMatches.findById(id);
+        if (archivedMatch.isPresent()) {
+            return ResponseEntity.ok(toHistoryMatchResponse(archivedMatch.get()));
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PostMapping("/{id}/join")
@@ -209,11 +240,19 @@ public class FacadeMatches {
         throw new RuntimeException("Erreur : Compte non existant");
     }
 
-    private int clampMaxPlayers(Integer value) {
-        if (value == null) {
-            return 4;
+    private String normalizeMapName(String mapName) {
+        if (mapName == null || !MAP_MAX_PLAYERS.containsKey(mapName)) {
+            return "classic";
         }
-        return Math.max(2, Math.min(16, value));
+        return mapName;
+    }
+
+    private int clampMaxPlayers(Integer value, String mapName) {
+        int mapMaxPlayers = MAP_MAX_PLAYERS.getOrDefault(mapName, 4);
+        if (value == null) {
+            return mapMaxPlayers;
+        }
+        return Math.max(2, Math.min(mapMaxPlayers, value));
     }
 
     private matchShape.LobbyMatchResponse toLobbyMatchResponse(Match match, String pseudo) {
@@ -233,6 +272,7 @@ public class FacadeMatches {
             match.getState(),
             match.getPlayersCount(),
             match.getMaxPlayers(),
+            match.getMapName() == null ? "classic" : match.getMapName(),
             match.getCreatedAt(),
             match.getStartedAt(),
             match.getEndedAt(),

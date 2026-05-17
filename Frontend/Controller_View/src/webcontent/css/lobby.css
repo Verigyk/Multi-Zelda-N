@@ -70,7 +70,7 @@ h2 { font-size: 1.1rem; }
     margin-bottom: 12px;
 }
 
-input, button {
+input, select, button {
     border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--panel-2);
@@ -80,6 +80,7 @@ input, button {
 }
 
 input { flex: 1; }
+select { min-width: 190px; }
 input[type="number"] { max-width: 120px; }
 
 button {

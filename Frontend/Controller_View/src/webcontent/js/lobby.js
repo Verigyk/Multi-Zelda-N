@@ -7,6 +7,10 @@ const state = {
 };
 
 const API_BASE = `${window.location.origin}/facade`;
+const MAPS = [
+    { name: "classic", label: "Classic", maxPlayers: 4 },
+    { name: "duel", label: "Duel", maxPlayers: 2 }
+];
 let ws = null;
 let reconnectTimer = null;
 let lobbyChat = null;
@@ -165,6 +169,7 @@ function renderList(containerId, matches, withActions) {
                 <span class="${matchClass(match.state)}">${match.state}</span>
             </div>
             <div class="small">ID: ${match.id}</div>
+            <div class="small">Map: ${match.mapName || "classic"}</div>
             <div class="small">Joueurs: ${match.playersCount}/${match.maxPlayers}</div>
             <div class="small">Créée: ${formatDate(match.createdAt)}</div>
             ${match.startedAt ? `<div class="small">Start: ${formatDate(match.startedAt)}</div>` : ""}
@@ -218,9 +223,32 @@ function createMatch() {
     }
 
     const title = document.getElementById("titleInput").value;
+    const mapName = document.getElementById("mapSelect").value;
     const maxPlayers = Number(document.getElementById("maxPlayersInput").value);
-    sendAction({ action: "create", title, maxPlayers });
+    sendAction({ action: "create", title, maxPlayers, mapName });
     document.getElementById("titleInput").value = "";
+}
+
+function initMapSelector() {
+    const mapSelect = document.getElementById("mapSelect");
+    const maxPlayersInput = document.getElementById("maxPlayersInput");
+
+    mapSelect.innerHTML = MAPS.map(map => `
+        <option value="${map.name}" data-max-players="${map.maxPlayers}">
+            ${map.label} (${map.maxPlayers} joueurs max)
+        </option>
+    `).join("");
+
+    const updateMaxPlayersLimit = () => {
+        const selected = MAPS.find(map => map.name === mapSelect.value) || MAPS[0];
+        maxPlayersInput.max = String(selected.maxPlayers);
+        if (Number(maxPlayersInput.value) > selected.maxPlayers) {
+            maxPlayersInput.value = String(selected.maxPlayers);
+        }
+    };
+
+    mapSelect.addEventListener("change", updateMaxPlayersLimit);
+    updateMaxPlayersLimit();
 }
 
 function handleAction(action, id) {
@@ -315,6 +343,7 @@ function initLobby() {
         statusId: null
     });
 
+    initMapSelector();
     document.getElementById("createBtn").addEventListener("click", createMatch);
     document.getElementById("loginBtn").addEventListener("click", goToLogin);
     document.getElementById("logoutBtn").addEventListener("click", logout);

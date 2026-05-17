@@ -109,6 +109,9 @@ public class MatchesEndpoint {
         if (payload.has("maxPlayers")) {
             request.put("maxPlayers", payload.optInt("maxPlayers", 4));
         }
+        if (payload.has("mapName")) {
+            request.put("mapName", payload.optString("mapName", "classic"));
+        }
         doPost("/create", request, session);
     }
 

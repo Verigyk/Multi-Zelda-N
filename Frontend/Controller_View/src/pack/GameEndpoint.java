@@ -2,6 +2,7 @@ package pack;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -61,7 +62,7 @@ public class GameEndpoint {
     private static final String[] PLAYER_COLORS = new String[]{
         "#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#06b6d4", "#f97316", "#ec4899"
     };
-    private static final GameMap DEFAULT_MAP = new GameMap(
+    private static final GameMap CLASSIC_MAP = new GameMap(
         "classic",
         1200,
         760,
@@ -77,6 +78,26 @@ public class GameEndpoint {
             new int[]{350, 50}
         }
     );
+    private static final GameMap DUEL_MAP = new GameMap(
+        "duel",
+        900,
+        600,
+        5,
+        new int[][]{
+            new int[]{450, 300, 90, 180},
+            new int[]{220, 300, 70, 70},
+            new int[]{680, 300, 70, 70}
+        },
+        new int[][]{
+            new int[]{60, 275},
+            new int[]{790, 275}
+        }
+    );
+    private static final Map<String, GameMap> GAME_MAPS = new HashMap<>();
+    static {
+        GAME_MAPS.put(CLASSIC_MAP.name, CLASSIC_MAP);
+        GAME_MAPS.put(DUEL_MAP.name, DUEL_MAP);
+    }
 
     private static final Map<String, GameRoom> rooms = new ConcurrentHashMap<>();
     private static final Map<Session, PlayerRef> sessionToPlayer = new ConcurrentHashMap<>();
@@ -96,7 +117,7 @@ public class GameEndpoint {
 
     @OnOpen
     public void onOpen(Session session, @PathParam("matchId") String matchId) throws IOException {
-        GameRoom room = rooms.computeIfAbsent(matchId, id -> new GameRoom());
+        GameRoom room = rooms.computeIfAbsent(matchId, id -> new GameRoom(loadMapForMatch(id, session)));
         String pseudo = getCurrentPseudo(session);
         PlayerState player = room.addPlayer(pseudo);
         PlayerRef ref = new PlayerRef(matchId, player.id);
@@ -291,6 +312,16 @@ public class GameEndpoint {
                 .get();
         String body = extractBody("/api/me", response);
         return new JSONObject(body).optString("pseudo", "Joueur");
+    }
+
+    private GameMap loadMapForMatch(String matchId, Session session) {
+        Response response = REST_CLIENT.target(MATCHES_API_BASE + "/" + matchId)
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Cookie", getCookieHeader(session))
+                .get();
+        String body = extractBody("/matches/" + matchId, response);
+        String mapName = new JSONObject(body).optString("mapName", CLASSIC_MAP.name);
+        return GAME_MAPS.getOrDefault(mapName, CLASSIC_MAP);
     }
 
     private String extractBody(String path, Response response) {
@@ -599,7 +630,7 @@ public class GameEndpoint {
     }
 
     private static class GameRoom {
-        private final GameMap map = DEFAULT_MAP;
+        private final GameMap map;
         private final Map<Session, String> sessions = new ConcurrentHashMap<>();
         private final Map<String, PlayerState> players = new ConcurrentHashMap<>();
         private final Map<String, PlayerState> knownPlayers = new ConcurrentHashMap<>();
@@ -618,7 +649,8 @@ public class GameEndpoint {
         private ScheduledFuture<?> timer;
         private int lastBroadcastRemainingSeconds = MATCH_DURATION_SECONDS;
 
-        private GameRoom() {
+        private GameRoom(GameMap map) {
+            this.map = map;
             initBombSpawns();
             spawnMissingGems();
         }
@@ -626,7 +658,9 @@ public class GameEndpoint {
         private void initBombSpawns() {
             for (int i = 0; i < BOMB_SPAWN_POINTS.length; i++) {
                 int[] point = BOMB_SPAWN_POINTS[i];
-                bombSpawns.put("b" + i, new BombSpawnState("b" + i, point[0], point[1]));
+                if (point[0] >= 0 && point[1] >= 0 && point[0] + BOMB_SIZE <= map.width && point[1] + BOMB_SIZE <= map.height) {
+                    bombSpawns.put("b" + i, new BombSpawnState("b" + i, point[0], point[1]));
+                }
             }
         }
 
