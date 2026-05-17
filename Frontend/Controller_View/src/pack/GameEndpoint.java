@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -30,9 +34,13 @@ import javax.ws.rs.core.Response;
 @ServerEndpoint(value = "/GameEndpoint/{matchId}/ws", configurator = GameEndpoint.Config.class)
 public class GameEndpoint {
     private static final String COOKIE_HEADER_KEY = "cookieHeader";
+    private static final String FACADE_API_BASE = System.getProperty("facade.api.url",
+            "http://localhost:8080/facade");
     private static final String MATCHES_API_BASE = System.getProperty("facade.matches.url",
             "http://localhost:8080/facade/matches");
     private static final Client REST_CLIENT = new ResteasyClientBuilder().build();
+    private static final ScheduledExecutorService TIMER_EXECUTOR = Executors.newSingleThreadScheduledExecutor();
+    private static final int MATCH_DURATION_SECONDS = 180;
     private static final int PLAYFIELD_WIDTH = 1200;
     private static final int PLAYFIELD_HEIGHT = 760;
     private static final int PLAYER_SIZE = 50;
@@ -67,7 +75,8 @@ public class GameEndpoint {
     @OnOpen
     public void onOpen(Session session, @PathParam("matchId") String matchId) throws IOException {
         GameRoom room = rooms.computeIfAbsent(matchId, id -> new GameRoom());
-        PlayerState player = room.addPlayer();
+        String pseudo = getCurrentPseudo(session);
+        PlayerState player = room.addPlayer(pseudo);
         PlayerRef ref = new PlayerRef(matchId, player.id);
 
         sessionToPlayer.put(session, ref);
@@ -95,7 +104,8 @@ public class GameEndpoint {
             player.ready = true;
             if ("WAITING".equals(room.state) && room.allPlayersReady()) {
                 startMatch(ref.matchId, session);
-                room.state = "RUNNING";
+                room.start(getCookieHeader(session));
+                scheduleTimer(ref.matchId, room);
             }
             room.broadcast(roomStateMessage(room));
             return;
@@ -123,6 +133,10 @@ public class GameEndpoint {
         if (room == null) return;
 
         room.sessions.remove(session);
+        if (room.sessions.isEmpty() && !"FINISHED".equals(room.state)) {
+            room.finishCookieHeader = getCookieHeader(session);
+            finishRoom(ref.matchId, room);
+        }
         room.players.remove(ref.playerId);
         try {
             leaveMatch(ref.matchId, session);
@@ -134,6 +148,7 @@ public class GameEndpoint {
         MatchesEndpoint.broadcastSnapshotsToOpenSessions();
 
         if (room.sessions.isEmpty()) {
+            room.cancelTimer();
             rooms.remove(ref.matchId);
         }
     }
@@ -149,27 +164,80 @@ public class GameEndpoint {
         MatchesEndpoint.broadcastSnapshotsToOpenSessions();
     }
 
+    private void scheduleTimer(String matchId, GameRoom room) {
+        room.cancelTimer();
+        room.timer = TIMER_EXECUTOR.scheduleAtFixedRate(() -> {
+            try {
+                if (!"RUNNING".equals(room.state)) {
+                    return;
+                }
+                if (room.remainingSeconds() <= 0) {
+                    finishRoom(matchId, room);
+                    return;
+                }
+                room.broadcast(roomStateMessage(room));
+            } catch (Exception exception) {
+                System.err.println("Game timer error for match " + matchId + ": " + exception.getMessage());
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    private void finishRoom(String matchId, GameRoom room) {
+        if ("FINISHED".equals(room.state)) {
+            return;
+        }
+
+        room.finish();
+        try {
+            finishMatch(matchId, room.winnerName, room.finishCookieHeader);
+        } catch (Exception exception) {
+            System.err.println("Unable to finish match " + matchId + ": " + exception.getMessage());
+        }
+        try {
+            room.broadcast(roomStateMessage(room));
+        } catch (IOException exception) {
+            System.err.println("Unable to broadcast match end for " + matchId + ": " + exception.getMessage());
+        }
+        MatchesEndpoint.broadcastSnapshotsToOpenSessions();
+    }
+
+    private void finishMatch(String matchId, String winner, String cookieHeader) {
+        JSONObject body = new JSONObject();
+        body.put("winner", winner == null || winner.isBlank() ? "Inconnu" : winner);
+        doPost("/" + matchId + "/finish", body, cookieHeader);
+    }
+
     private void leaveMatch(String matchId, Session session) {
         Response response = REST_CLIENT.target(MATCHES_API_BASE + "/" + matchId + "/leave")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Cookie", getCookieHeader(session))
                 .post(Entity.entity("", MediaType.APPLICATION_JSON));
-        try {
-            if (response.getStatus() == 404) {
-                return;
-            }
-            extractBody("/" + matchId + "/leave", response);
-        } finally {
+        if (response.getStatus() == 404) {
             response.close();
+            return;
         }
+        extractBody("/" + matchId + "/leave", response);
     }
 
     private void doPost(String path, Session session) {
+        doPost(path, new JSONObject(), getCookieHeader(session));
+    }
+
+    private void doPost(String path, JSONObject body, String cookieHeader) {
         Response response = REST_CLIENT.target(MATCHES_API_BASE + path)
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Cookie", getCookieHeader(session))
-                .post(Entity.entity("", MediaType.APPLICATION_JSON));
+                .header("Cookie", cookieHeader)
+                .post(Entity.entity(body == null ? "" : body.toString(), MediaType.APPLICATION_JSON));
         extractBody(path, response);
+    }
+
+    private String getCurrentPseudo(Session session) {
+        Response response = REST_CLIENT.target(FACADE_API_BASE + "/api/me")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Cookie", getCookieHeader(session))
+                .get();
+        String body = extractBody("/api/me", response);
+        return new JSONObject(body).optString("pseudo", "Joueur");
     }
 
     private String extractBody(String path, Response response) {
@@ -277,6 +345,7 @@ public class GameEndpoint {
             playerData.put("x", player.x);
             playerData.put("y", player.y);
             playerData.put("color", player.color);
+            playerData.put("pseudo", player.pseudo);
             playerData.put("gems", player.gems);
             data.put(player.id, playerData);
         }
@@ -305,6 +374,9 @@ public class GameEndpoint {
         json.put("state", room.state);
         json.put("ready", ready);
         json.put("playersCount", room.players.size());
+        json.put("remainingSeconds", room.remainingSeconds());
+        json.put("durationSeconds", MATCH_DURATION_SECONDS);
+        json.put("winnerName", room.winnerName == null ? "" : room.winnerName);
         return json;
     }
 
@@ -336,20 +408,27 @@ public class GameEndpoint {
     private static class GameRoom {
         private final Map<Session, String> sessions = new ConcurrentHashMap<>();
         private final Map<String, PlayerState> players = new ConcurrentHashMap<>();
+        private final Map<String, PlayerState> knownPlayers = new ConcurrentHashMap<>();
         private final Map<String, GemState> gems = new ConcurrentHashMap<>();
         private final AtomicInteger nextPlayerId = new AtomicInteger(0);
         private final AtomicInteger nextGemId = new AtomicInteger(0);
         private final Random random = new Random();
         private String state = "WAITING";
+        private long startedAtMillis = 0;
+        private long endsAtMillis = 0;
+        private String winnerName = "";
+        private String finishCookieHeader = "";
+        private ScheduledFuture<?> timer;
 
         private GameRoom() {
             spawnMissingGems();
         }
 
-        private PlayerState addPlayer() {
+        private PlayerState addPlayer(String pseudo) {
             int id = nextPlayerId.getAndIncrement();
-            PlayerState player = new PlayerState("p" + id, 50 + id * 100, 50, PLAYER_COLORS[id % PLAYER_COLORS.length]);
+            PlayerState player = new PlayerState("p" + id, pseudo, 50 + id * 100, 50, PLAYER_COLORS[id % PLAYER_COLORS.length]);
             players.put(player.id, player);
+            knownPlayers.put(player.id, player);
             removeGemsCollidingWith(player);
             spawnMissingGems();
             return player;
@@ -427,6 +506,47 @@ public class GameEndpoint {
             return !players.isEmpty() && players.values().stream().allMatch(player -> player.ready);
         }
 
+        private void start(String cookieHeader) {
+            this.state = "RUNNING";
+            this.startedAtMillis = System.currentTimeMillis();
+            this.endsAtMillis = this.startedAtMillis + MATCH_DURATION_SECONDS * 1000L;
+            this.finishCookieHeader = cookieHeader;
+        }
+
+        private int remainingSeconds() {
+            if ("WAITING".equals(state)) {
+                return MATCH_DURATION_SECONDS;
+            }
+            if (endsAtMillis == 0) {
+                return 0;
+            }
+            long remainingMillis = endsAtMillis - System.currentTimeMillis();
+            return (int) Math.max(0, Math.ceil(remainingMillis / 1000.0));
+        }
+
+        private void finish() {
+            this.state = "FINISHED";
+            this.winnerName = resolveWinnerName();
+            this.cancelTimer();
+        }
+
+        private String resolveWinnerName() {
+            PlayerState winner = null;
+            for (PlayerState player : knownPlayers.values()) {
+                if (winner == null || player.gems > winner.gems) {
+                    winner = player;
+                }
+            }
+            return winner == null ? "Inconnu" : winner.pseudo;
+        }
+
+        private void cancelTimer() {
+            if (timer != null) {
+                timer.cancel(false);
+                timer = null;
+            }
+        }
+
         private void broadcast(JSONObject json) throws IOException {
             for (Session session : sessions.keySet()) {
                 if (session.isOpen()) {
@@ -450,14 +570,16 @@ public class GameEndpoint {
         private static final int WALK_STEP = 5;
 
         private final String id;
+        private final String pseudo;
         private final String color;
         private int x;
         private int y;
         private int gems;
         private boolean ready;
 
-        private PlayerState(String id, int x, int y, String color) {
+        private PlayerState(String id, String pseudo, int x, int y, String color) {
             this.id = id;
+            this.pseudo = pseudo;
             this.color = color;
             this.x = x;
             this.y = y;

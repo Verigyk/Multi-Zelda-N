@@ -10,6 +10,8 @@ const game = new Vue({
     ready: false,
     roomState: "WAITING",
     playerGems: 0,
+    remainingSeconds: 180,
+    winnerName: "",
     quitting: false
   },
 
@@ -58,10 +60,28 @@ const game = new Vue({
       const matchState = document.getElementById("matchState");
       const readyState = document.getElementById("readyState");
       const readyBtn = document.getElementById("readyBtn");
+      const timer = document.getElementById("timer");
+      const winner = document.getElementById("winner");
 
-      matchState.textContent = this.roomState === "RUNNING" ? "Game started" : "Waiting for players";
-      readyState.textContent = this.ready ? "Ready" : "Not ready";
-      readyBtn.disabled = this.ready || this.roomState === "RUNNING";
+      this.remainingSeconds = data["remainingSeconds"] !== undefined ? data["remainingSeconds"] : this.remainingSeconds;
+      this.winnerName = data["winnerName"] || "";
+
+      if (this.roomState === "FINISHED") {
+        matchState.textContent = "Game finished";
+        readyState.textContent = "Finished";
+      } else {
+        matchState.textContent = this.roomState === "RUNNING" ? "Game started" : "Waiting for players";
+        readyState.textContent = this.ready ? "Ready" : "Not ready";
+      }
+      timer.textContent = this.formatTime(this.remainingSeconds);
+      winner.textContent = this.winnerName ? `Winner: ${this.winnerName}` : "";
+      readyBtn.disabled = this.ready || this.roomState === "RUNNING" || this.roomState === "FINISHED";
+    },
+
+    formatTime: function(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${String(seconds).padStart(2, "0")}`;
     },
 
     updatePositions: function(data) {
@@ -132,20 +152,15 @@ const game = new Vue({
     },
 
     leaveMatch: async function() {
-      if (!this.matchId) return;
-      try {
-        await fetch(`${this.apiBase}/matches/${encodeURIComponent(this.matchId)}/leave`, {
-          method: "POST",
-          credentials: "include"
-        });
-      } catch (error) {
-        console.error("Unable to leave match", error);
+      if (this.connection) {
+        this.connection.close();
       }
     },
 
     leaveMatchOnUnload: function() {
-      if (!this.matchId || !navigator.sendBeacon) return;
-      navigator.sendBeacon(`${this.apiBase}/matches/${encodeURIComponent(this.matchId)}/leave`);
+      if (this.connection) {
+        this.connection.close();
+      }
     }
   },
 
@@ -188,9 +203,6 @@ const game = new Vue({
     document.getElementById("quitBtn").addEventListener("click", async () => {
       game.quitting = true;
       await game.leaveMatch();
-      if (game.connection) {
-        game.connection.close();
-      }
       window.location.href = "lobby.html";
     });
 

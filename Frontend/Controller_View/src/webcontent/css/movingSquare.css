@@ -30,6 +30,12 @@ body {
     margin: 0 10px;
 }
 
+#winner {
+    color: #facc15;
+    font-weight: 700;
+    margin-left: 14px;
+}
+
 .hud-actions {
     display: flex;
     gap: 8px;
