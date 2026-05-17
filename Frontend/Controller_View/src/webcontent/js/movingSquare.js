@@ -12,17 +12,31 @@ const game = new Vue({
     playerGems: 0,
     remainingSeconds: 180,
     winnerName: "",
+    pressedKeys: {},
+    movementLoop: null,
     quitting: false
   },
 
   methods : {
-    keyMove(key, isPressed) {
+    setKeyState(key, isPressed) {
+      const normalizedKey = key.toLowerCase();
+      if (!["z", "s", "q", "d"].includes(normalizedKey)) return;
+      this.pressedKeys[normalizedKey] = isPressed;
+    },
+
+    sendMovementInput() {
       if (this.roomState !== "RUNNING") return;
-      if (key === "z") this.sendMessage("HAUT");
-      if (key === "s") this.sendMessage("BAS");
-      if (key === "q") this.sendMessage("GAUCHE");
-      if (key === "d") this.sendMessage("DROITE");
-      if (key === "p") this.sendMessage("ATTAQUE");
+      if (document.hidden) return;
+
+      const dx = (this.pressedKeys.d ? 1 : 0) - (this.pressedKeys.q ? 1 : 0);
+      const dy = (this.pressedKeys.s ? 1 : 0) - (this.pressedKeys.z ? 1 : 0);
+      if (dx === 0 && dy === 0) return;
+
+      this.sendMessage(JSON.stringify({
+        type: "Move",
+        dx,
+        dy
+      }));
     },
 
     sendMessage: function(message) {
@@ -53,6 +67,9 @@ const game = new Vue({
 
     updateRoomState: function(data) {
       this.roomState = data["state"];
+      if (this.roomState !== "RUNNING") {
+        this.pressedKeys = {};
+      }
       if (this.playerId && data["ready"] && data["ready"][this.playerId] !== undefined) {
         this.ready = data["ready"][this.playerId];
       }
@@ -161,6 +178,13 @@ const game = new Vue({
       if (this.connection) {
         this.connection.close();
       }
+    },
+
+    stopMovementLoop: function() {
+      if (this.movementLoop) {
+        clearInterval(this.movementLoop);
+        this.movementLoop = null;
+      }
     }
   },
 
@@ -187,6 +211,7 @@ const game = new Vue({
     }
 
     this.connection.onclose = function() {
+      game.stopMovementLoop();
       if (!game.quitting) {
         console.log("Game websocket closed");
       }
@@ -206,8 +231,22 @@ const game = new Vue({
       window.location.href = "lobby.html";
     });
 
+    this.movementLoop = setInterval(() => {
+      game.sendMovementInput();
+    }, 33);
+
     window.addEventListener("keydown", (e) => {
-      game.keyMove(e.key, 1);
+      game.setKeyState(e.key, true);
+      if (["z", "s", "q", "d"].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+    });
+
+    window.addEventListener("keyup", (e) => {
+      game.setKeyState(e.key, false);
+      if (["z", "s", "q", "d"].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
     });
 
     window.addEventListener("beforeunload", () => {

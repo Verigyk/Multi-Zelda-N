@@ -260,35 +260,52 @@ public class GameEndpoint {
         return cookieHeader.toString();
     }
 
-    private MoveResult move(GameRoom room, PlayerState player, String direction) {
-        int nextX = player.x;
-        int nextY = player.y;
-
-        switch (direction) {
-            case "HAUT":
-                nextY -= PlayerState.WALK_STEP;
-                break;
-            case "BAS":
-                nextY += PlayerState.WALK_STEP;
-                break;
-            case "GAUCHE":
-                nextX -= PlayerState.WALK_STEP;
-                break;
-            case "DROITE":
-                nextX += PlayerState.WALK_STEP;
-                break;
-            default:
-                return MoveResult.noMove();
+    private MoveResult move(GameRoom room, PlayerState player, String message) {
+        MoveVector vector = parseMoveVector(message);
+        if (vector.isIdle()) {
+            return MoveResult.noMove();
         }
 
+        int nextX = player.x + vector.dx;
+        int nextY = player.y + vector.dy;
+
         if (!canMove(room, player, nextX, nextY)) {
-            return MoveResult.noMove();
+            boolean movedX = vector.dx != 0 && canMove(room, player, player.x + vector.dx, player.y);
+            boolean movedY = vector.dy != 0 && canMove(room, player, player.x, player.y + vector.dy);
+            if (!movedX && !movedY) {
+                return MoveResult.noMove();
+            }
+            nextX = movedX ? player.x + vector.dx : player.x;
+            nextY = movedY ? player.y + vector.dy : player.y;
         }
 
         player.x = nextX;
         player.y = nextY;
         boolean gemPickedUp = collectGemIfNeeded(room, player);
         return new MoveResult(true, gemPickedUp);
+    }
+
+    private MoveVector parseMoveVector(String message) {
+        if (message != null && message.trim().startsWith("{")) {
+            JSONObject payload = new JSONObject(message);
+            if (!"Move".equals(payload.optString("type", ""))) {
+                return MoveVector.idle();
+            }
+            return MoveVector.fromAxes(payload.optInt("dx", 0), payload.optInt("dy", 0));
+        }
+
+        switch (message) {
+            case "HAUT":
+                return MoveVector.fromAxes(0, -1);
+            case "BAS":
+                return MoveVector.fromAxes(0, 1);
+            case "GAUCHE":
+                return MoveVector.fromAxes(-1, 0);
+            case "DROITE":
+                return MoveVector.fromAxes(1, 0);
+            default:
+                return MoveVector.idle();
+        }
     }
 
     private boolean canMove(GameRoom room, PlayerState movedPlayer, int nextX, int nextY) {
@@ -567,8 +584,6 @@ public class GameEndpoint {
     }
 
     private static class PlayerState {
-        private static final int WALK_STEP = 5;
-
         private final String id;
         private final String pseudo;
         private final String color;
@@ -585,6 +600,41 @@ public class GameEndpoint {
             this.y = y;
             this.gems = 0;
             this.ready = false;
+        }
+    }
+
+    private static class MoveVector {
+        private static final int WALK_STEP = 6;
+
+        private final int dx;
+        private final int dy;
+
+        private MoveVector(int dx, int dy) {
+            this.dx = dx;
+            this.dy = dy;
+        }
+
+        private static MoveVector fromAxes(int axisX, int axisY) {
+            int normalizedX = Integer.compare(axisX, 0);
+            int normalizedY = Integer.compare(axisY, 0);
+            if (normalizedX == 0 && normalizedY == 0) {
+                return idle();
+            }
+
+            if (normalizedX != 0 && normalizedY != 0) {
+                int diagonalStep = (int) Math.round(WALK_STEP / Math.sqrt(2));
+                return new MoveVector(normalizedX * diagonalStep, normalizedY * diagonalStep);
+            }
+
+            return new MoveVector(normalizedX * WALK_STEP, normalizedY * WALK_STEP);
+        }
+
+        private static MoveVector idle() {
+            return new MoveVector(0, 0);
+        }
+
+        private boolean isIdle() {
+            return dx == 0 && dy == 0;
         }
     }
 
