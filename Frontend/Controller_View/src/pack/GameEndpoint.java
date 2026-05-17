@@ -366,7 +366,8 @@ public class GameEndpoint {
         }
 
         for (PlayerState player : room.players.values()) {
-            if (!player.id.equals(movedPlayer.id) && !player.isDead() && collidesPlayerWithRect(nextX, nextY, player.x + PLAYER_HALF_SIZE, player.y + PLAYER_HALF_SIZE, PLAYER_HALF_SIZE, PLAYER_HALF_SIZE)) {
+            if (!player.id.equals(movedPlayer.id) && !player.isDead() && collidesPlayerWithRect(nextX, nextY, player.x + PLAYER_HALF_SIZE, player.y + PLAYER_HALF_SIZE, PLAYER_HALF_SIZE, PLAYER_HALF_SIZE)
+                    && !isEscapingPlayerOverlap(movedPlayer, player, nextX, nextY)) {
                 return false;
             }
         }
@@ -378,6 +379,20 @@ public class GameEndpoint {
         }
 
         return true;
+    }
+
+    private boolean isEscapingPlayerOverlap(PlayerState movedPlayer, PlayerState otherPlayer, int nextX, int nextY) {
+        if (!collidesPlayerWithRect(movedPlayer.x, movedPlayer.y, otherPlayer.x + PLAYER_HALF_SIZE, otherPlayer.y + PLAYER_HALF_SIZE, PLAYER_HALF_SIZE, PLAYER_HALF_SIZE)) {
+            return false;
+        }
+
+        return overlapArea(nextX, nextY, otherPlayer) < overlapArea(movedPlayer.x, movedPlayer.y, otherPlayer);
+    }
+
+    private int overlapArea(int playerLeft, int playerTop, PlayerState otherPlayer) {
+        int overlapX = Math.max(0, Math.min(playerLeft + PLAYER_SIZE, otherPlayer.x + PLAYER_SIZE) - Math.max(playerLeft, otherPlayer.x));
+        int overlapY = Math.max(0, Math.min(playerTop + PLAYER_SIZE, otherPlayer.y + PLAYER_SIZE) - Math.max(playerTop, otherPlayer.y));
+        return overlapX * overlapY;
     }
 
     private boolean collectGemIfNeeded(GameRoom room, PlayerState player) {
