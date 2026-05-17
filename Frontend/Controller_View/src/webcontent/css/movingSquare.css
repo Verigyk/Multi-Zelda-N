@@ -112,24 +112,16 @@ body {
     z-index: 2;
 }
 
-.obstacle-a {
-    left: 100px;
-    top: 350px;
-    width: 400px;
-    height: 300px;
-}
-
-.obstacle-b {
-    left: 700px;
-    top: 100px;
-    width: 400px;
-    height: 600px;
-}
-
 #gemLayer {
     position: absolute;
     inset: 0;
     z-index: 1;
+}
+
+#obstacleLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
 }
 
 #bombSpawnLayer {

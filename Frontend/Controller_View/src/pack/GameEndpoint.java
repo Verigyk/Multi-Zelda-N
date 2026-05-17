@@ -41,13 +41,10 @@ public class GameEndpoint {
     private static final Client REST_CLIENT = new ResteasyClientBuilder().build();
     private static final ScheduledExecutorService TIMER_EXECUTOR = Executors.newSingleThreadScheduledExecutor();
     private static final int MATCH_DURATION_SECONDS = 180;
-    private static final int PLAYFIELD_WIDTH = 1200;
-    private static final int PLAYFIELD_HEIGHT = 760;
     private static final int PLAYER_SIZE = 50;
     private static final int PLAYER_HALF_SIZE = 25;
     private static final int GEM_SIZE = 22;
     private static final int GEM_HALF_SIZE = 11;
-    private static final int GEM_COUNT = 8;
     private static final int BOMB_SIZE = 22;
     private static final int BOMB_HALF_SIZE = 11;
     private static final int BOMB_SPAWN_COOLDOWN_MS = 7000;
@@ -64,10 +61,22 @@ public class GameEndpoint {
     private static final String[] PLAYER_COLORS = new String[]{
         "#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#06b6d4", "#f97316", "#ec4899"
     };
-    private static final int[][] OBSTACLES = new int[][]{
-        new int[]{300, 500, 200, 150},
-        new int[]{900, 400, 200, 300}
-    };
+    private static final GameMap DEFAULT_MAP = new GameMap(
+        "classic",
+        1200,
+        760,
+        8,
+        new int[][]{
+            new int[]{300, 500, 200, 150},
+            new int[]{900, 400, 200, 300}
+        },
+        new int[][]{
+            new int[]{50, 50},
+            new int[]{150, 50},
+            new int[]{250, 50},
+            new int[]{350, 50}
+        }
+    );
 
     private static final Map<String, GameRoom> rooms = new ConcurrentHashMap<>();
     private static final Map<Session, PlayerRef> sessionToPlayer = new ConcurrentHashMap<>();
@@ -95,6 +104,7 @@ public class GameEndpoint {
         sessionToPlayer.put(session, ref);
         room.sessions.put(session, player.id);
 
+        session.getBasicRemote().sendText(mapMessage(room.map).toString());
         session.getBasicRemote().sendText(playersMessage(room.players).toString());
         session.getBasicRemote().sendText(youAreMessage(player.id).toString());
         session.getBasicRemote().sendText(gemsMessage(room.gems).toString());
@@ -361,7 +371,7 @@ public class GameEndpoint {
         if (movedPlayer.isDead()) {
             return false;
         }
-        if (nextX < 0 || nextY < 0 || nextX + PLAYER_SIZE > PLAYFIELD_WIDTH || nextY + PLAYER_SIZE > PLAYFIELD_HEIGHT) {
+        if (nextX < 0 || nextY < 0 || nextX + PLAYER_SIZE > room.map.width || nextY + PLAYER_SIZE > room.map.height) {
             return false;
         }
 
@@ -372,7 +382,7 @@ public class GameEndpoint {
             }
         }
 
-        for (int[] obstacle : OBSTACLES) {
+        for (int[] obstacle : room.map.obstacles) {
             if (collidesPlayerWithRect(nextX, nextY, obstacle[0], obstacle[1], obstacle[2], obstacle[3])) {
                 return false;
             }
@@ -483,6 +493,30 @@ public class GameEndpoint {
         return json;
     }
 
+    private JSONObject mapMessage(GameMap map) {
+        JSONArray obstacles = new JSONArray();
+        for (int[] obstacle : map.obstacles) {
+            JSONObject obstacleData = new JSONObject();
+            obstacleData.put("x", obstacle[0] - obstacle[2]);
+            obstacleData.put("y", obstacle[1] - obstacle[3]);
+            obstacleData.put("width", obstacle[2] * 2);
+            obstacleData.put("height", obstacle[3] * 2);
+            obstacles.put(obstacleData);
+        }
+
+        JSONObject data = new JSONObject();
+        data.put("name", map.name);
+        data.put("width", map.width);
+        data.put("height", map.height);
+        data.put("gemCount", map.gemCount);
+        data.put("obstacles", obstacles);
+
+        JSONObject json = new JSONObject();
+        json.put("type", "Map");
+        json.put("data", data);
+        return json;
+    }
+
     private JSONObject youAreMessage(String playerId) {
         JSONObject json = new JSONObject();
         json.put("type", "YouAre");
@@ -565,6 +599,7 @@ public class GameEndpoint {
     }
 
     private static class GameRoom {
+        private final GameMap map = DEFAULT_MAP;
         private final Map<Session, String> sessions = new ConcurrentHashMap<>();
         private final Map<String, PlayerState> players = new ConcurrentHashMap<>();
         private final Map<String, PlayerState> knownPlayers = new ConcurrentHashMap<>();
@@ -597,7 +632,8 @@ public class GameEndpoint {
 
         private PlayerState addPlayer(String pseudo) {
             int id = nextPlayerId.getAndIncrement();
-            PlayerState player = new PlayerState("p" + id, pseudo, 50 + id * 100, 50, PLAYER_COLORS[id % PLAYER_COLORS.length]);
+            int[] startPosition = map.startPosition(id);
+            PlayerState player = new PlayerState("p" + id, pseudo, startPosition[0], startPosition[1], PLAYER_COLORS[id % PLAYER_COLORS.length]);
             players.put(player.id, player);
             knownPlayers.put(player.id, player);
             removeGemsCollidingWith(player);
@@ -621,7 +657,7 @@ public class GameEndpoint {
         }
 
         private void spawnMissingGems() {
-            while (gems.size() < GEM_COUNT) {
+            while (gems.size() < map.gemCount) {
                 GemState gem = randomGem();
                 if (gem != null) {
                     gems.put(gem.id, gem);
@@ -633,8 +669,8 @@ public class GameEndpoint {
 
         private GemState randomGem() {
             for (int attempt = 0; attempt < 100; attempt++) {
-                int x = random.nextInt(PLAYFIELD_WIDTH - GEM_SIZE);
-                int y = random.nextInt(PLAYFIELD_HEIGHT - GEM_SIZE);
+                int x = random.nextInt(map.width - GEM_SIZE);
+                int y = random.nextInt(map.height - GEM_SIZE);
                 if (isValidGemPosition(x, y)) {
                     return new GemState("g" + nextGemId.getAndIncrement(), x, y);
                 }
@@ -646,7 +682,7 @@ public class GameEndpoint {
             int centerX = x + GEM_HALF_SIZE;
             int centerY = y + GEM_HALF_SIZE;
 
-            for (int[] obstacle : OBSTACLES) {
+            for (int[] obstacle : map.obstacles) {
                 boolean inObstacle = Math.abs(obstacle[0] - centerX) < obstacle[2] + GEM_HALF_SIZE
                     && Math.abs(obstacle[1] - centerY) < obstacle[3] + GEM_HALF_SIZE;
                 if (inObstacle) {
@@ -838,8 +874,8 @@ public class GameEndpoint {
                 int distance = 48 + random.nextInt(44);
                 int x = centerX - GEM_HALF_SIZE + (int) Math.round(Math.cos(angle) * distance);
                 int y = centerY - GEM_HALF_SIZE + (int) Math.round(Math.sin(angle) * distance);
-                x = Math.max(0, Math.min(PLAYFIELD_WIDTH - GEM_SIZE, x));
-                y = Math.max(0, Math.min(PLAYFIELD_HEIGHT - GEM_SIZE, y));
+                x = Math.max(0, Math.min(map.width - GEM_SIZE, x));
+                y = Math.max(0, Math.min(map.height - GEM_SIZE, y));
                 if (isValidGemPosition(x, y)) {
                     return new GemState("g" + nextGemId.getAndIncrement(), x, y);
                 }
@@ -851,12 +887,12 @@ public class GameEndpoint {
         private boolean projectileOutOfBounds(ProjectileState projectile) {
             return projectile.x < 0
                 || projectile.y < 0
-                || projectile.x + BOMB_SIZE > PLAYFIELD_WIDTH
-                || projectile.y + BOMB_SIZE > PLAYFIELD_HEIGHT;
+                || projectile.x + BOMB_SIZE > map.width
+                || projectile.y + BOMB_SIZE > map.height;
         }
 
         private boolean projectileHitsObstacle(ProjectileState projectile) {
-            for (int[] obstacle : OBSTACLES) {
+            for (int[] obstacle : map.obstacles) {
                 boolean hit = Math.abs(obstacle[0] - (projectile.x + BOMB_HALF_SIZE)) < obstacle[2] + BOMB_HALF_SIZE
                     && Math.abs(obstacle[1] - (projectile.y + BOMB_HALF_SIZE)) < obstacle[3] + BOMB_HALF_SIZE;
                 if (hit) {
@@ -886,6 +922,28 @@ public class GameEndpoint {
                     session.getBasicRemote().sendText(json.toString());
                 }
             }
+        }
+    }
+
+    private static class GameMap {
+        private final String name;
+        private final int width;
+        private final int height;
+        private final int gemCount;
+        private final int[][] obstacles;
+        private final int[][] startPositions;
+
+        private GameMap(String name, int width, int height, int gemCount, int[][] obstacles, int[][] startPositions) {
+            this.name = name;
+            this.width = width;
+            this.height = height;
+            this.gemCount = gemCount;
+            this.obstacles = obstacles;
+            this.startPositions = startPositions;
+        }
+
+        private int[] startPosition(int playerIndex) {
+            return startPositions[playerIndex % startPositions.length];
         }
     }
 

@@ -54,6 +54,9 @@ const game = new Vue({
 
     updateState: function(data) {
       switch (data["type"]) {
+        case "Map":
+          game.updateMap(data["data"]);
+          break;
         case "Players":
           game.updatePositions(data["data"]);
           break;
@@ -112,6 +115,25 @@ const game = new Vue({
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
       return `${minutes}:${String(seconds).padStart(2, "0")}`;
+    },
+
+    updateMap: function(data) {
+      const gameElement = document.getElementById("game");
+      const obstacleLayer = document.getElementById("obstacleLayer");
+
+      gameElement.style.width = data.width + "px";
+      gameElement.style.height = data.height + "px";
+      obstacleLayer.innerHTML = "";
+
+      for (const obstacle of data.obstacles || []) {
+        const element = document.createElement("div");
+        element.setAttribute("class", "obstacle");
+        element.style.left = obstacle.x + "px";
+        element.style.top = obstacle.y + "px";
+        element.style.width = obstacle.width + "px";
+        element.style.height = obstacle.height + "px";
+        obstacleLayer.appendChild(element);
+      }
     },
 
     updatePositions: function(data) {
