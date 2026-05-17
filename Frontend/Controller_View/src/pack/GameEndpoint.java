@@ -48,6 +48,17 @@ public class GameEndpoint {
     private static final int GEM_SIZE = 22;
     private static final int GEM_HALF_SIZE = 11;
     private static final int GEM_COUNT = 8;
+    private static final int BOMB_SIZE = 22;
+    private static final int BOMB_HALF_SIZE = 11;
+    private static final int BOMB_SPAWN_COOLDOWN_MS = 7000;
+    private static final int PROJECTILE_SPEED = 14;
+    private static final int PROJECTILE_MAX_AGE_MS = 1800;
+    private static final int[][] BOMB_SPAWN_POINTS = new int[][]{
+        new int[]{150, 140},
+        new int[]{570, 120},
+        new int[]{610, 690},
+        new int[]{1120, 620}
+    };
     private static final String[] PLAYER_COLORS = new String[]{
         "#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#a855f7", "#06b6d4", "#f97316", "#ec4899"
     };
@@ -85,6 +96,8 @@ public class GameEndpoint {
         session.getBasicRemote().sendText(playersMessage(room.players).toString());
         session.getBasicRemote().sendText(youAreMessage(player.id).toString());
         session.getBasicRemote().sendText(gemsMessage(room.gems).toString());
+        session.getBasicRemote().sendText(bombsMessage(room.bombSpawns).toString());
+        session.getBasicRemote().sendText(projectilesMessage(room.projectiles).toString());
         room.broadcast(playersMessage(Map.of(player.id, player)));
         room.broadcast(roomStateMessage(room));
     }
@@ -115,11 +128,22 @@ public class GameEndpoint {
             return;
         }
 
+        if (isThrowBombMessage(message)) {
+            if (throwBomb(room, player)) {
+                room.broadcast(playersMessage(Map.of(player.id, player)));
+                room.broadcast(projectilesMessage(room.projectiles));
+            }
+            return;
+        }
+
         MoveResult result = move(room, player, message);
         if (result.moved) {
             room.broadcast(playersMessage(Map.of(player.id, player)));
             if (result.gemPickedUp) {
                 room.broadcast(gemsMessage(room.gems));
+            }
+            if (result.bombPickedUp) {
+                room.broadcast(bombsMessage(room.bombSpawns));
             }
         }
     }
@@ -175,11 +199,23 @@ public class GameEndpoint {
                     finishRoom(matchId, room);
                     return;
                 }
-                room.broadcast(roomStateMessage(room));
+                RoomTickResult tick = room.tick();
+                if (tick.bombsChanged) {
+                    room.broadcast(bombsMessage(room.bombSpawns));
+                }
+                if (tick.projectilesChanged) {
+                    room.broadcast(projectilesMessage(room.projectiles));
+                }
+                if (tick.playersChanged) {
+                    room.broadcast(playersMessage(room.players));
+                }
+                if (tick.remainingSecondsChanged) {
+                    room.broadcast(roomStateMessage(room));
+                }
             } catch (Exception exception) {
                 System.err.println("Game timer error for match " + matchId + ": " + exception.getMessage());
             }
-        }, 0, 1, TimeUnit.SECONDS);
+        }, 0, 33, TimeUnit.MILLISECONDS);
     }
 
     private void finishRoom(String matchId, GameRoom room) {
@@ -188,6 +224,7 @@ public class GameEndpoint {
         }
 
         room.finish();
+        room.projectiles.clear();
         try {
             finishMatch(matchId, room.winnerName, room.finishCookieHeader);
         } catch (Exception exception) {
@@ -195,6 +232,7 @@ public class GameEndpoint {
         }
         try {
             room.broadcast(roomStateMessage(room));
+            room.broadcast(projectilesMessage(room.projectiles));
         } catch (IOException exception) {
             System.err.println("Unable to broadcast match end for " + matchId + ": " + exception.getMessage());
         }
@@ -281,8 +319,10 @@ public class GameEndpoint {
 
         player.x = nextX;
         player.y = nextY;
+        player.updateFacing(vector.axisX, vector.axisY);
         boolean gemPickedUp = collectGemIfNeeded(room, player);
-        return new MoveResult(true, gemPickedUp);
+        boolean bombPickedUp = collectBombIfNeeded(room, player);
+        return new MoveResult(true, gemPickedUp, bombPickedUp);
     }
 
     private MoveVector parseMoveVector(String message) {
@@ -347,6 +387,43 @@ public class GameEndpoint {
         return true;
     }
 
+    private boolean collectBombIfNeeded(GameRoom room, PlayerState player) {
+        if (player.hasBomb) {
+            return false;
+        }
+
+        for (BombSpawnState spawn : room.bombSpawns.values()) {
+            if (spawn.available && collidesPlayerWithRect(player.x, player.y, spawn.x + BOMB_HALF_SIZE, spawn.y + BOMB_HALF_SIZE, BOMB_HALF_SIZE, BOMB_HALF_SIZE)) {
+                spawn.pickup();
+                player.hasBomb = true;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isThrowBombMessage(String message) {
+        if ("ATTAQUE".equals(message)) {
+            return true;
+        }
+        if (message != null && message.trim().startsWith("{")) {
+            JSONObject payload = new JSONObject(message);
+            return "ThrowBomb".equals(payload.optString("type", ""));
+        }
+        return false;
+    }
+
+    private boolean throwBomb(GameRoom room, PlayerState player) {
+        if (!player.hasBomb) {
+            return false;
+        }
+
+        player.hasBomb = false;
+        room.addProjectile(player);
+        return true;
+    }
+
     private boolean collidesPlayerWithRect(int playerLeft, int playerTop, int rectCenterX, int rectCenterY, int rectHalfWidth, int rectHalfHeight) {
         int playerCenterX = playerLeft + PLAYER_HALF_SIZE;
         int playerCenterY = playerTop + PLAYER_HALF_SIZE;
@@ -364,6 +441,7 @@ public class GameEndpoint {
             playerData.put("color", player.color);
             playerData.put("pseudo", player.pseudo);
             playerData.put("gems", player.gems);
+            playerData.put("hasBomb", player.hasBomb);
             data.put(player.id, playerData);
         }
 
@@ -422,13 +500,48 @@ public class GameEndpoint {
         return json;
     }
 
+    private JSONObject bombsMessage(Map<String, BombSpawnState> bombSpawns) {
+        JSONObject data = new JSONObject();
+        for (BombSpawnState spawn : bombSpawns.values()) {
+            JSONObject spawnData = new JSONObject();
+            spawnData.put("x", spawn.x);
+            spawnData.put("y", spawn.y);
+            spawnData.put("available", spawn.available);
+            spawnData.put("cooldownMs", spawn.cooldownMs());
+            data.put(spawn.id, spawnData);
+        }
+
+        JSONObject json = new JSONObject();
+        json.put("type", "BombSpawns");
+        json.put("data", data);
+        return json;
+    }
+
+    private JSONObject projectilesMessage(Map<String, ProjectileState> projectiles) {
+        JSONObject data = new JSONObject();
+        for (ProjectileState projectile : projectiles.values()) {
+            JSONObject projectileData = new JSONObject();
+            projectileData.put("x", projectile.x);
+            projectileData.put("y", projectile.y);
+            data.put(projectile.id, projectileData);
+        }
+
+        JSONObject json = new JSONObject();
+        json.put("type", "Projectiles");
+        json.put("data", data);
+        return json;
+    }
+
     private static class GameRoom {
         private final Map<Session, String> sessions = new ConcurrentHashMap<>();
         private final Map<String, PlayerState> players = new ConcurrentHashMap<>();
         private final Map<String, PlayerState> knownPlayers = new ConcurrentHashMap<>();
         private final Map<String, GemState> gems = new ConcurrentHashMap<>();
+        private final Map<String, BombSpawnState> bombSpawns = new ConcurrentHashMap<>();
+        private final Map<String, ProjectileState> projectiles = new ConcurrentHashMap<>();
         private final AtomicInteger nextPlayerId = new AtomicInteger(0);
         private final AtomicInteger nextGemId = new AtomicInteger(0);
+        private final AtomicInteger nextProjectileId = new AtomicInteger(0);
         private final Random random = new Random();
         private String state = "WAITING";
         private long startedAtMillis = 0;
@@ -436,9 +549,18 @@ public class GameEndpoint {
         private String winnerName = "";
         private String finishCookieHeader = "";
         private ScheduledFuture<?> timer;
+        private int lastBroadcastRemainingSeconds = MATCH_DURATION_SECONDS;
 
         private GameRoom() {
+            initBombSpawns();
             spawnMissingGems();
+        }
+
+        private void initBombSpawns() {
+            for (int i = 0; i < BOMB_SPAWN_POINTS.length; i++) {
+                int[] point = BOMB_SPAWN_POINTS[i];
+                bombSpawns.put("b" + i, new BombSpawnState("b" + i, point[0], point[1]));
+            }
         }
 
         private PlayerState addPlayer(String pseudo) {
@@ -528,6 +650,7 @@ public class GameEndpoint {
             this.startedAtMillis = System.currentTimeMillis();
             this.endsAtMillis = this.startedAtMillis + MATCH_DURATION_SECONDS * 1000L;
             this.finishCookieHeader = cookieHeader;
+            this.lastBroadcastRemainingSeconds = MATCH_DURATION_SECONDS;
         }
 
         private int remainingSeconds() {
@@ -564,6 +687,123 @@ public class GameEndpoint {
             }
         }
 
+        private void addProjectile(PlayerState player) {
+            int directionX = player.facingX;
+            int directionY = player.facingY;
+            int speedX = directionX * PROJECTILE_SPEED;
+            int speedY = directionY * PROJECTILE_SPEED;
+            if (directionX != 0 && directionY != 0) {
+                int diagonalSpeed = (int) Math.round(PROJECTILE_SPEED / Math.sqrt(2));
+                speedX = directionX * diagonalSpeed;
+                speedY = directionY * diagonalSpeed;
+            }
+
+            int projectileX = player.x + PLAYER_HALF_SIZE - BOMB_HALF_SIZE + directionX * PLAYER_HALF_SIZE;
+            int projectileY = player.y + PLAYER_HALF_SIZE - BOMB_HALF_SIZE + directionY * PLAYER_HALF_SIZE;
+            ProjectileState projectile = new ProjectileState(
+                "bp" + nextProjectileId.getAndIncrement(),
+                player.id,
+                projectileX,
+                projectileY,
+                speedX,
+                speedY
+            );
+            projectiles.put(projectile.id, projectile);
+        }
+
+        private RoomTickResult tick() {
+            boolean bombsChanged = refreshBombSpawns();
+            ProjectileUpdateResult projectileResult = updateProjectiles();
+            int remaining = remainingSeconds();
+            boolean remainingSecondsChanged = remaining != lastBroadcastRemainingSeconds;
+            lastBroadcastRemainingSeconds = remaining;
+            return new RoomTickResult(
+                bombsChanged,
+                projectileResult.projectilesChanged,
+                projectileResult.playersChanged,
+                remainingSecondsChanged
+            );
+        }
+
+        private boolean refreshBombSpawns() {
+            boolean changed = false;
+            long now = System.currentTimeMillis();
+            for (BombSpawnState spawn : bombSpawns.values()) {
+                if (!spawn.available && now >= spawn.availableAtMillis) {
+                    spawn.available = true;
+                    changed = true;
+                }
+            }
+            return changed;
+        }
+
+        private ProjectileUpdateResult updateProjectiles() {
+            if (projectiles.isEmpty()) {
+                return new ProjectileUpdateResult(false, false);
+            }
+
+            boolean playersChanged = false;
+            ArrayList<String> removedProjectileIds = new ArrayList<>();
+            long now = System.currentTimeMillis();
+
+            for (ProjectileState projectile : projectiles.values()) {
+                projectile.x += projectile.vx;
+                projectile.y += projectile.vy;
+
+                if (now - projectile.createdAtMillis > PROJECTILE_MAX_AGE_MS || projectileOutOfBounds(projectile) || projectileHitsObstacle(projectile)) {
+                    removedProjectileIds.add(projectile.id);
+                    continue;
+                }
+
+                PlayerState hitPlayer = hitPlayer(projectile);
+                if (hitPlayer != null) {
+                    if (hitPlayer.gems > 0) {
+                        hitPlayer.gems--;
+                        playersChanged = true;
+                    }
+                    removedProjectileIds.add(projectile.id);
+                }
+            }
+
+            for (String projectileId : removedProjectileIds) {
+                projectiles.remove(projectileId);
+            }
+
+            return new ProjectileUpdateResult(true, playersChanged);
+        }
+
+        private boolean projectileOutOfBounds(ProjectileState projectile) {
+            return projectile.x < 0
+                || projectile.y < 0
+                || projectile.x + BOMB_SIZE > PLAYFIELD_WIDTH
+                || projectile.y + BOMB_SIZE > PLAYFIELD_HEIGHT;
+        }
+
+        private boolean projectileHitsObstacle(ProjectileState projectile) {
+            for (int[] obstacle : OBSTACLES) {
+                boolean hit = Math.abs(obstacle[0] - (projectile.x + BOMB_HALF_SIZE)) < obstacle[2] + BOMB_HALF_SIZE
+                    && Math.abs(obstacle[1] - (projectile.y + BOMB_HALF_SIZE)) < obstacle[3] + BOMB_HALF_SIZE;
+                if (hit) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private PlayerState hitPlayer(ProjectileState projectile) {
+            for (PlayerState player : players.values()) {
+                if (projectile.ownerId.equals(player.id)) {
+                    continue;
+                }
+                boolean hit = Math.abs(player.x + PLAYER_HALF_SIZE - (projectile.x + BOMB_HALF_SIZE)) < PLAYER_HALF_SIZE + BOMB_HALF_SIZE
+                    && Math.abs(player.y + PLAYER_HALF_SIZE - (projectile.y + BOMB_HALF_SIZE)) < PLAYER_HALF_SIZE + BOMB_HALF_SIZE;
+                if (hit) {
+                    return player;
+                }
+            }
+            return null;
+        }
+
         private void broadcast(JSONObject json) throws IOException {
             for (Session session : sessions.keySet()) {
                 if (session.isOpen()) {
@@ -591,6 +831,9 @@ public class GameEndpoint {
         private int y;
         private int gems;
         private boolean ready;
+        private boolean hasBomb;
+        private int facingX;
+        private int facingY;
 
         private PlayerState(String id, String pseudo, int x, int y, String color) {
             this.id = id;
@@ -600,6 +843,16 @@ public class GameEndpoint {
             this.y = y;
             this.gems = 0;
             this.ready = false;
+            this.hasBomb = false;
+            this.facingX = 1;
+            this.facingY = 0;
+        }
+
+        private void updateFacing(int axisX, int axisY) {
+            if (axisX != 0 || axisY != 0) {
+                this.facingX = axisX;
+                this.facingY = axisY;
+            }
         }
     }
 
@@ -608,10 +861,14 @@ public class GameEndpoint {
 
         private final int dx;
         private final int dy;
+        private final int axisX;
+        private final int axisY;
 
-        private MoveVector(int dx, int dy) {
+        private MoveVector(int dx, int dy, int axisX, int axisY) {
             this.dx = dx;
             this.dy = dy;
+            this.axisX = axisX;
+            this.axisY = axisY;
         }
 
         private static MoveVector fromAxes(int axisX, int axisY) {
@@ -623,18 +880,64 @@ public class GameEndpoint {
 
             if (normalizedX != 0 && normalizedY != 0) {
                 int diagonalStep = (int) Math.round(WALK_STEP / Math.sqrt(2));
-                return new MoveVector(normalizedX * diagonalStep, normalizedY * diagonalStep);
+                return new MoveVector(normalizedX * diagonalStep, normalizedY * diagonalStep, normalizedX, normalizedY);
             }
 
-            return new MoveVector(normalizedX * WALK_STEP, normalizedY * WALK_STEP);
+            return new MoveVector(normalizedX * WALK_STEP, normalizedY * WALK_STEP, normalizedX, normalizedY);
         }
 
         private static MoveVector idle() {
-            return new MoveVector(0, 0);
+            return new MoveVector(0, 0, 0, 0);
         }
 
         private boolean isIdle() {
             return dx == 0 && dy == 0;
+        }
+    }
+
+    private static class BombSpawnState {
+        private final String id;
+        private final int x;
+        private final int y;
+        private boolean available = true;
+        private long availableAtMillis = 0;
+
+        private BombSpawnState(String id, int x, int y) {
+            this.id = id;
+            this.x = x;
+            this.y = y;
+        }
+
+        private void pickup() {
+            this.available = false;
+            this.availableAtMillis = System.currentTimeMillis() + BOMB_SPAWN_COOLDOWN_MS;
+        }
+
+        private int cooldownMs() {
+            if (available) {
+                return 0;
+            }
+            return (int) Math.max(0, availableAtMillis - System.currentTimeMillis());
+        }
+    }
+
+    private static class ProjectileState {
+        private final String id;
+        private final String ownerId;
+        private int x;
+        private int y;
+        private final int vx;
+        private final int vy;
+        private final long createdAtMillis;
+
+        private ProjectileState(String id, String ownerId, int x, int y, int vx, int vy) {
+            this.id = id;
+            this.ownerId = ownerId;
+            this.x = x;
+            this.y = y;
+            this.vx = vx;
+            this.vy = vy;
+            this.createdAtMillis = System.currentTimeMillis();
         }
     }
 
@@ -653,14 +956,40 @@ public class GameEndpoint {
     private static class MoveResult {
         private final boolean moved;
         private final boolean gemPickedUp;
+        private final boolean bombPickedUp;
 
-        private MoveResult(boolean moved, boolean gemPickedUp) {
+        private MoveResult(boolean moved, boolean gemPickedUp, boolean bombPickedUp) {
             this.moved = moved;
             this.gemPickedUp = gemPickedUp;
+            this.bombPickedUp = bombPickedUp;
         }
 
         private static MoveResult noMove() {
-            return new MoveResult(false, false);
+            return new MoveResult(false, false, false);
+        }
+    }
+
+    private static class RoomTickResult {
+        private final boolean bombsChanged;
+        private final boolean projectilesChanged;
+        private final boolean playersChanged;
+        private final boolean remainingSecondsChanged;
+
+        private RoomTickResult(boolean bombsChanged, boolean projectilesChanged, boolean playersChanged, boolean remainingSecondsChanged) {
+            this.bombsChanged = bombsChanged;
+            this.projectilesChanged = projectilesChanged;
+            this.playersChanged = playersChanged;
+            this.remainingSecondsChanged = remainingSecondsChanged;
+        }
+    }
+
+    private static class ProjectileUpdateResult {
+        private final boolean projectilesChanged;
+        private final boolean playersChanged;
+
+        private ProjectileUpdateResult(boolean projectilesChanged, boolean playersChanged) {
+            this.projectilesChanged = projectilesChanged;
+            this.playersChanged = playersChanged;
         }
     }
 }

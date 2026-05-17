@@ -39,6 +39,13 @@ const game = new Vue({
       }));
     },
 
+    sendThrowBomb() {
+      if (this.roomState !== "RUNNING") return;
+      this.sendMessage(JSON.stringify({
+        type: "ThrowBomb"
+      }));
+    },
+
     sendMessage: function(message) {
       if (this.connection && this.connection.readyState === WebSocket.OPEN) {
         this.connection.send(message);
@@ -61,6 +68,12 @@ const game = new Vue({
           break;
         case "Gems":
           game.updateGems(data["data"]);
+          break;
+        case "BombSpawns":
+          game.updateBombSpawns(data["data"]);
+          break;
+        case "Projectiles":
+          game.updateProjectiles(data["data"]);
           break;
       }
     },
@@ -109,6 +122,8 @@ const game = new Vue({
         const left = Array.isArray(player) ? player[0] : player.x;
         const color = Array.isArray(player) ? "red" : player.color;
         const gems = Array.isArray(player) ? 0 : player.gems;
+        const hasBomb = !Array.isArray(player) && player.hasBomb;
+        let playerElement = element;
 
         if (element === null) {
           const child = document.createElement('div')
@@ -121,6 +136,7 @@ const game = new Vue({
           child.style.backgroundColor = color;
 
           this.$el.appendChild(child)
+          playerElement = child;
         } else {
           element.style.top = top + "px";
           element.style.left = left + "px";
@@ -131,6 +147,20 @@ const game = new Vue({
           this.playerGems = gems;
           document.getElementById("gemCount").textContent = String(this.playerGems);
         }
+
+        this.updateCarriedBomb(playerElement, hasBomb);
+      }
+    },
+
+    updateCarriedBomb: function(playerElement, hasBomb) {
+      if (!playerElement) return;
+      let bomb = playerElement.querySelector(".carriedBomb");
+      if (hasBomb && bomb === null) {
+        bomb = document.createElement("div");
+        bomb.setAttribute("class", "carriedBomb");
+        playerElement.appendChild(bomb);
+      } else if (!hasBomb && bomb !== null) {
+        bomb.remove();
       }
     },
 
@@ -152,6 +182,54 @@ const game = new Vue({
       }
 
       gemLayer.querySelectorAll(".gem").forEach((element) => {
+        if (!existing.has(element.id)) {
+          element.remove();
+        }
+      });
+    },
+
+    updateBombSpawns: function(data) {
+      const layer = document.getElementById("bombSpawnLayer");
+      const existing = new Set();
+
+      for (const [key, spawn] of Object.entries(data)) {
+        existing.add(`bomb-spawn-${key}`);
+        let element = layer.querySelector(`#bomb-spawn-${key}`);
+        if (element === null) {
+          element = document.createElement("div");
+          element.setAttribute("id", `bomb-spawn-${key}`);
+          layer.appendChild(element);
+        }
+        element.setAttribute("class", spawn.available ? "bombSpawn available" : "bombSpawn cooling");
+        element.style.left = spawn.x + "px";
+        element.style.top = spawn.y + "px";
+      }
+
+      layer.querySelectorAll(".bombSpawn").forEach((element) => {
+        if (!existing.has(element.id)) {
+          element.remove();
+        }
+      });
+    },
+
+    updateProjectiles: function(data) {
+      const layer = document.getElementById("projectileLayer");
+      const existing = new Set();
+
+      for (const [key, projectile] of Object.entries(data)) {
+        existing.add(`projectile-${key}`);
+        let element = layer.querySelector(`#projectile-${key}`);
+        if (element === null) {
+          element = document.createElement("div");
+          element.setAttribute("id", `projectile-${key}`);
+          element.setAttribute("class", "bombProjectile");
+          layer.appendChild(element);
+        }
+        element.style.left = projectile.x + "px";
+        element.style.top = projectile.y + "px";
+      }
+
+      layer.querySelectorAll(".bombProjectile").forEach((element) => {
         if (!existing.has(element.id)) {
           element.remove();
         }
@@ -238,6 +316,10 @@ const game = new Vue({
     window.addEventListener("keydown", (e) => {
       game.setKeyState(e.key, true);
       if (["z", "s", "q", "d"].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+      if ((e.key === " " || e.key.toLowerCase() === "p") && !e.repeat) {
+        game.sendThrowBomb();
         e.preventDefault();
       }
     });
