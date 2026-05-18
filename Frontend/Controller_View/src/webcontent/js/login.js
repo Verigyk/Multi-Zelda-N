@@ -1,5 +1,5 @@
 
-const BASE_URL = "http://localhost:8080/facade/auth";
+const BASE_URL = `${window.location.origin}/facade/auth`;
 
 function showTab(tab) {
     document.getElementById("form-login").style.display   = tab === "login"    ? "block" : "none";
@@ -11,7 +11,7 @@ function showTab(tab) {
 
 function showMessage(text, type) {
     const el = document.getElementById("message");
-    el.textContent = text;
+    el.textContent = text || (type === "error" ? "Erreur inconnue." : "OK");
     el.className = type;  // "success" ou "error"
     el.style.display = "block";
 }
@@ -33,6 +33,7 @@ async function login() {
         const response = await fetch(BASE_URL + "/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ "username" : pseudo,
                                    "password" : password })
         });
@@ -41,12 +42,12 @@ async function login() {
 
         if (response.ok) {
             showMessage("Bienvenue, " + pseudo + " ! Redirection...", "success");
-            // Redirige vers le jeu dans 1.5 secondes
+            // Redirige vers le lobby dans 1.5 secondes
             setTimeout(() => {
-                window.location.href = "game.html?pseudo=" + encodeURIComponent(pseudo);
+                window.location.href = "lobby.html?pseudo=" + encodeURIComponent(pseudo);
             }, 1500);
         } else {
-            showMessage(text, "error");
+            showMessage(text || ("Erreur HTTP " + response.status), "error");
         }
     } catch (e) {
         showMessage("Impossible de contacter le serveur.", "error");
@@ -71,6 +72,7 @@ async function register() {
         const response = await fetch(BASE_URL + "/addAccount", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ "pseudo" : pseudo,
                                    "password" : password })
         });
@@ -81,7 +83,7 @@ async function register() {
             showMessage("Compte créé ! Tu peux maintenant te connecter.", "success");
             setTimeout(() => showTab_name("login"), 1500);
         } else {
-            showMessage(text, "error");
+            showMessage(text || ("Erreur HTTP " + response.status), "error");
         }
     } catch (e) {
         showMessage("Impossible de contacter le serveur.", "error");

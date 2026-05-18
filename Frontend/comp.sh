@@ -1,3 +1,6 @@
+mkdir -p $1/bin
+javac -cp "$1/lib/*" -d $1/bin $(find $1/src -name "*.java")
+
 mkdir -p tmp/WEB-INF/classes
 cp -r $1/bin/pack tmp/WEB-INF/classes/.
 cp -r $1/lib tmp/WEB-INF/.

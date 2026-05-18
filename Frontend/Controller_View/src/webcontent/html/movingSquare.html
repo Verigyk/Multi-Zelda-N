@@ -9,7 +9,27 @@
 </head>
 
 <body>
+  <div id="gameHud">
+    <div>
+      <strong id="matchState">Waiting for players</strong>
+      <span id="readyState">Not ready</span>
+      <span class="hud-separator">|</span>
+      <span>Time: <strong id="timer">3:00</strong></span>
+      <span class="hud-separator">|</span>
+      <span>Gems: <strong id="gemCount">0</strong></span>
+      <span id="winner"></span>
+    </div>
+    <div class="hud-actions">
+      <button id="readyBtn">Ready</button>
+      <button id="quitBtn">Quit</button>
+    </div>
+  </div>
+
   <div id="game">
+    <div id="obstacleLayer"></div>
+    <div id="bombSpawnLayer"></div>
+    <div id="gemLayer"></div>
+    <div id="projectileLayer"></div>
   </div>
   
   <script src="../js/movingSquare.js"></script>

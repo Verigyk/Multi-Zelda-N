@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zelda Multi - Lobby</title>
+
+    <link rel="stylesheet" href="../css/lobby.css" />
+    <script src="../js/chat-widget.js"></script>
+    <script src="../js/lobby.js"></script>
+
+</head>
+<body>
+    <div class="layout">
+        <section class="panel">
+            <div class="topbar">
+                <div>
+                    <h1>Lobby</h1>
+                    <p class="small">Choisis une partie active ou crée une nouvelle partie.</p>
+                </div>
+                <div class="auth-box" id="authBox">
+                    <span id="authLabel">Not connected</span>
+                    <button class="btn-auth" id="loginBtn">Login</button>
+                    <button class="btn-auth btn-logout" id="logoutBtn" style="display:none">Logout</button>
+                </div>
+            </div>
+
+            <div class="create-row">
+                <input id="titleInput" placeholder="Nom de la partie (optionnel)" />
+                <select id="mapSelect"></select>
+                <input id="maxPlayersInput" type="number" min="2" max="16" value="4" />
+                <button class="btn-primary" id="createBtn" disabled>Créer</button>
+            </div>
+
+            <h2>Parties Actives</h2>
+            <div id="activeList" class="list"></div>
+
+            <h2 style="margin-top:16px;">Historique</h2>
+            <div id="historyList" class="list"></div>
+        </section>
+
+        <section class="panel">
+            <h2>Chat</h2>
+            <div id="chatLog" class="chat-log"></div>
+            <div class="chat-row">
+                <input id="chatInput" placeholder="Message..." disabled />
+                <button id="chatSendBtn" disabled>Send</button>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
