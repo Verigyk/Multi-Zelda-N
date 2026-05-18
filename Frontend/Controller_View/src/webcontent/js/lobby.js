@@ -9,7 +9,8 @@ const state = {
 const API_BASE = `${window.location.origin}/facade`;
 const MAPS = [
     { name: "classic", label: "Classic", maxPlayers: 4 },
-    { name: "duel", label: "Duel", maxPlayers: 2 }
+    { name: "duel", label: "Duel", maxPlayers: 2 },
+    { name: "crossroads", label: "Crossroads", maxPlayers: 4 }
 ];
 let ws = null;
 let reconnectTimer = null;

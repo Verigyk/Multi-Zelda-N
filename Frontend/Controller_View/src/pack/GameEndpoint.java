@@ -93,10 +93,34 @@ public class GameEndpoint {
             new int[]{790, 275}
         }
     );
+    private static final GameMap CROSSROADS_MAP = new GameMap(
+        "crossroads",
+        1200,
+        760,
+        12,
+        new int[][]{
+            new int[]{600, 380, 90, 90},
+            new int[]{600, 165, 55, 115},
+            new int[]{600, 595, 55, 115},
+            new int[]{265, 380, 115, 55},
+            new int[]{935, 380, 115, 55},
+            new int[]{285, 185, 70, 70},
+            new int[]{915, 185, 70, 70},
+            new int[]{285, 575, 70, 70},
+            new int[]{915, 575, 70, 70}
+        },
+        new int[][]{
+            new int[]{60, 60},
+            new int[]{1090, 60},
+            new int[]{60, 650},
+            new int[]{1090, 650}
+        }
+    );
     private static final Map<String, GameMap> GAME_MAPS = new HashMap<>();
     static {
         GAME_MAPS.put(CLASSIC_MAP.name, CLASSIC_MAP);
         GAME_MAPS.put(DUEL_MAP.name, DUEL_MAP);
+        GAME_MAPS.put(CROSSROADS_MAP.name, CROSSROADS_MAP);
     }
 
     private static final Map<String, GameRoom> rooms = new ConcurrentHashMap<>();

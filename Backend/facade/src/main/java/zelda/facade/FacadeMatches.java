@@ -35,6 +35,7 @@ public class FacadeMatches {
     static {
         MAP_MAX_PLAYERS.put("classic", 4);
         MAP_MAX_PLAYERS.put("duel", 2);
+        MAP_MAX_PLAYERS.put("crossroads", 4);
     }
 
     private HashMap<String, Match> activeMatches = new HashMap<String,Match>(); 
