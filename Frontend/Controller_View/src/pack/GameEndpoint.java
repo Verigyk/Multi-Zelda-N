@@ -79,53 +79,42 @@ public class GameEndpoint {
             new int[]{350, 50}
         }
     );
-    private static final GameMap DUEL_MAP = new GameMap(
-        "duel",
-        900,
-        600,
-        5,
-        new int[][]{
-            new int[]{450, 300, 90, 180},
-            new int[]{220, 300, 70, 70},
-            new int[]{680, 300, 70, 70}
-        },
-        new int[][]{
-            new int[]{60, 275},
-            new int[]{790, 275}
-        }
-    );
-    private static final GameMap CROSSROADS_MAP = new GameMap(
-        "crossroads",
-        1200,
-        760,
-        12,
-        new int[][]{
-            new int[]{600, 380, 90, 90},
-            new int[]{600, 165, 55, 115},
-            new int[]{600, 595, 55, 115},
-            new int[]{265, 380, 115, 55},
-            new int[]{935, 380, 115, 55},
-            new int[]{285, 185, 70, 70},
-            new int[]{915, 185, 70, 70},
-            new int[]{285, 575, 70, 70},
-            new int[]{915, 575, 70, 70}
-        },
-        new int[][]{
-            new int[]{60, 60},
-            new int[]{1090, 60},
-            new int[]{60, 650},
-            new int[]{1090, 650}
-        }
-    );
-    private static final Map<String, GameMap> GAME_MAPS = new HashMap<>();
-    static {
-        GAME_MAPS.put(CLASSIC_MAP.name, CLASSIC_MAP);
-        GAME_MAPS.put(DUEL_MAP.name, DUEL_MAP);
-        GAME_MAPS.put(CROSSROADS_MAP.name, CROSSROADS_MAP);
-    }
 
     private static final Map<String, GameRoom> rooms = new ConcurrentHashMap<>();
     private static final Map<Session, PlayerRef> sessionToPlayer = new ConcurrentHashMap<>();
+
+    public static boolean hasActivePlayerSession(String matchId, String pseudo) {
+        if (matchId == null || pseudo == null) {
+            return false;
+        }
+        GameRoom room = rooms.get(matchId);
+        if (room == null) {
+            return false;
+        }
+        for (Map.Entry<Session, PlayerRef> entry : sessionToPlayer.entrySet()) {
+            PlayerRef ref = entry.getValue();
+            if (!matchId.equals(ref.matchId)) {
+                continue;
+            }
+            PlayerState player = room.players.get(ref.playerId);
+            if (player != null && pseudo.equals(player.pseudo)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void broadcastMatchCancelled(String matchId) {
+        GameRoom room = rooms.get(matchId);
+        if (room == null) {
+            return;
+        }
+        try {
+            room.cancelForCancellation();
+        } catch (IOException exception) {
+            System.err.println("Unable to broadcast canceled match for " + matchId + ": " + exception.getMessage());
+        }
+    }
 
     public static class Config extends ServerEndpointConfig.Configurator {
         @Override
@@ -144,13 +133,26 @@ public class GameEndpoint {
     public void onOpen(Session session, @PathParam("matchId") String matchId) throws IOException {
         GameRoom room = rooms.computeIfAbsent(matchId, id -> new GameRoom(loadMapForMatch(id, session)));
         String pseudo = getCurrentPseudo(session);
-        PlayerState player = room.findDisconnectedPlayer(pseudo);
+        
+        // Check if this player is already in the game
+        PlayerState player = room.players.values().stream()
+                .filter(p -> pseudo.equals(p.pseudo))
+                .findFirst()
+                .orElse(null);
+        
         if (player == null) {
-            player = room.addPlayer(pseudo);
-            room.sessions.put(session, player.id);
-        } else {
-            room.reconnectPlayer(session, player);
+            // Player not currently in game, check if reconnecting
+            player = room.findDisconnectedPlayer(pseudo);
+            if (player == null) {
+                // New player
+                player = room.addPlayer(pseudo);
+            } else {
+                // Reconnecting after disconnect
+                room.reconnectPlayer(session, player);
+            }
         }
+        
+        room.sessions.put(session, player.id);
         PlayerRef ref = new PlayerRef(matchId, player.id);
 
         sessionToPlayer.put(session, ref);
@@ -178,7 +180,7 @@ public class GameEndpoint {
 
         if ("READY".equals(message)) {
             player.ready = true;
-            if ("WAITING".equals(room.state) && room.allPlayersReady()) {
+            if ("WAITING".equals(room.state) && room.allPlayersReady() && room.players.size() >= 2) {
                 startMatch(ref.matchId, session);
                 room.start(getCookieHeader(session));
                 scheduleTimer(ref.matchId, room);
@@ -223,20 +225,46 @@ public class GameEndpoint {
         PlayerState player = room.players.get(ref.playerId);
         if (player == null) return;
 
-        room.scheduleDisconnectRemoval(player.id, () -> {
-            player.gems = 0;
-            room.players.remove(player.id);
-            try {
-                room.broadcast(removePlayersMessage(ref.playerId));
-                room.broadcast(roomStateMessage(room));
-                MatchesEndpoint.broadcastSnapshotsToOpenSessions();
-            } catch (IOException exception) {
-                System.err.println("Unable to broadcast disconnect removal for " + ref.playerId + ": " + exception.getMessage());
-            }
-            if (room.sessions.isEmpty() && room.players.isEmpty() && !"FINISHED".equals(room.state)) {
-                finishRoom(ref.matchId, room);
-            }
-        });
+        if (room.sessions.containsValue(player.id)) {
+            return;
+        }
+
+        if (!"RUNNING".equals(room.state)) {
+            removePlayerImmediately(room, ref, player);
+            return;
+        }
+
+        room.scheduleDisconnectRemoval(player.id, () -> removePlayerAfterTimeout(room, ref, player));
+    }
+
+    private void removePlayerImmediately(GameRoom room, PlayerRef ref, PlayerState player) {
+        player.gems = 0;
+        room.players.remove(player.id);
+        try {
+            room.broadcast(removePlayersMessage(ref.playerId));
+            room.broadcast(roomStateMessage(room));
+            MatchesEndpoint.broadcastSnapshotsToOpenSessions();
+        } catch (IOException exception) {
+            System.err.println("Unable to broadcast immediate removal for " + ref.playerId + ": " + exception.getMessage());
+        }
+        if (room.sessions.isEmpty() && room.players.isEmpty() && "RUNNING".equals(room.state)) {
+            finishRoom(ref.matchId, room);
+        }
+    }
+
+    private void removePlayerAfterTimeout(GameRoom room, PlayerRef ref, PlayerState player) {
+        player.gems = 0;
+        room.players.remove(player.id);
+        try {
+            room.broadcast(removePlayersMessage(ref.playerId));
+            room.broadcast(roomStateMessage(room));
+            MatchesEndpoint.broadcastSnapshotsToOpenSessions();
+        } catch (IOException exception) {
+            System.err.println("Unable to broadcast delayed removal for " + ref.playerId + ": " + exception.getMessage());
+        }
+        if (room.sessions.isEmpty() && room.players.isEmpty() && "RUNNING".equals(room.state)) {
+            finishRoom(ref.matchId, room);
+        }
     }
 
     @OnError
@@ -350,7 +378,60 @@ public class GameEndpoint {
                 .get();
         String body = extractBody("/matches/" + matchId, response);
         String mapName = new JSONObject(body).optString("mapName", CLASSIC_MAP.name);
-        return GAME_MAPS.getOrDefault(mapName, CLASSIC_MAP);
+        return loadMapDefinitionFromBackend(mapName, session);
+    }
+
+    private GameMap loadMapDefinitionFromBackend(String mapName, Session session) {
+        try {
+            Response response = REST_CLIENT.target(MATCHES_API_BASE)
+                    .path("maps")
+                    .path(mapName)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .header("Cookie", getCookieHeader(session))
+                    .get();
+            String body = extractBody("/matches/maps/" + mapName, response);
+            JSONObject json = new JSONObject(body);
+            return parseMapDefinition(json);
+        } catch (Exception e) {
+            System.err.println("Impossible de charger la définition de la map '" + mapName + "' depuis le backend: " + e.getMessage());
+            return CLASSIC_MAP;
+        }
+    }
+
+    private GameMap parseMapDefinition(JSONObject json) {
+        String name = json.optString("name", CLASSIC_MAP.name);
+        int width = json.optInt("width", CLASSIC_MAP.width);
+        int height = json.optInt("height", CLASSIC_MAP.height);
+        int gemCount = json.optInt("gemCount", CLASSIC_MAP.gemCount);
+        int[][] obstacles = toIntMatrix(json.optJSONArray("obstacles"));
+        int[][] startPositions = toIntMatrix(json.optJSONArray("startPositions"));
+        if (obstacles.length == 0) {
+            obstacles = CLASSIC_MAP.obstacles;
+        }
+        if (startPositions.length == 0) {
+            startPositions = CLASSIC_MAP.startPositions;
+        }
+        return new GameMap(name, width, height, gemCount, obstacles, startPositions);
+    }
+
+    private int[][] toIntMatrix(JSONArray array) {
+        if (array == null) {
+            return new int[0][0];
+        }
+        int[][] matrix = new int[array.length()][];
+        for (int i = 0; i < array.length(); i++) {
+            JSONArray row = array.optJSONArray(i);
+            if (row == null) {
+                matrix[i] = new int[0];
+                continue;
+            }
+            int[] values = new int[row.length()];
+            for (int j = 0; j < row.length(); j++) {
+                values[j] = row.optInt(j, 0);
+            }
+            matrix[i] = values;
+        }
+        return matrix;
     }
 
     private String extractBody(String path, Response response) {
@@ -584,7 +665,7 @@ public class GameEndpoint {
         return json;
     }
 
-    private JSONObject roomStateMessage(GameRoom room) {
+    private static JSONObject roomStateMessage(GameRoom room) {
         JSONObject ready = new JSONObject();
         for (PlayerState player : room.players.values()) {
             ready.put(player.id, player.ready);
@@ -601,13 +682,20 @@ public class GameEndpoint {
         return json;
     }
 
-    private JSONObject removePlayersMessage(String playerId) {
+    private static JSONObject removePlayersMessage(String playerId) {
         ArrayList<String> ids = new ArrayList<>();
         ids.add(playerId);
 
         JSONObject json = new JSONObject();
         json.put("type", "RemovePlayers");
         json.put("data", new JSONArray(ids));
+        return json;
+    }
+
+    private static JSONObject notificationMessage(String message) {
+        JSONObject json = new JSONObject();
+        json.put("type", "Notification");
+        json.put("message", message);
         return json;
     }
 
@@ -734,6 +822,24 @@ public class GameEndpoint {
             if (timer != null) {
                 timer.cancel(false);
             }
+        }
+
+        private void cancelTimerForAllPlayers() {
+            for (ScheduledFuture<?> timer : disconnectTimers.values()) {
+                if (timer != null) {
+                    timer.cancel(false);
+                }
+            }
+            disconnectTimers.clear();
+        }
+
+        private void cancelForCancellation() throws IOException {
+            cancelTimerForAllPlayers();
+            this.state = "FINISHED";
+            this.winnerName = "Annulé";
+            this.projectiles.clear();
+            broadcast(roomStateMessage(this));
+            broadcast(notificationMessage("La partie a été annulée."));
         }
 
         private void removeGemsCollidingWith(PlayerState player) {

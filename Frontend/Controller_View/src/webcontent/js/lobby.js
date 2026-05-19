@@ -7,11 +7,9 @@ const state = {
 };
 
 const AUTH_BASE = "../auth";
-const MAPS = [
-    { name: "classic", label: "Classic", maxPlayers: 4 },
-    { name: "duel", label: "Duel", maxPlayers: 2 },
-    { name: "crossroads", label: "Crossroads", maxPlayers: 4 }
-];
+const MATCHES_API_BASE = "../matches";
+const RESUME_KEY = "zelda-current-matchId";
+let MAPS = [];
 let ws = null;
 let reconnectTimer = null;
 let lobbyChat = null;
@@ -23,10 +21,29 @@ function status(text) {
     }
 }
 
+function getStoredMatchId() {
+    return localStorage.getItem(RESUME_KEY);
+}
+
+function setStoredMatchId(matchId) {
+    if (matchId) {
+        localStorage.setItem(RESUME_KEY, matchId);
+    } else {
+        localStorage.removeItem(RESUME_KEY);
+    }
+}
+
 function wsUrl() {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const context = window.location.pathname.split("/")[1] || "Controller_View";
     return `${protocol}://${window.location.host}/${context}/matches/ws`;
+}
+
+function resumeIfNeeded() {
+    const storedId = getStoredMatchId();
+    if (storedId && state.authenticated) {
+        goToGame(storedId);
+    }
 }
 
 function connectWs() {
@@ -153,7 +170,6 @@ function updateAuthBox() {
         logoutBtn.style.display = "none";
         createBtn.disabled = true;
     }
-
 }
 
 function renderList(containerId, matches, withActions) {
@@ -163,7 +179,10 @@ function renderList(containerId, matches, withActions) {
         return;
     }
 
-    container.innerHTML = matches.map(match => `
+    container.innerHTML = matches.map(match => {
+        const joinedButDisconnected = match.joined && !match.hasGameSession;
+        const canJoin = match.state === "LOADING" && (joinedButDisconnected || !match.joined);
+        return `
         <div class="match-card ${state.selectedId === match.id ? "selected" : ""}" data-id="${match.id}">
             <div class="match-head">
                 <strong>${match.title}</strong>
@@ -178,15 +197,16 @@ function renderList(containerId, matches, withActions) {
             ${match.winner ? `<div class="small">Winner: ${match.winner}</div>` : ""}
             ${withActions ? `
                 <div class="actions">
-                    <button class="btn-ok" data-action="join" data-id="${match.id}" ${match.joined || match.state !== "LOADING" ? "disabled" : ""}>
+                    <button class="btn-ok" data-action="join" data-id="${match.id}" ${!canJoin ? "disabled" : ""}>
                         ${joinLabel(match)}
                     </button>
-                    <button class="btn-warn" data-action="start" data-id="${match.id}">Start</button>
-                    <button class="btn-danger" data-action="finish" data-id="${match.id}">Finish</button>
+                    ${match.state === "LOADING" && match.createdBy === state.pseudo ? `
+                        <button class="btn-danger" data-action="cancel" data-id="${match.id}">Annuler</button>
+                    ` : ""}
                 </div>
             ` : ""}
         </div>
-    `).join("");
+    `;} ).join("");
 
     container.querySelectorAll(".match-card").forEach(card => {
         card.addEventListener("click", (e) => {
@@ -207,7 +227,7 @@ function renderList(containerId, matches, withActions) {
 }
 
 function joinLabel(match) {
-    if (match.joined) return "Already joined";
+    if (match.joined && match.hasGameSession) return "Already joined";
     if (match.state !== "LOADING") return "Started";
     return "Join";
 }
@@ -230,15 +250,48 @@ function createMatch() {
     document.getElementById("titleInput").value = "";
 }
 
+async function loadMapsFromBackend() {
+    try {
+        const response = await fetch(`${MATCHES_API_BASE}/maps`, {
+            credentials: "include"
+        });
+        if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+        }
+        const data = await response.json();
+        MAPS = Array.isArray(data)
+            ? data.map(item => ({
+                name: item.name,
+                label: item.name.charAt(0).toUpperCase() + item.name.slice(1),
+                maxPlayers: item.maxPlayers
+            }))
+            : [];
+    } catch (error) {
+        console.error("Impossible de charger les maps depuis le backend:", error);
+        MAPS = [
+            { name: "classic", label: "Classic", maxPlayers: 4 },
+            { name: "duel", label: "Duel", maxPlayers: 2 },
+            { name: "crossroads", label: "Crossroads", maxPlayers: 4 }
+        ];
+    }
+}
+
 function initMapSelector() {
     const mapSelect = document.getElementById("mapSelect");
     const maxPlayersInput = document.getElementById("maxPlayersInput");
 
-    mapSelect.innerHTML = MAPS.map(map => `
-        <option value="${map.name}" data-max-players="${map.maxPlayers}">
-            ${map.label} (${map.maxPlayers} joueurs max)
-        </option>
-    `).join("");
+    const renderMaps = () => {
+        if (!MAPS.length) {
+            mapSelect.innerHTML = `<option value="classic">Classic (4 joueurs max)</option>`;
+            MAPS = [{ name: "classic", label: "Classic", maxPlayers: 4 }];
+        } else {
+            mapSelect.innerHTML = MAPS.map(map => `
+                <option value="${map.name}" data-max-players="${map.maxPlayers}">
+                    ${map.label} (${map.maxPlayers} joueurs max)
+                </option>
+            `).join("");
+        }
+    };
 
     const updateMaxPlayersLimit = () => {
         const selected = MAPS.find(map => map.name === mapSelect.value) || MAPS[0];
@@ -249,19 +302,30 @@ function initMapSelector() {
     };
 
     mapSelect.addEventListener("change", updateMaxPlayersLimit);
-    updateMaxPlayersLimit();
+    loadMapsFromBackend().then(() => {
+        renderMaps();
+        updateMaxPlayersLimit();
+    }).catch(() => {
+        renderMaps();
+        updateMaxPlayersLimit();
+    });
 }
 
 function handleAction(action, id) {
     if (action === "join") {
         const match = state.active.find(m => m.id === id);
-        if (!match || match.joined || match.state !== "LOADING") {
+        const sessionActive = match && match.hasGameSession === true;
+        if (!match || match.state !== "LOADING" || sessionActive) {
             return;
         }
         status("Connexion à la partie...");
         sendAction({ action: "join", id });
-    } else if (action === "start") {
-        sendAction({ action: "start", id });
+    } else if (action === "cancel") {
+        if (!confirm("Annuler la partie et renvoyer tous les joueurs vers le lobby ?")) {
+            return;
+        }
+        sendAction({ action: "cancel", id });
+        state.selectedId = id;
     } else if (action === "finish") {
         const winner = prompt("Nom du vainqueur (optionnel):", "");
         sendAction({ action: "finish", id, winner: winner || "" });
@@ -270,6 +334,7 @@ function handleAction(action, id) {
 }
 
 function goToGame(matchId) {
+    setStoredMatchId(matchId);
     const params = new URLSearchParams(window.location.search);
     params.set("matchId", matchId);
     window.location.href = "movingSquare.html?" + params.toString();
@@ -302,6 +367,7 @@ async function logout() {
         status("Disconnected");
         renderAll();
         updateAuthBox();
+        window.location.href = "login.html";
     }
 }
 
@@ -312,27 +378,23 @@ async function checkAuth() {
         });
 
         if (!response.ok) {
-            throw new Error("Not authenticated");
+            window.location.href = "login.html";
+            return;
         }
 
         const user = await response.json();
         state.authenticated = true;
         state.pseudo = user.pseudo;
         updateAuthBox();
+        resumeIfNeeded();
         connectWs();
         lobbyChat.connect({
             senderId: user.pseudo,
             displayName: user.pseudo
         });
     } catch (error) {
-        state.authenticated = false;
-        state.pseudo = null;
-        if (lobbyChat) {
-            lobbyChat.disconnect();
-        }
-        status("Connecte-toi pour voir et rejoindre les parties.");
-        renderAll();
-        updateAuthBox();
+        window.location.href = "login.html";
+        return;
     }
 }
 
@@ -348,6 +410,7 @@ function initLobby() {
     document.getElementById("createBtn").addEventListener("click", createMatch);
     document.getElementById("loginBtn").addEventListener("click", goToLogin);
     document.getElementById("logoutBtn").addEventListener("click", logout);
+    
     renderAll();
     updateAuthBox();
     checkAuth();

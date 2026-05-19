@@ -23,6 +23,7 @@ public class Match {
     private String endedAt;
     private String winner;
     private String mapName;
+    private String createdBy;
 
     @ManyToMany(mappedBy = "match_history")
     private Collection<Account> participants;
@@ -40,7 +41,8 @@ public class Match {
         String startedAt,
         String endedAt,
         String winner,
-        String mapName
+        String mapName,
+        String createdBy
     ) {
         this.id = id;
         this.title = title;
@@ -51,6 +53,7 @@ public class Match {
         this.endedAt = endedAt;
         this.winner = winner;
         this.mapName = mapName;
+        this.createdBy = createdBy;
     }
 
     public String getId() {
@@ -93,6 +96,10 @@ public class Match {
         return mapName;
     }
 
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -131,5 +138,9 @@ public class Match {
 
     public void setMapName(String mapName) {
         this.mapName = mapName;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

@@ -1,5 +1,6 @@
 
 const BASE_URL = "../auth";
+const RESUME_KEY = "zelda-current-matchId";
 
 function showTab(tab) {
     document.getElementById("form-login").style.display   = tab === "login"    ? "block" : "none";
@@ -18,6 +19,36 @@ function showMessage(text, type) {
 
 function hideMessage() {
     document.getElementById("message").style.display = "none";
+}
+
+function getStoredMatchId() {
+    return localStorage.getItem(RESUME_KEY);
+}
+
+async function checkLoginRedirect() {
+    const storedId = getStoredMatchId();
+
+    try {
+        const response = await fetch(BASE_URL + "/me", {
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        if (storedId) {
+            window.location.href = "movingSquare.html?matchId=" + encodeURIComponent(storedId);
+        } else {
+            window.location.href = "lobby.html";
+        }
+    } catch (e) {
+        // Aucun redirect si l'utilisateur n'est pas authentifié
+    }
+}
+
+function initLoginPage() {
+    checkLoginRedirect();
 }
 
 async function login() {
@@ -41,11 +72,12 @@ async function login() {
         const text = await response.text();
 
         if (response.ok) {
-            showMessage("Bienvenue, " + pseudo + " ! Redirection...", "success");
-            // Redirige vers le lobby dans 1.5 secondes
-            setTimeout(() => {
-                window.location.href = "lobby.html?pseudo=" + encodeURIComponent(pseudo);
-            }, 1500);
+            const storedId = getStoredMatchId();
+            const redirectUrl = storedId
+                ? "movingSquare.html?matchId=" + encodeURIComponent(storedId)
+                : "lobby.html?pseudo=" + encodeURIComponent(pseudo);
+            window.location.href = redirectUrl;
+            return;
         } else {
             showMessage(text || ("Erreur HTTP " + response.status), "error");
         }
@@ -105,3 +137,5 @@ document.addEventListener("keydown", (e) => {
     if (document.getElementById("form-login").style.display !== "none") login();
     else register();
 });
+
+document.addEventListener("DOMContentLoaded", initLoginPage);

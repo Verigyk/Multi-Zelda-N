@@ -20,6 +20,7 @@ public class ChatEndpoint{
     private static final long RECONNECT_GRACE_MS = 2000;
     private static final Set<Session> sessions = ConcurrentHashMap.newKeySet();
     private static final Map<Session, String> names = new ConcurrentHashMap<>();
+    private static final Map<String, Integer> activeCounts = new ConcurrentHashMap<>();
     private static final Map<String, Long> recentlyLeft = new ConcurrentHashMap<>();
     private String myName = "server";
 
@@ -36,8 +37,11 @@ public class ChatEndpoint{
         if ("join".equals(type)) {
             String displayName = cleanName(json.optString("displayName", json.optString("senderId", "")));
             names.put(session, displayName);
+            int currentCount = activeCounts.getOrDefault(displayName, 0);
+            activeCounts.put(displayName, currentCount + 1);
+
             Long leftAt = recentlyLeft.remove(displayName);
-            if (leftAt == null || Instant.now().toEpochMilli() - leftAt > RECONNECT_GRACE_MS) {
+            if (currentCount == 0 && (leftAt == null || Instant.now().toEpochMilli() - leftAt > RECONNECT_GRACE_MS)) {
                 broadcastServer(displayName + " joined the chat");
             }
             return;
@@ -52,8 +56,11 @@ public class ChatEndpoint{
         String displayName = names.remove(session);
 
         if (displayName != null) {
-            recentlyLeft.put(displayName, Instant.now().toEpochMilli());
-            new Thread(() -> broadcastLeaveIfStillDisconnected(displayName)).start();
+            activeCounts.computeIfPresent(displayName, (name, count) -> count > 1 ? count - 1 : null);
+            if (!activeCounts.containsKey(displayName)) {
+                recentlyLeft.put(displayName, Instant.now().toEpochMilli());
+                new Thread(() -> broadcastLeaveIfStillDisconnected(displayName)).start();
+            }
         }
     }
 
@@ -88,7 +95,7 @@ public class ChatEndpoint{
         try {
             Thread.sleep(RECONNECT_GRACE_MS);
             Long leftAt = recentlyLeft.remove(displayName);
-            if (leftAt != null) {
+            if (leftAt != null && activeCounts.getOrDefault(displayName, 0) == 0) {
                 broadcastServer(displayName + " left the chat");
             }
         } catch (InterruptedException exception) {

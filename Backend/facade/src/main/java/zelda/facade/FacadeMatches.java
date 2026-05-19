@@ -32,10 +32,66 @@ import org.springframework.web.bind.annotation.RestController;
 public class FacadeMatches {
 
     private static final HashMap<String, Integer> MAP_MAX_PLAYERS = new HashMap<String, Integer>();
+    private static final HashMap<String, matchShape.MapDefinitionResponse> GAME_MAPS = new HashMap<>();
     static {
         MAP_MAX_PLAYERS.put("classic", 4);
         MAP_MAX_PLAYERS.put("duel", 2);
         MAP_MAX_PLAYERS.put("crossroads", 4);
+
+        GAME_MAPS.put("classic", new matchShape.MapDefinitionResponse(
+            "classic",
+            1200,
+            760,
+            8,
+            new int[][]{
+                new int[]{300, 500, 200, 150},
+                new int[]{900, 400, 200, 300}
+            },
+            new int[][]{
+                new int[]{50, 50},
+                new int[]{150, 50},
+                new int[]{250, 50},
+                new int[]{350, 50}
+            }
+        ));
+        GAME_MAPS.put("duel", new matchShape.MapDefinitionResponse(
+            "duel",
+            900,
+            600,
+            5,
+            new int[][]{
+                new int[]{450, 300, 90, 180},
+                new int[]{220, 300, 70, 70},
+                new int[]{680, 300, 70, 70}
+            },
+            new int[][]{
+                new int[]{60, 275},
+                new int[]{790, 275}
+            }
+        ));
+        GAME_MAPS.put("crossroads", new matchShape.MapDefinitionResponse(
+            "crossroads",
+            1200,
+            760,
+            12,
+            new int[][]{
+                new int[]{600, 380, 90, 90},
+                new int[]{600, 165, 55, 115},
+                new int[]{600, 595, 55, 115},
+                new int[]{265, 380, 115, 55},
+                new int[]{935, 380, 115, 55},
+                new int[]{285, 185, 70, 70},
+                new int[]{915, 185, 70, 70},
+                new int[]{285, 575, 70, 70},
+                new int[]{915, 575, 70, 70}
+            },
+            new int[][]{
+                new int[]{60, 60},
+                new int[]{1090, 60},
+                new int[]{60, 650},
+                new int[]{1090, 650}
+            }
+        ));
     }
 
     private HashMap<String, Match> activeMatches = new HashMap<String,Match>(); 
@@ -65,7 +121,8 @@ public class FacadeMatches {
                                 null,
                                 null,
                                 null,
-                                mapName
+                                mapName,
+                                authentication.getName()
         );
         HashSet<String> pseudos = new HashSet<String>();
         match.setPlayersCount(pseudos.size());
@@ -78,10 +135,19 @@ public class FacadeMatches {
 
     @GetMapping("/maps")
     public Collection<matchShape.MapOptionResponse> listMaps() {
-        return MAP_MAX_PLAYERS.entrySet()
+        return GAME_MAPS.values()
             .stream()
-            .map(entry -> new matchShape.MapOptionResponse(entry.getKey(), entry.getValue()))
+            .map(map -> new matchShape.MapOptionResponse(map.name(), MAP_MAX_PLAYERS.getOrDefault(map.name(), 4)))
             .collect(Collectors.toList());
+    }
+
+    @GetMapping("/maps/{name}")
+    public ResponseEntity<matchShape.MapDefinitionResponse> getMapDefinition(@PathVariable String name) {
+        matchShape.MapDefinitionResponse map = GAME_MAPS.get(name);
+        if (map == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(map);
     }
 
     @GetMapping("/{id}")
@@ -140,7 +206,7 @@ public class FacadeMatches {
             if (activeMatchPlayersIds != null && activeMatchPlayersIds.remove(account.getPseudo())) {
                 match.setPlayersCount(activeMatchPlayersIds.size());
             }
-            if (activeMatchPlayersIds == null || activeMatchPlayersIds.isEmpty()) {
+            if ("RUNNING".equals(match.getState()) && (activeMatchPlayersIds == null || activeMatchPlayersIds.isEmpty())) {
                 finishAndArchiveMatch(id, match, "Inconnu");
             }
             return ResponseEntity.ok(match);
@@ -161,6 +227,25 @@ public class FacadeMatches {
             }
             return ResponseEntity.ok(match);
         }
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Match> cancelMatch(Authentication authentication, @PathVariable String id) {
+        Match match = activeMatches.get(id);
+        if (match == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if (!"LOADING".equals(match.getState())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(match);
+        }
+        if (!authentication.getName().equals(match.getCreatedBy())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        synchronized (match) {
+            finishAndArchiveMatch(id, match, "Annulé");
+        }
+        return ResponseEntity.ok(match);
     }
 
     @PostMapping("/{id}/finish")
@@ -278,6 +363,7 @@ public class FacadeMatches {
             match.getStartedAt(),
             match.getEndedAt(),
             match.getWinner(),
+            match.getCreatedBy(),
             joined
         );
     }

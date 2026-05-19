@@ -1,20 +1,22 @@
+const RESUME_KEY = "zelda-current-matchId";
 const game = new Vue({
 
   el: "#game",
   
   data: {
     connection : null,
-    matchId: new URLSearchParams(window.location.search).get("matchId"),
-    apiBase: `${window.location.origin}/facade`,
+    matchId: new URLSearchParams(window.location.search).get("matchId") || localStorage.getItem(RESUME_KEY),
     playerId: null,
     ready: false,
     roomState: "WAITING",
+    previousRoomState: "WAITING",
     playerGems: 0,
     remainingSeconds: 180,
     winnerName: "",
     pressedKeys: {},
     movementLoop: null,
     quitting: false,
+    notificationTimeout: null,
     scoreboardPlayers: {}
   },
 
@@ -70,6 +72,9 @@ const game = new Vue({
         case "RoomState":
           game.updateRoomState(data);
           break;
+        case "Notification":
+          game.showNotification(data["message"] || "Notification");
+          break;
         case "Gems":
           game.updateGems(data["data"]);
           break;
@@ -83,6 +88,7 @@ const game = new Vue({
     },
 
     updateRoomState: function(data) {
+      this.previousRoomState = this.roomState;
       this.roomState = data["state"];
       if (this.roomState !== "RUNNING") {
         this.pressedKeys = {};
@@ -99,6 +105,15 @@ const game = new Vue({
 
       this.remainingSeconds = data["remainingSeconds"] !== undefined ? data["remainingSeconds"] : this.remainingSeconds;
       this.winnerName = data["winnerName"] || "";
+
+      if (this.roomState === "FINISHED" && this.winnerName === "Annulé") {
+        this.showNotification("La partie a été annulée.");
+        setTimeout(() => {
+          localStorage.removeItem(RESUME_KEY);
+          window.location.href = "lobby.html";
+        }, 1200);
+        return;
+      }
 
       if (this.roomState === "FINISHED") {
         matchState.textContent = "Game finished";
@@ -196,6 +211,20 @@ const game = new Vue({
         const gems = player.gems || 0;
         return `\n          <li class="scoreRow">\n            <div class="scoreInfo">\n              <span class="scoreDot" style="background:${color};"></span>\n              <span class="scoreName">${this.escapeHtml(player.pseudo || player.id || "Joueur")}</span>\n            </div>\n            <span class="scoreGems">${gems}</span>\n          </li>\n        `;
       }).join("");
+    },
+
+    showNotification: function(message) {
+      const notification = document.getElementById("notification");
+      if (!notification) {
+        alert(message);
+        return;
+      }
+      notification.textContent = message;
+      notification.style.display = "block";
+      clearTimeout(this.notificationTimeout);
+      this.notificationTimeout = setTimeout(() => {
+        notification.style.display = "none";
+      }, 5000);
     },
 
     escapeHtml: function(unsafe) {
@@ -298,19 +327,33 @@ const game = new Vue({
           element.remove();
         }
         if (this.scoreboardPlayers[id]) {
-          this.scoreboardPlayers[id].gems = 0;
+          delete this.scoreboardPlayers[id];
         }
       }
       this.updateScoreboard();
     },
 
     leaveMatch: async function() {
-      if (this.connection) {
-        this.connection.close();
+      try {
+        await fetch(`../matches/${encodeURIComponent(this.matchId)}/leave`, {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (e) {
+        console.warn("Unable to notify backend of match leave", e);
+      } finally {
+        if (this.connection) {
+          localStorage.removeItem(RESUME_KEY);
+          this.connection.close();
+        }
       }
     },
 
     leaveMatchOnUnload: function() {
+      const url = `../matches/${encodeURIComponent(this.matchId)}/leave`;
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, "");
+      }
       if (this.connection) {
         this.connection.close();
       }
@@ -330,6 +373,7 @@ const game = new Vue({
       return;
     }
 
+    localStorage.setItem(RESUME_KEY, this.matchId);
     console.log("Starting connection to WebSocket Server")
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const context = window.location.pathname.split("/")[1] || "Controller_View";
