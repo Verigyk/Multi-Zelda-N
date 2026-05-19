@@ -52,6 +52,7 @@ public class GameEndpoint {
     private static final int PROJECTILE_SPEED = 14;
     private static final int PROJECTILE_MAX_AGE_MS = 1800;
     private static final int PLAYER_DEAD_DURATION_MS = 5000;
+    private static final int RECONNECT_GRACE_SECONDS = 5;
     private static final int GEMS_DROPPED_ON_HIT = 5;
     private static final int[][] BOMB_SPAWN_POINTS = new int[][]{
         new int[]{150, 140},
@@ -143,11 +144,16 @@ public class GameEndpoint {
     public void onOpen(Session session, @PathParam("matchId") String matchId) throws IOException {
         GameRoom room = rooms.computeIfAbsent(matchId, id -> new GameRoom(loadMapForMatch(id, session)));
         String pseudo = getCurrentPseudo(session);
-        PlayerState player = room.addPlayer(pseudo);
+        PlayerState player = room.findDisconnectedPlayer(pseudo);
+        if (player == null) {
+            player = room.addPlayer(pseudo);
+            room.sessions.put(session, player.id);
+        } else {
+            room.reconnectPlayer(session, player);
+        }
         PlayerRef ref = new PlayerRef(matchId, player.id);
 
         sessionToPlayer.put(session, ref);
-        room.sessions.put(session, player.id);
 
         session.getBasicRemote().sendText(mapMessage(room.map).toString());
         session.getBasicRemote().sendText(playersMessage(room.players).toString());
@@ -214,24 +220,23 @@ public class GameEndpoint {
         if (room == null) return;
 
         room.sessions.remove(session);
-        if (room.sessions.isEmpty() && !"FINISHED".equals(room.state)) {
-            room.finishCookieHeader = getCookieHeader(session);
-            finishRoom(ref.matchId, room);
-        }
-        room.players.remove(ref.playerId);
-        try {
-            leaveMatch(ref.matchId, session);
-        } catch (Exception exception) {
-            System.err.println("Unable to leave match " + ref.matchId + ": " + exception.getMessage());
-        }
-        room.broadcast(removePlayersMessage(ref.playerId));
-        room.broadcast(roomStateMessage(room));
-        MatchesEndpoint.broadcastSnapshotsToOpenSessions();
+        PlayerState player = room.players.get(ref.playerId);
+        if (player == null) return;
 
-        if (room.sessions.isEmpty()) {
-            room.cancelTimer();
-            rooms.remove(ref.matchId);
-        }
+        room.scheduleDisconnectRemoval(player.id, () -> {
+            player.gems = 0;
+            room.players.remove(player.id);
+            try {
+                room.broadcast(removePlayersMessage(ref.playerId));
+                room.broadcast(roomStateMessage(room));
+                MatchesEndpoint.broadcastSnapshotsToOpenSessions();
+            } catch (IOException exception) {
+                System.err.println("Unable to broadcast disconnect removal for " + ref.playerId + ": " + exception.getMessage());
+            }
+            if (room.sessions.isEmpty() && room.players.isEmpty() && !"FINISHED".equals(room.state)) {
+                finishRoom(ref.matchId, room);
+            }
+        });
     }
 
     @OnError
@@ -661,6 +666,7 @@ public class GameEndpoint {
         private final Map<String, GemState> gems = new ConcurrentHashMap<>();
         private final Map<String, BombSpawnState> bombSpawns = new ConcurrentHashMap<>();
         private final Map<String, ProjectileState> projectiles = new ConcurrentHashMap<>();
+        private final Map<String, ScheduledFuture<?>> disconnectTimers = new ConcurrentHashMap<>();
         private final AtomicInteger nextPlayerId = new AtomicInteger(0);
         private final AtomicInteger nextGemId = new AtomicInteger(0);
         private final AtomicInteger nextProjectileId = new AtomicInteger(0);
@@ -697,6 +703,37 @@ public class GameEndpoint {
             removeGemsCollidingWith(player);
             spawnMissingGems();
             return player;
+        }
+
+        private PlayerState findDisconnectedPlayer(String pseudo) {
+            for (PlayerState player : knownPlayers.values()) {
+                if (player.pseudo.equals(pseudo) && !sessions.containsValue(player.id)) {
+                    return player;
+                }
+            }
+            return null;
+        }
+
+        private void reconnectPlayer(Session session, PlayerState player) {
+            sessions.put(session, player.id);
+            players.put(player.id, player);
+            cancelDisconnectTimer(player.id);
+        }
+
+        private void scheduleDisconnectRemoval(String playerId, Runnable removalTask) {
+            cancelDisconnectTimer(playerId);
+            ScheduledFuture<?> timer = TIMER_EXECUTOR.schedule(() -> {
+                disconnectTimers.remove(playerId);
+                removalTask.run();
+            }, RECONNECT_GRACE_SECONDS, TimeUnit.SECONDS);
+            disconnectTimers.put(playerId, timer);
+        }
+
+        private void cancelDisconnectTimer(String playerId) {
+            ScheduledFuture<?> timer = disconnectTimers.remove(playerId);
+            if (timer != null) {
+                timer.cancel(false);
+            }
         }
 
         private void removeGemsCollidingWith(PlayerState player) {

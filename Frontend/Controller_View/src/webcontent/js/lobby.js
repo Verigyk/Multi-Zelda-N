@@ -6,7 +6,7 @@ const state = {
     pseudo: null
 };
 
-const API_BASE = `${window.location.origin}/facade`;
+const AUTH_BASE = "../auth";
 const MAPS = [
     { name: "classic", label: "Classic", maxPlayers: 4 },
     { name: "duel", label: "Duel", maxPlayers: 2 },
@@ -281,7 +281,7 @@ function goToLogin() {
 
 async function logout() {
     try {
-        await fetch(API_BASE + "/auth/logout", {
+        await fetch(AUTH_BASE + "/logout", {
             method: "POST",
             credentials: "include"
         });
@@ -307,7 +307,7 @@ async function logout() {
 
 async function checkAuth() {
     try {
-        const response = await fetch(API_BASE + "/api/me", {
+        const response = await fetch(AUTH_BASE + "/me", {
             credentials: "include"
         });
 

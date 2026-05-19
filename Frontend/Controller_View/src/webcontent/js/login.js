@@ -1,5 +1,5 @@
 
-const BASE_URL = `${window.location.origin}/facade/auth`;
+const BASE_URL = "../auth";
 
 function showTab(tab) {
     document.getElementById("form-login").style.display   = tab === "login"    ? "block" : "none";

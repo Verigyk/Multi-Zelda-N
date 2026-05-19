@@ -25,11 +25,20 @@
     </div>
   </div>
 
-  <div id="game">
-    <div id="obstacleLayer"></div>
-    <div id="bombSpawnLayer"></div>
-    <div id="gemLayer"></div>
-    <div id="projectileLayer"></div>
+  <div id="gameArea">
+    <div id="game">
+      <div id="obstacleLayer"></div>
+      <div id="bombSpawnLayer"></div>
+      <div id="gemLayer"></div>
+      <div id="projectileLayer"></div>
+    </div>
+    <aside id="scoreboard">
+      <div class="scoreboard-header">
+        <strong>Scoreboard</strong>
+        <span id="scoreboardSubtitle">Gems par joueur</span>
+      </div>
+      <ul id="scoreList"></ul>
+    </aside>
   </div>
   
   <script src="../js/movingSquare.js"></script>

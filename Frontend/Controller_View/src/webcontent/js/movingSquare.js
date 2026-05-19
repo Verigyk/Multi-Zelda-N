@@ -14,7 +14,8 @@ const game = new Vue({
     winnerName: "",
     pressedKeys: {},
     movementLoop: null,
-    quitting: false
+    quitting: false,
+    scoreboardPlayers: {}
   },
 
   methods : {
@@ -138,6 +139,12 @@ const game = new Vue({
 
     updatePositions: function(data) {
       for (const [key, player] of Object.entries(data)) {
+        if (!Array.isArray(player)) {
+          this.scoreboardPlayers[key] = player;
+        }
+      }
+      this.updateScoreboard();
+      for (const [key, player] of Object.entries(data)) {
         const element = this.$el.querySelector(`#s${key}`);
 
         const top = Array.isArray(player) ? player[1] : player.y;
@@ -174,6 +181,30 @@ const game = new Vue({
         playerElement.classList.toggle("dead", dead);
         this.updateCarriedBomb(playerElement, hasBomb);
       }
+    },
+
+    updateScoreboard: function() {
+      const scoreList = document.getElementById("scoreList");
+      if (!scoreList) return;
+
+      const players = Object.values(this.scoreboardPlayers)
+        .filter(player => player && !Array.isArray(player))
+        .sort((a, b) => (b.gems || 0) - (a.gems || 0));
+
+      scoreList.innerHTML = players.map(player => {
+        const color = player.color || "#94a3b8";
+        const gems = player.gems || 0;
+        return `\n          <li class="scoreRow">\n            <div class="scoreInfo">\n              <span class="scoreDot" style="background:${color};"></span>\n              <span class="scoreName">${this.escapeHtml(player.pseudo || player.id || "Joueur")}</span>\n            </div>\n            <span class="scoreGems">${gems}</span>\n          </li>\n        `;
+      }).join("");
+    },
+
+    escapeHtml: function(unsafe) {
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     },
 
     updateCarriedBomb: function(playerElement, hasBomb) {
@@ -261,13 +292,16 @@ const game = new Vue({
     },
 
     removePlayers: function(data) {
-      console.log(data)
       for (const id of data) {
         const element = this.$el.querySelector(`#s${id}`);
         if (element) {
           element.remove();
         }
+        if (this.scoreboardPlayers[id]) {
+          this.scoreboardPlayers[id].gems = 0;
+        }
       }
+      this.updateScoreboard();
     },
 
     leaveMatch: async function() {
